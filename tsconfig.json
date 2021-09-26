@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "lib": ["es6", "esnext.asynciterable"],
+        "target": "es2017",
+        "module": "commonjs",
+        "noImplicitReturns": false,
+        "strict": true,
+        "outDir": "dist",
+        "rootDir": "src"
+    }
+}
