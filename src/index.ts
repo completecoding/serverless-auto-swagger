@@ -1,7 +1,21 @@
 'use strict';
 import { getTypeScriptReader, getOpenApiWriter, makeConverter } from 'typeconv';
-import * as fs from 'fs';
 import swaggerFunctions from './resources/functions';
+import * as fs from 'fs';
+
+import {
+    Serverless,
+    ServerlessOptions,
+    ServerlessCommand,
+    ServerlessHooks,
+    HttpEvent,
+    HttpApiEvent,
+    HttpResponses,
+    FullHttpEvent,
+    FullHttpApiEvent,
+} from './serverlessPlugin';
+import { Swagger, Definition, Paths, Response } from './swagger';
+import { removeStringFromArray, writeFile } from './helperFunctions';
 
 class ServerlessAutoSwagger {
     serverless: Serverless;
@@ -36,6 +50,8 @@ class ServerlessAutoSwagger {
             'generate-swagger:generateSwagger': this.generateSwagger,
             'generate-swagger:addEndpointsAndLambda': this.addEndpointsAndLambda,
             'before:offline:start:init': this.addEndpointsAndLambda,
+
+            // TODO hook into the deployment as well to generate and add endpoints
         };
     }
 
@@ -73,7 +89,7 @@ class ServerlessAutoSwagger {
                         JSON.parse(definitionsData).components.schemas;
 
                     if (data.includes('anyOf')) {
-                        console.log('evil!!!!!!!', definition);
+                        console.log('includes anyOf', definition);
                         //const newDef = Object.values(definition).map(recursiveFixAnyOf);
                     }
 
@@ -82,6 +98,7 @@ class ServerlessAutoSwagger {
             );
 
             this.swagger.definitions = combinedDefinitions;
+            // TODO change this to store these as temporary and only include definitions used elsewhere.
         } catch (error) {
             console.log('error getting types', error);
         }
@@ -113,7 +130,7 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
                 .map(event => {
                     let http = (event as HttpEvent).http || (event as HttpApiEvent).httpApi;
                     if (typeof http === 'string') {
-                        // they're using the shorthand - parse that into object.
+                        // TODO they're using the shorthand - parse that into object.
                         return;
                     }
 
@@ -171,7 +188,8 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
         return formatted;
     };
     httpEventToSecurity = (http: EitherHttpEvent) => {
-        // todo - add connecting the security sections
+        // TODO - add security sections
+        http.path;
         return undefined;
     };
 
@@ -232,49 +250,3 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
 module.exports = ServerlessAutoSwagger;
 
 type EitherHttpEvent = FullHttpEvent['http'] | FullHttpApiEvent['httpApi'];
-
-const writeFile = (filepath: string, content: string) => {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(filepath, content, err => {
-            if (err) {
-                console.error(err);
-                reject();
-                return;
-            }
-            resolve(true);
-        });
-    });
-};
-
-export function removeStringFromArray(arr: string[], value: string) {
-    var i = 0;
-    while (i < arr.length) {
-        if (arr[i] === value) {
-            arr.splice(i, 1);
-        } else {
-            ++i;
-        }
-    }
-    return arr;
-}
-
-export const recursiveFixAnyOf = (definition: Definition) => {
-    switch (definition.type) {
-        case 'object':
-            let newDefinition: Definition = { ...definition, properties: {} };
-
-            Object.entries(definition.properties!).map(([propertyKey, definition]) => {
-                if (propertyKey === 'anyOf' && newDefinition.properties) {
-                    //fix it
-                    newDefinition.enum = (definition as Definition).anyOf!.map(anyOfObj => {
-                        return anyOfObj.const;
-                    });
-                }
-                newDefinition.properties![propertyKey] = recursiveFixAnyOf(definition);
-            });
-
-            return newDefinition;
-    }
-
-    return definition;
-};

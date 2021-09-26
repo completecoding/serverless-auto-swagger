@@ -1,11 +1,11 @@
-interface Serverless {
+export interface Serverless {
     cli: {
         log: Function;
     };
     service: ServerlessConfig;
 }
 
-interface ServerlessConfig {
+export interface ServerlessConfig {
     service: string;
     provider: ServerlessProvider;
     plugins: string[];
@@ -17,11 +17,11 @@ interface ServerlessConfig {
     custom: { [key: string]: any };
 }
 
-interface ServerlessFunctions {
+export interface ServerlessFunctions {
     [functionName: string]: ServerlessFunction;
 }
 
-interface ServerlessFunction {
+export interface ServerlessFunction {
     handler: string;
     name?: string;
     description?: string;
@@ -33,7 +33,7 @@ type ServerlessFunctionEvent = HttpEvent | HttpApiEvent;
 
 type HttpEvent = FullHttpEvent | { http: string };
 
-interface FullHttpEvent {
+export interface FullHttpEvent {
     http: {
         path: string;
         method: string;
@@ -50,7 +50,7 @@ interface FullHttpEvent {
 }
 
 type HttpApiEvent = FullHttpApiEvent | { httpApi: string };
-interface FullHttpApiEvent {
+export interface FullHttpApiEvent {
     httpApi: {
         path: string;
         method: string;
@@ -61,7 +61,7 @@ interface FullHttpApiEvent {
     };
 }
 
-interface HttpResponses {
+export interface HttpResponses {
     [statusCode: string]:
         | string
         | {
@@ -70,9 +70,9 @@ interface HttpResponses {
           };
 }
 
-interface CorsConfig {}
+export interface CorsConfig {}
 
-interface ServerlessProvider {
+export interface ServerlessProvider {
     name: string;
     runtime: string;
     stage: string;
@@ -81,14 +81,14 @@ interface ServerlessProvider {
     environment: { [key: string]: string };
 }
 
-interface ServerlessResources {
+export interface ServerlessResources {
     [resourceName: string]: {
         type: string;
         properties: any;
     };
 }
 
-interface ServerlessOutputs {
+export interface ServerlessOutputs {
     [key: string]: {
         Description: string;
         Value: string | { [key: string]: string | string[] };
@@ -98,13 +98,13 @@ interface ServerlessOutputs {
     };
 }
 
-interface ServerlessOptions {}
+export interface ServerlessOptions {}
 
-interface ServerlessCommand {
+export interface ServerlessCommand {
     lifecycleEvents: string[];
     usage?: string;
 }
 
-interface ServerlessHooks {
+export interface ServerlessHooks {
     [hook: string]: Function;
 }

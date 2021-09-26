@@ -1,4 +1,4 @@
-interface Swagger {
+export interface Swagger {
     swagger: string;
     info: Info;
     host?: string;
@@ -12,7 +12,7 @@ interface Swagger {
 }
 
 // Info Section
-interface Info {
+export interface Info {
     title: string;
     description?: string;
     version: string;
@@ -20,32 +20,32 @@ interface Info {
     contact?: Contact;
     license?: License;
 }
-interface Contact {
+export interface Contact {
     name?: string;
     url?: string;
     email?: string;
 }
-interface License {
+export interface License {
     name: string;
     url?: string;
 }
 
 // Tag Section
-interface Tag {
+export interface Tag {
     name: string;
     description?: string;
     externalDocs?: ExternalDocs;
 }
 
 // Path Section
-interface Paths {
+export interface Paths {
     [key: string]: PathMethods;
 }
 
 type PathMethods = {
     [method: string]: MethodDetails;
 };
-interface MethodDetails {
+export interface MethodDetails {
     tags?: string[];
     summary?: string;
     description?: string;
@@ -56,26 +56,26 @@ interface MethodDetails {
     responses: { [key: string]: Response };
     security?: MethodSecurity[];
 }
-interface Parameter {
+export interface Parameter {
     in: string;
     name: string;
     description?: string;
     required?: boolean;
     schema?: SchemaRef;
 }
-interface SchemaRef {
+export interface SchemaRef {
     $ref: string;
 }
-interface Response {
+export interface Response {
     description: string;
     schema?: SchemaRef;
 }
-interface MethodSecurity {
+export interface MethodSecurity {
     [securityType: string]: string[];
 }
 
 // Security Section
-interface SecurityDefinition {
+export interface SecurityDefinition {
     type: string;
     name?: string;
     in?: string;
@@ -86,7 +86,7 @@ interface SecurityDefinition {
 
 // definition Section
 
-interface Definition {
+export interface Definition {
     type?: string;
     items?: { $ref: string };
     format?: Format;
@@ -100,7 +100,7 @@ interface Definition {
 }
 type Format = 'date-time' | 'int32' | 'int64';
 
-interface ExternalDocs {
+export interface ExternalDocs {
     description: string;
     url: string;
 }

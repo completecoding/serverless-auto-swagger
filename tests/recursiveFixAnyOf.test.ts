@@ -1,4 +1,5 @@
-import { recursiveFixAnyOf } from '../src/index';
+import { recursiveFixAnyOf } from '../src/helperFunctions';
+import { Definition } from '../src/swagger';
 
 describe('test of recursiveFixAnyOf', () => {
     test('without AnyOf', () => {
@@ -41,8 +42,12 @@ describe('test of recursiveFixAnyOf', () => {
             },
         };
 
+        console.log(recursiveFixAnyOf);
+
         const result = recursiveFixAnyOf(definition);
 
         expect(result).toMatchObject(definition);
     });
+
+    //TODO add more tests
 });

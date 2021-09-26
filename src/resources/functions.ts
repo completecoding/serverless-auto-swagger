@@ -1,3 +1,5 @@
+import { ServerlessFunction } from '../serverlessPlugin';
+
 export default (() => {
     // will change for something that check if we are in .serverless_plugins or node modules
     const isDevelopment = true;
