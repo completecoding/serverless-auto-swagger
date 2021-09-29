@@ -1,4 +1,4 @@
-const swagger = require('../../../../swagger');
+const swagger = require('./swagger');
 
 exports.handler = async () => {
     return {

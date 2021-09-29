@@ -1,14 +1,12 @@
 import { ServerlessFunction } from '../serverlessPlugin';
 
 export default (() => {
-    // will change for something that check if we are in .serverless_plugins or node modules
-    const isDevelopment = true;
-    const rootPath = isDevelopment ? '.serverless_plugins/' : 'node_modules/';
-    const path = rootPath + 'serverless-auto-swagger/dist/resources/';
+    const path = 'swagger/';
 
     return {
         swaggerUI: {
             handler: path + 'html.handler',
+            disableLogs: true,
             events: [
                 {
                     http: {
@@ -22,6 +20,7 @@ export default (() => {
 
         swaggerJSON: {
             handler: path + 'json.handler',
+            disableLogs: true,
             events: [
                 {
                     http: {
