@@ -84,9 +84,9 @@ class ServerlessAutoSwagger {
 
                     const { data } = await convert({ data: fileData });
                     // change the #/components/schema to #/definitions
-                    const definitionsData = data.replace(/\/components\/schema/g, '/definitions');
+                    const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
-                    const definition: { [key: string]: Definition } =
+                    const definitions: { [key: string]: Definition } =
                         JSON.parse(definitionsData).components.schemas;
 
                     if (data.includes('anyOf')) {
@@ -95,7 +95,7 @@ class ServerlessAutoSwagger {
                         //const newDef = Object.values(definition).map(recursiveFixAnyOf);
                     }
 
-                    combinedDefinitions = { ...combinedDefinitions, ...definition };
+                    combinedDefinitions = { ...combinedDefinitions, ...definitions };
                 })
             );
 
@@ -200,6 +200,10 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
         // TODO - add security sections
         http.path;
         return undefined;
+    };
+
+    cleanDefinitions = (definitions: Record<string, Definition>) => {
+        Object.values(definitions).map(def => {});
     };
 
     httpEventToParameters = (httpEvent: EitherHttpEvent) => {
