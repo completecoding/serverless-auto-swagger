@@ -80,22 +80,30 @@ class ServerlessAutoSwagger {
             let combinedDefinitions = {};
             await Promise.all(
                 typesFile.map(async filepath => {
-                    const fileData = fs.readFileSync(filepath, 'utf8');
+                    try {
+                        const fileData = fs.readFileSync(filepath, 'utf8');
 
-                    const { data } = await convert({ data: fileData });
-                    // change the #/components/schema to #/definitions
-                    const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
+                        const { data } = await convert({ data: fileData });
+                        // change the #/components/schema to #/definitions
+                        const definitionsData = data.replace(
+                            /\/components\/schemas/g,
+                            '/definitions'
+                        );
 
-                    const definitions: { [key: string]: Definition } =
-                        JSON.parse(definitionsData).components.schemas;
+                        const definitions: { [key: string]: Definition } =
+                            JSON.parse(definitionsData).components.schemas;
 
-                    if (data.includes('anyOf')) {
-                        // anyOf caused some issues with certain swagger configs
-                        console.log('includes anyOf');
-                        //const newDef = Object.values(definition).map(recursiveFixAnyOf);
+                        if (data.includes('anyOf')) {
+                            // anyOf caused some issues with certain swagger configs
+                            console.log('includes anyOf');
+                            //const newDef = Object.values(definition).map(recursiveFixAnyOf);
+                        }
+
+                        combinedDefinitions = { ...combinedDefinitions, ...definitions };
+                    } catch (error) {
+                        console.log(`couldn't read types from file: ${filepath}`);
+                        return;
                     }
-
-                    combinedDefinitions = { ...combinedDefinitions, ...definitions };
                 })
             );
 
@@ -252,6 +260,18 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
                     in: 'path',
                     required: true,
                     type: 'string',
+                });
+            });
+        }
+
+        if ((httpEvent as FullHttpEvent['http']).queryStringParameters) {
+            const rawQueryParams = (httpEvent as FullHttpEvent['http']).queryStringParameters!;
+            Object.entries(rawQueryParams).map(([param, data]) => {
+                parameters.push({
+                    in: 'query',
+                    name: param,
+                    type: data.type || 'string',
+                    description: data.description,
                 });
             });
         }

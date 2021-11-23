@@ -67,6 +67,45 @@ responses: {
 }
 ```
 
+### Post request expected body
+
+When you create a `POST` or `PUT` endpoint, you expect to receive a specific structure of data as the body of the request.
+
+You can do that by adding a `bodyType` to the http event:
+
+```
+http: {
+    path: 'hello',
+    method: 'post',
+    cors: true,
+    bodyType: 'helloPostBody',
+}
+```
+
+### Query String Parameters
+
+If you want to specify the query string parameters on an endpoint you can do this by adding an object of `queryStringParameters` to the event (original I know). This has two required properties of `required` and `type` as well as an optional `description`.
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    queryStringParameters: {
+        bob: {
+            required: true,
+            type: 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'integer',
+        },
+    },
+},
+```
+
+![Query String Parameters](./doc_images/queryStringParams.png)
+
 ## with Serverless Offline
 
 In the plugin list, you must list serverless-auto-swagger before the serverless-offline plugin. If you don't you won't get the required endpoints added to your local endpoints.

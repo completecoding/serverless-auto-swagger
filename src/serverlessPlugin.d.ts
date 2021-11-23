@@ -42,6 +42,15 @@ export interface FullHttpEvent {
         description?: string;
         responses?: HttpResponses;
         bodyType?: string;
+        queryStringParameters?: Record<
+            string,
+            {
+                required: boolean;
+                type: 'string' | 'integer';
+                description?: string;
+                minimum?: number;
+            }
+        >;
         parameters?: {
             path?: { [key: string]: boolean };
             headers?: { [key: string]: boolean | { required: boolean; mappedValue: string } };
@@ -57,7 +66,8 @@ export interface FullHttpApiEvent {
         swaggerTags?: string[];
         description?: string;
         responses?: HttpResponses;
-        bodyType: string;
+        bodyType?: string;
+        queryStringParameterType?: string;
     };
 }
 
