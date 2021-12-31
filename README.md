@@ -106,6 +106,15 @@ http: {
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
 
+### Exclude an endpoint
+You can exclude some endpoints from the swagger generation by adding `exclude` to the http event:
+```
+http: {
+    path: 'hello',
+    method: 'post',
+    exclude: true,
+}
+```
 ## with Serverless Offline
 
 In the plugin list, you must list serverless-auto-swagger before the serverless-offline plugin. If you don't you won't get the required endpoints added to your local endpoints.
