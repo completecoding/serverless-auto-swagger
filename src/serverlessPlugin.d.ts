@@ -41,6 +41,7 @@ export interface FullHttpEvent {
         swaggerTags?: string[];
         description?: string;
         responses?: HttpResponses;
+        exclude?: boolean;
         bodyType?: string;
         queryStringParameters?: Record<
             string,
@@ -66,6 +67,7 @@ export interface FullHttpApiEvent {
         swaggerTags?: string[];
         description?: string;
         responses?: HttpResponses;
+        exclude?: boolean;
         bodyType?: string;
         queryStringParameterType?: string;
     };
