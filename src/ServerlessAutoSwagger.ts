@@ -1,5 +1,5 @@
 'use strict';
-import { getTypeScriptReader, getOpenApiWriter, makeConverter } from 'typeconv';
+import { getTypeScriptReader, getOpenApiWriter, makeConverter, Writer, getOpenApiReader } from 'typeconv';
 import swaggerFunctions from './resources/functions';
 import * as fs from 'fs-extra';
 
@@ -14,7 +14,7 @@ import {
     FullHttpEvent,
     FullHttpApiEvent,
 } from './serverlessPlugin';
-import { Swagger, Definition, Paths, Response } from './swagger';
+import { Swagger, Definition, Paths, Response, PathMethods } from './swagger';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 
 class ServerlessAutoSwagger {
@@ -28,6 +28,7 @@ class ServerlessAutoSwagger {
         },
         schemes: ['https'],
         paths: {},
+        definitions: {},
     };
 
     commands: { [key: string]: ServerlessCommand } = {};
@@ -61,6 +62,38 @@ class ServerlessAutoSwagger {
         this.addEndpointsAndLambda();
     };
 
+    gatherSwaggerFiles = async () => {
+        const swaggerFiles = this.serverless.service.custom?.autoswagger
+            ?.swaggerFiles as string[];
+
+        if (!swaggerFiles || swaggerFiles.length < 1) {
+            return;
+        }
+
+        await Promise.all(swaggerFiles.map(async (filepath) => {
+            const fileData = fs.readFileSync(filepath, 'utf8');
+
+            const jsonData = JSON.parse(fileData)
+
+
+            const { paths = {}, definitions = {}, ...swagger } = jsonData
+
+
+            this.swagger = {
+                ...this.swagger,
+                ...swagger,
+                paths: {
+                    ...this.swagger.paths,
+                    ...paths,
+                },
+                definitions: {
+                    ...this.swagger.definitions,
+                    ...definitions,
+                }
+            }
+        }))
+    }
+
     gatherTypes = async () => {
         // get the details from the package.json? for info
         this.swagger.info.title = this.serverless.service.service;
@@ -77,7 +110,6 @@ class ServerlessAutoSwagger {
             const typeLocationOverride = this.serverless.service.custom?.autoswagger
                 ?.typefiles as string[];
             const typesFile = typeLocationOverride || ['./src/types/api-types.d.ts'];
-            let combinedDefinitions = {};
             await Promise.all(
                 typesFile.map(async filepath => {
                     try {
@@ -99,15 +131,16 @@ class ServerlessAutoSwagger {
                             //const newDef = Object.values(definition).map(recursiveFixAnyOf);
                         }
 
-                        combinedDefinitions = { ...combinedDefinitions, ...definitions };
+                        this.swagger.definitions = {
+                            ...this.swagger.definitions,
+                            ...definitions,
+                        }
                     } catch (error) {
                         console.log(`couldn't read types from file: ${filepath}`);
                         return;
                     }
                 })
             );
-
-            this.swagger.definitions = combinedDefinitions;
             // TODO change this to store these as temporary and only include definitions used elsewhere.
         } catch (error) {
             this.serverless.cli.log('unable to get types', error);
@@ -115,6 +148,7 @@ class ServerlessAutoSwagger {
     };
 
     generateSwagger = async () => {
+        await this.gatherSwaggerFiles();
         await this.gatherTypes();
 
         this.generatePaths();
@@ -139,7 +173,6 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
 
     generatePaths = () => {
         const functions = this.serverless.service.functions;
-        const paths: Paths = {};
         Object.entries(functions).map(([functionName, config]) => {
             const events = config.events || [];
             events
@@ -166,11 +199,11 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
                     let path = http.path;
                     if (path[0] !== '/') path = `/${path}`;
 
-                    if (!paths[path]) {
-                        paths[path] = {};
+                    if (!this.swagger.paths[path]) {
+                        this.swagger.paths[path] = {};
                     }
 
-                    paths[path][http.method] = {
+                    this.swagger.paths[path][http.method] = {
                         summary: functionName,
                         description: http.description || '',
                         tags: http.swaggerTags,
@@ -183,8 +216,6 @@ module.exports = ${JSON.stringify(this.swagger, null, 2)};`;
                     };
                 });
         });
-
-        this.swagger.paths = paths;
     };
 
     formatResponses = (responses: HttpResponses | undefined) => {

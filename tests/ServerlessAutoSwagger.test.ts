@@ -3,8 +3,10 @@ import {
     FullHttpEvent,
     Serverless,
 } from '../src/serverlessPlugin';
+import * as fs from 'fs-extra';
 
-const generateServerlessFromAnEndpoint = (events: FullHttpEvent[]): Serverless => (
+
+const generateServerlessFromAnEndpoint = (events: FullHttpEvent[], autoswaggerOptions = {}): Serverless => (
     {
         cli: {
             log: () => {}
@@ -26,7 +28,9 @@ const generateServerlessFromAnEndpoint = (events: FullHttpEvent[]): Serverless =
                     events
                 }
             },
-            custom: {},
+            custom: {
+                autoswagger: autoswaggerOptions
+            },
         }
     }
 )
@@ -219,5 +223,197 @@ describe('ServerlessAutoSwagger', () => {
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({});
         });
+
+        it('should add path without remove existings', () => {
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
+                http: {
+                    path: 'hello',
+                    method: 'post',
+                }
+            }]), {});
+            serverlessAutoSwagger.swagger.paths = {
+                "/should": {
+                    "still": {
+                        operationId: 'be here',
+                        consumes: [],
+                        produces: [],
+                        parameters: [],
+                        responses: {}
+                    }
+                }
+            }
+
+
+            serverlessAutoSwagger.generatePaths();
+
+            expect(serverlessAutoSwagger.swagger.paths).toEqual({
+                "/should": {
+                    still: {
+                        operationId: "be here",
+                        consumes: [],
+                        produces: [],
+                        parameters: [],
+                        responses: {}
+                    }
+                },
+                "/hello": {
+                    post: {
+                        summary: "mocked",
+                        description: "",
+                        operationId: "mocked",
+                        consumes: [
+                            "application/json"
+                        ],
+                        produces: [
+                            "application/json"
+                        ],
+                        parameters: [],
+                        responses: {
+                            200: {
+                                description: "200 response"
+                            }
+                        },
+                    }
+                }
+            });
+        })
     });
+
+
+    describe('gatherSwaggerFiles', () => {
+        const mockedJsonFiles = new Map<string, string>();
+        const spy = jest.spyOn(fs, 'readFileSync').mockImplementation((fileName: string): string => {
+            const content = mockedJsonFiles.get(fileName);
+
+            if (!content) {
+                throw new Error(`file ${fileName} not mocked`)
+            }
+
+            return content
+        });
+        const mockJsonFile = (fileName: string, content: Record<string, unknown>): void => {
+            mockedJsonFiles.set(fileName, JSON.stringify(content));
+        }
+
+        beforeEach(() => {
+            mockedJsonFiles.clear();
+        })
+
+        it('should add additionalProperties', async () => {
+            mockJsonFile('test.json', {
+                foo: {
+                    bar: true
+                }
+            });
+
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
+                http: {
+                    path: 'hello',
+                    method: 'post',
+                    exclude: true
+                }
+            }], {
+                swaggerFiles: ['test.json']
+            }), {});
+
+
+            await serverlessAutoSwagger.gatherSwaggerFiles();
+
+            expect(serverlessAutoSwagger.swagger).toEqual({
+                swagger: '2.0',
+                info: { title: '', version: '1' },
+                schemes: [ 'https' ],
+                paths: {},
+                definitions: {},
+                foo: { bar: true }
+            });
+        })
+
+        it('should extend existing property', async () => {
+            mockJsonFile('test.json', {
+                schemes: ['http']
+            })
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
+                http: {
+                    path: 'hello',
+                    method: 'post',
+                    exclude: true
+                }
+            }], {
+                swaggerFiles: ['test.json']
+            }), {});
+
+
+            await serverlessAutoSwagger.gatherSwaggerFiles();
+
+            expect(serverlessAutoSwagger.swagger).toEqual({
+                swagger: '2.0',
+                info: { title: '', version: '1' },
+                schemes: ['http'],
+                paths: {},
+                definitions: {},
+            });
+        })
+
+        it('should cumulate files', async () => {
+            mockJsonFile('foobar.json', {
+                paths: {
+                    "/foo": "whatever",
+                    "/bar": "something else"
+                },
+                definitions: {
+                    "World": {
+                        "type": "number"
+                    },
+                }
+            })
+            mockJsonFile('helloworld.json', {
+                paths: {
+                    "/hello": "world",
+                },
+                definitions: {
+                    "Foo": {
+                        "type": "string"
+                    },
+                    "Bar": {
+                        "type": "string"
+                    }
+                }
+            })
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
+                http: {
+                    path: 'hello',
+                    method: 'post',
+                    exclude: true
+                }
+            }], {
+                swaggerFiles: ['helloworld.json', 'foobar.json']
+            }), {});
+
+
+            await serverlessAutoSwagger.gatherSwaggerFiles();
+
+            expect(serverlessAutoSwagger.swagger).toEqual({
+                swagger: '2.0',
+                info: { title: '', version: '1' },
+                schemes: ['https'],
+                paths: {
+                    "/foo": "whatever",
+                    "/bar": "something else",
+                    "/hello": "world",
+                },
+                definitions: {
+                    Foo: {
+                        type: "string"
+                    },
+                    Bar: {
+                        type: "string"
+                    },
+                    World: {
+                        type: "number"
+                    },
+                },
+            });
+        });
+    })
 });
