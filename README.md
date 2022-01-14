@@ -30,11 +30,17 @@ custom:
     autoswagger:
         generateSwaggerOnDeploy?: true | false
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
+        swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
+        swaggerPath?: 'string'
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
 
 `typefiles` is an array of strings which defines where to find the typescript types to use for the request and response bodies. Default is `./src/types/api-types.d.ts`.
+
+`swaggerFiles` is an array of string which will merge custom json OpenApi 2.0 files to the generated swagger
+
+`swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
 
 ## Adding more details
 
