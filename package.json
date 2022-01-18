@@ -9,7 +9,7 @@
         "url": "https://github.com/SamWSoftware/serverless-auto-swagger"
     },
     "scripts": {
-        "build": "tsc",
+        "build": "tsc && cp ./src/resources/*.py ./dist/resources/",
         "prepare-release": "standard-version",
         "prepublish": "npm run build",
         "precommit": "npm run test",
