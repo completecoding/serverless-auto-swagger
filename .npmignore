@@ -2,3 +2,4 @@ __tests__
 node_modules
 src
 jest.config.js
+tests

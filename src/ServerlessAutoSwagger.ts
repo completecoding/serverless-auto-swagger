@@ -1,5 +1,5 @@
 'use strict';
-import { getTypeScriptReader, getOpenApiWriter, makeConverter, Writer, getOpenApiReader } from 'typeconv';
+import { getTypeScriptReader, getOpenApiWriter, makeConverter } from 'typeconv';
 import swaggerFunctions from './resources/functions';
 import * as fs from 'fs-extra';
 
@@ -14,7 +14,7 @@ import {
     FullHttpEvent,
     FullHttpApiEvent,
 } from './serverlessPlugin';
-import { Swagger, Definition, Paths, Response, PathMethods } from './swagger';
+import { Swagger, Definition, Response } from './swagger';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import { throwUnsupportedError } from 'core-types';
 
@@ -39,6 +39,8 @@ class ServerlessAutoSwagger {
         this.serverless = serverless;
         this.options = options;
 
+        this.registerOptions();
+
         this.commands = {
             'generate-swagger': {
                 usage: 'Generates Swagger for your API',
@@ -53,6 +55,73 @@ class ServerlessAutoSwagger {
         };
     }
 
+    registerOptions = () => {
+        this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', {
+            properties: {
+                exclude: {
+                    type: 'boolean',
+                    nullable: true,
+                    defaultValue: false,
+                },
+                swaggerTags: {
+                    type: 'array',
+                    nullable: true,
+                    items: { type: 'string' },
+                },
+                responses: {
+                    type: 'object',
+                    nullable: true,
+                    additionalProperties: {
+                        anyOf: [
+                            {
+                                type: 'string',
+                            },
+                            {
+                                type: 'object',
+                                required: [],
+                                properties: {
+                                    description: {
+                                        type: 'string',
+                                    },
+                                    bodyType: {
+                                        type: 'string',
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                },
+                queryStringParameters: {
+                    type: 'object',
+                    nullable: true,
+                    required: [],
+                    additionalProperties: {
+                        type: 'object',
+                        required: ['required', 'type'],
+                        properties: {
+                            required: {
+                                type: 'boolean',
+                            },
+                            type: {
+                                type: 'string',
+                                enum: ['string', 'integer'],
+                            },
+                            description: {
+                                type: 'string',
+                                nullable: true,
+                            },
+                            minimum: {
+                                type: 'number',
+                                nullable: true,
+                            },
+                        },
+                    },
+                },
+            },
+            required: [],
+        });
+    };
+
     predeploy = async () => {
         const generateSwaggerOnDeploy =
             this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy;
@@ -64,36 +133,35 @@ class ServerlessAutoSwagger {
     };
 
     gatherSwaggerFiles = async () => {
-        const swaggerFiles = this.serverless.service.custom?.autoswagger
-            ?.swaggerFiles as string[];
+        const swaggerFiles = this.serverless.service.custom?.autoswagger?.swaggerFiles as string[];
 
         if (!swaggerFiles || swaggerFiles.length < 1) {
             return;
         }
 
-        await Promise.all(swaggerFiles.map(async (filepath) => {
-            const fileData = fs.readFileSync(filepath, 'utf8');
+        await Promise.all(
+            swaggerFiles.map(async filepath => {
+                const fileData = fs.readFileSync(filepath, 'utf8');
 
-            const jsonData = JSON.parse(fileData)
+                const jsonData = JSON.parse(fileData);
 
+                const { paths = {}, definitions = {}, ...swagger } = jsonData;
 
-            const { paths = {}, definitions = {}, ...swagger } = jsonData
-
-
-            this.swagger = {
-                ...this.swagger,
-                ...swagger,
-                paths: {
-                    ...this.swagger.paths,
-                    ...paths,
-                },
-                definitions: {
-                    ...this.swagger.definitions,
-                    ...definitions,
-                }
-            }
-        }))
-    }
+                this.swagger = {
+                    ...this.swagger,
+                    ...swagger,
+                    paths: {
+                        ...this.swagger.paths,
+                        ...paths,
+                    },
+                    definitions: {
+                        ...this.swagger.definitions,
+                        ...definitions,
+                    },
+                };
+            })
+        );
+    };
 
     gatherTypes = async () => {
         // get the details from the package.json? for info
@@ -135,7 +203,7 @@ class ServerlessAutoSwagger {
                         this.swagger.definitions = {
                             ...this.swagger.definitions,
                             ...definitions,
-                        }
+                        };
                     } catch (error) {
                         console.log(`couldn't read types from file: ${filepath}`);
                         return;
@@ -161,7 +229,7 @@ class ServerlessAutoSwagger {
         await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');
         if (this.serverless.service.provider.runtime.includes('python')) {
             const swaggerPythonString = `# this file was generated by serverless-auto-swagger
-docs = ${JSON.stringify(this.swagger, null, 2)}`
+docs = ${JSON.stringify(this.swagger, null, 2)}`;
             await writeFile('./swagger/swagger.py', swaggerPythonString);
         } else {
             const swaggerJavaScriptString = `// this file was generated by serverless-auto-swagger
@@ -173,7 +241,7 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
     addEndpointsAndLambda = () => {
         this.serverless.service.functions = {
             ...this.serverless.service.functions,
-            ...swaggerFunctions,
+            ...swaggerFunctions(this.serverless),
         };
     };
 
@@ -184,7 +252,7 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
             events
                 .filter(event => {
                     if (!((event as HttpEvent).http || (event as HttpApiEvent).httpApi)) {
-                        return false
+                        return false;
                     }
 
                     const http = (event as HttpEvent).http || (event as HttpApiEvent).httpApi;
@@ -193,7 +261,7 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
                         return false;
                     }
 
-                    return !http.exclude
+                    return !http.exclude;
                 })
                 .map(event => {
                     let http = (event as HttpEvent).http || (event as HttpApiEvent).httpApi;
@@ -217,15 +285,15 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: this.httpEventToParameters(http),
-                        responses: this.formatResponses(http.responses),
+                        responses: this.formatResponses(http.responseData || http.responses),
                         security: this.httpEventToSecurity(http),
                     };
                 });
         });
     };
 
-    formatResponses = (responses: HttpResponses | undefined) => {
-        if (!responses) {
+    formatResponses = (responseData: HttpResponses | undefined) => {
+        if (!responseData) {
             // could throw error
             return {
                 200: {
@@ -234,7 +302,7 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
             };
         }
         const formatted: { [key: string]: Response } = {};
-        Object.entries(responses).map(([statusCode, responseDetails]) => {
+        Object.entries(responseData).map(([statusCode, responseDetails]) => {
             if (typeof responseDetails == 'string') {
                 formatted[statusCode] = {
                     description: responseDetails,
@@ -257,10 +325,6 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
         // TODO - add security sections
         http.path;
         return undefined;
-    };
-
-    cleanDefinitions = (definitions: Record<string, Definition>) => {
-        Object.values(definitions).map(def => {});
     };
 
     httpEventToParameters = (httpEvent: EitherHttpEvent) => {

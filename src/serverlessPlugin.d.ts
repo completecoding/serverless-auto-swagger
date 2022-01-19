@@ -3,6 +3,24 @@ export interface Serverless {
         log: Function;
     };
     service: ServerlessConfig;
+    configurationInput: {
+        service?: string | { name?: string };
+        provider?: {
+            stage?: string;
+        };
+    };
+    configSchemaHandler: {
+        defineCustomProperties(schema: unknown): void;
+        defineFunctionEvent(provider: string, event: string, schema: Record<string, unknown>): void;
+        defineFunctionEventProperties(
+            provider: string,
+            existingEvent: string,
+            schema: unknown
+        ): void;
+        defineFunctionProperties(provider: string, schema: unknown): void;
+        defineProvider(provider: string, options?: Record<string, unknown>): void;
+        defineTopLevelProperty(provider: string, schema: Record<string, unknown>): void;
+    };
 }
 
 export interface ServerlessConfig {
@@ -40,7 +58,8 @@ export interface FullHttpEvent {
         cors?: boolean | CorsConfig;
         swaggerTags?: string[];
         description?: string;
-        responses?: HttpResponses;
+        responseData?: HttpResponses;
+        responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
         exclude?: boolean;
         bodyType?: string;
         queryStringParameters?: Record<
@@ -66,7 +85,8 @@ export interface FullHttpApiEvent {
         method: string;
         swaggerTags?: string[];
         description?: string;
-        responses?: HttpResponses;
+        responseData?: HttpResponses;
+        responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
         exclude?: boolean;
         bodyType?: string;
         queryStringParameterType?: string;

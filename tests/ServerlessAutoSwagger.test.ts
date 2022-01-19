@@ -1,348 +1,391 @@
 import ServerlessAutoSwagger from '../src/ServerlessAutoSwagger';
-import {
-    FullHttpEvent,
-    Serverless,
-} from '../src/serverlessPlugin';
+import { FullHttpEvent, Serverless } from '../src/serverlessPlugin';
 import * as fs from 'fs-extra';
+import { PathOrFileDescriptor } from 'fs-extra';
 
-
-const generateServerlessFromAnEndpoint = (events: FullHttpEvent[], autoswaggerOptions = {}): Serverless => (
-    {
-        cli: {
-            log: () => {}
+const generateServerlessFromAnEndpoint = (
+    events: FullHttpEvent[],
+    autoswaggerOptions = {}
+): Serverless => {
+    const serviceDetails = {
+        service: '',
+        provider: {
+            name: '',
+            runtime: '',
+            stage: '',
+            region: '',
+            profile: '',
+            environment: {},
         },
-        service: {
-            service: '',
-            provider: {
-                name: '',
-                runtime: '',
-                stage: '',
-                region: '',
-                profile: '',
-                environment: {  }
+        plugins: [],
+        functions: {
+            mocked: {
+                handler: 'mocked.handler',
+                events,
             },
-            plugins: [],
-            functions: {
-                mocked: {
-                    handler: 'mocked.handler',
-                    events
-                }
-            },
-            custom: {
-                autoswagger: autoswaggerOptions
-            },
-        }
-    }
-)
+        },
+        custom: {
+            autoswagger: autoswaggerOptions,
+        },
+    };
+
+    return {
+        cli: {
+            log: () => {},
+        },
+        service: serviceDetails,
+        configurationInput: serviceDetails,
+        configSchemaHandler: {
+            defineCustomProperties: (schema: unknown) => {},
+            defineFunctionEvent: (
+                provider: string,
+                event: string,
+                schema: Record<string, unknown>
+            ) => {},
+            defineFunctionEventProperties: (
+                provider: string,
+                existingEvent: string,
+                schema: unknown
+            ) => {},
+            defineFunctionProperties: (provider: string, schema: unknown) => {},
+            defineProvider: (provider: string, options?: Record<string, unknown>) => {},
+            defineTopLevelProperty: (provider: string, schema: Record<string, unknown>) => {},
+        },
+    };
+};
 
 describe('ServerlessAutoSwagger', () => {
     describe('generatePaths', () => {
         it('should generate minimal endpoint', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                }
-            }]), {});
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'hello',
+                            method: 'post',
+                        },
+                    },
+                ]),
+                {}
+            );
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({
-                "/hello": {
+                '/hello': {
                     post: {
-                        summary: "mocked",
-                        description: "",
-                        operationId: "mocked",
-                        consumes: [
-                            "application/json"
-                        ],
-                        produces: [
-                            "application/json"
-                        ],
+                        summary: 'mocked',
+                        description: '',
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
                         parameters: [],
                         responses: {
                             200: {
-                                description: "200 response"
-                            }
+                                description: '200 response',
+                            },
                         },
-                    }
-                }
+                    },
+                },
             });
         });
 
         it('should generate an endpoint with a description', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    description: 'I like documentation'
-                }
-            }]), {});
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'hello',
+                            method: 'post',
+                            description: 'I like documentation',
+                        },
+                    },
+                ]),
+                {}
+            );
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({
-                "/hello": {
+                '/hello': {
                     post: {
-                        summary: "mocked",
-                        description: "I like documentation",
-                        operationId: "mocked",
-                        consumes: [
-                            "application/json"
-                        ],
-                        produces: [
-                            "application/json"
-                        ],
+                        summary: 'mocked',
+                        description: 'I like documentation',
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
                         parameters: [],
                         responses: {
                             200: {
-                                description: "200 response"
-                            }
+                                description: '200 response',
+                            },
                         },
-                    }
-                }
+                    },
+                },
             });
         });
 
         it('should generate an endpoint with a response', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    responses: {
-                        // response with description and response body
-                        200: {
-                            description: 'this went well',
-                            bodyType: 'helloPostResponse',
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'hello',
+                            method: 'post',
+                            responses: {
+                                // response with description and response body
+                                200: {
+                                    description: 'this went well',
+                                    bodyType: 'helloPostResponse',
+                                },
+                                // response with just a description
+                                400: {
+                                    description: 'failed Post',
+                                },
+                                // shorthand for just a description
+                                502: 'server error',
+                            },
                         },
-                        // response with just a description
-                        400: {
-                            description: 'failed Post',
-                        },
-                        // shorthand for just a description
-                        502: 'server error',
-                    }
-                }
-            }]), {});
+                    },
+                ]),
+                {}
+            );
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({
-                "/hello": {
+                '/hello': {
                     post: {
-                        summary: "mocked",
-                        description: "",
-                        operationId: "mocked",
-                        consumes: [
-                            "application/json"
-                        ],
-                        produces: [
-                            "application/json"
-                        ],
+                        summary: 'mocked',
+                        description: '',
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
                         parameters: [],
                         responses: {
                             200: {
-                                description: "this went well",
+                                description: 'this went well',
                                 schema: {
-                                    "$ref": "#/definitions/helloPostResponse"
-                                }
+                                    $ref: '#/definitions/helloPostResponse',
+                                },
                             },
                             400: {
-                                description: "failed Post"
+                                description: 'failed Post',
                             },
                             502: {
-                                description: "server error"
-                            }
-                        }
-                    }
-                }
+                                description: 'server error',
+                            },
+                        },
+                    },
+                },
             });
         });
 
         it('should generate an endpoint with parameters', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'goodbye',
-                    method: 'get',
-                    queryStringParameters: {
-                        bob: {
-                            required: true,
-                            type: 'string',
-                            description: 'bob',
-                        },
-                        count: {
-                            required: false,
-                            type: 'integer',
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'goodbye',
+                            method: 'get',
+                            queryStringParameters: {
+                                bob: {
+                                    required: true,
+                                    type: 'string',
+                                    description: 'bob',
+                                },
+                                count: {
+                                    required: false,
+                                    type: 'integer',
+                                },
+                            },
                         },
                     },
-                }
-            }]), {});
+                ]),
+                {}
+            );
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({
-                "/goodbye": {
+                '/goodbye': {
                     get: {
-                        summary: "mocked",
-                        description: "",
-                        operationId: "mocked",
-                        consumes: [
-                            "application/json"
-                        ],
-                        produces: [
-                            "application/json"
-                        ],
+                        summary: 'mocked',
+                        description: '',
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
                         parameters: [
                             {
                                 name: 'bob',
                                 type: 'string',
                                 description: 'bob',
-                                in: "query"
+                                in: 'query',
                             },
                             {
                                 name: 'count',
                                 type: 'integer',
-                                in: "query"
-                            }
+                                in: 'query',
+                            },
                         ],
                         responses: {
                             200: {
-                                description: "200 response"
-                            }
+                                description: '200 response',
+                            },
                         },
-                    }
-                }
+                    },
+                },
             });
         });
 
         it('should filter an endpoint with exclude', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    exclude: true
-                }
-            }]), {});
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'hello',
+                            method: 'post',
+                            exclude: true,
+                        },
+                    },
+                ]),
+                {}
+            );
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({});
         });
 
         it('should add path without remove existings', () => {
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                }
-            }]), {});
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint([
+                    {
+                        http: {
+                            path: 'hello',
+                            method: 'post',
+                        },
+                    },
+                ]),
+                {}
+            );
             serverlessAutoSwagger.swagger.paths = {
-                "/should": {
-                    "still": {
+                '/should': {
+                    still: {
                         operationId: 'be here',
                         consumes: [],
                         produces: [],
                         parameters: [],
-                        responses: {}
-                    }
-                }
-            }
-
+                        responses: {},
+                    },
+                },
+            };
 
             serverlessAutoSwagger.generatePaths();
 
             expect(serverlessAutoSwagger.swagger.paths).toEqual({
-                "/should": {
+                '/should': {
                     still: {
-                        operationId: "be here",
+                        operationId: 'be here',
                         consumes: [],
                         produces: [],
                         parameters: [],
-                        responses: {}
-                    }
+                        responses: {},
+                    },
                 },
-                "/hello": {
+                '/hello': {
                     post: {
-                        summary: "mocked",
-                        description: "",
-                        operationId: "mocked",
-                        consumes: [
-                            "application/json"
-                        ],
-                        produces: [
-                            "application/json"
-                        ],
+                        summary: 'mocked',
+                        description: '',
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
                         parameters: [],
                         responses: {
                             200: {
-                                description: "200 response"
-                            }
+                                description: '200 response',
+                            },
                         },
-                    }
-                }
+                    },
+                },
             });
-        })
+        });
     });
-
 
     describe('gatherSwaggerFiles', () => {
         const mockedJsonFiles = new Map<string, string>();
-        const spy = jest.spyOn(fs, 'readFileSync').mockImplementation((fileName: string): string => {
-            const content = mockedJsonFiles.get(fileName);
+        const spy = jest
+            .spyOn(fs, 'readFileSync')
+            .mockImplementation((fileName: PathOrFileDescriptor): string => {
+                const content = mockedJsonFiles.get(fileName as string);
 
-            if (!content) {
-                throw new Error(`file ${fileName} not mocked`)
-            }
+                if (!content) {
+                    throw new Error(`file ${fileName} not mocked`);
+                }
 
-            return content
-        });
+                return content;
+            });
         const mockJsonFile = (fileName: string, content: Record<string, unknown>): void => {
             mockedJsonFiles.set(fileName, JSON.stringify(content));
-        }
+        };
 
         beforeEach(() => {
             mockedJsonFiles.clear();
-        })
+        });
 
         it('should add additionalProperties', async () => {
             mockJsonFile('test.json', {
                 foo: {
-                    bar: true
-                }
+                    bar: true,
+                },
             });
 
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    exclude: true
-                }
-            }], {
-                swaggerFiles: ['test.json']
-            }), {});
-
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint(
+                    [
+                        {
+                            http: {
+                                path: 'hello',
+                                method: 'post',
+                                exclude: true,
+                            },
+                        },
+                    ],
+                    {
+                        swaggerFiles: ['test.json'],
+                    }
+                ),
+                {}
+            );
 
             await serverlessAutoSwagger.gatherSwaggerFiles();
 
             expect(serverlessAutoSwagger.swagger).toEqual({
                 swagger: '2.0',
                 info: { title: '', version: '1' },
-                schemes: [ 'https' ],
+                schemes: ['https'],
                 paths: {},
                 definitions: {},
-                foo: { bar: true }
+                foo: { bar: true },
             });
-        })
+        });
 
         it('should extend existing property', async () => {
             mockJsonFile('test.json', {
-                schemes: ['http']
-            })
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    exclude: true
-                }
-            }], {
-                swaggerFiles: ['test.json']
-            }), {});
-
+                schemes: ['http'],
+            });
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint(
+                    [
+                        {
+                            http: {
+                                path: 'hello',
+                                method: 'post',
+                                exclude: true,
+                            },
+                        },
+                    ],
+                    {
+                        swaggerFiles: ['test.json'],
+                    }
+                ),
+                {}
+            );
 
             await serverlessAutoSwagger.gatherSwaggerFiles();
 
@@ -353,43 +396,50 @@ describe('ServerlessAutoSwagger', () => {
                 paths: {},
                 definitions: {},
             });
-        })
+        });
 
         it('should cumulate files', async () => {
             mockJsonFile('foobar.json', {
                 paths: {
-                    "/foo": "whatever",
-                    "/bar": "something else"
+                    '/foo': 'whatever',
+                    '/bar': 'something else',
                 },
                 definitions: {
-                    "World": {
-                        "type": "number"
+                    World: {
+                        type: 'number',
                     },
-                }
-            })
+                },
+            });
             mockJsonFile('helloworld.json', {
                 paths: {
-                    "/hello": "world",
+                    '/hello': 'world',
                 },
                 definitions: {
-                    "Foo": {
-                        "type": "string"
+                    Foo: {
+                        type: 'string',
                     },
-                    "Bar": {
-                        "type": "string"
+                    Bar: {
+                        type: 'string',
+                    },
+                },
+            });
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+                generateServerlessFromAnEndpoint(
+                    [
+                        {
+                            http: {
+                                path: 'hello',
+                                method: 'post',
+                                exclude: true,
+                            },
+                        },
+                    ],
+                    {
+                        swaggerFiles: ['helloworld.json', 'foobar.json'],
                     }
-                }
-            })
-            const serverlessAutoSwagger = new ServerlessAutoSwagger(generateServerlessFromAnEndpoint([{
-                http: {
-                    path: 'hello',
-                    method: 'post',
-                    exclude: true
-                }
-            }], {
-                swaggerFiles: ['helloworld.json', 'foobar.json']
-            }), {});
-
+                ),
+                {}
+            );
 
             await serverlessAutoSwagger.gatherSwaggerFiles();
 
@@ -398,22 +448,22 @@ describe('ServerlessAutoSwagger', () => {
                 info: { title: '', version: '1' },
                 schemes: ['https'],
                 paths: {
-                    "/foo": "whatever",
-                    "/bar": "something else",
-                    "/hello": "world",
+                    '/foo': 'whatever',
+                    '/bar': 'something else',
+                    '/hello': 'world',
                 },
                 definitions: {
                     Foo: {
-                        type: "string"
+                        type: 'string',
                     },
                     Bar: {
-                        type: "string"
+                        type: 'string',
                     },
                     World: {
-                        type: "number"
+                        type: 'number',
                     },
                 },
             });
         });
-    })
+    });
 });
