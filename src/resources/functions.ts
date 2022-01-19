@@ -2,9 +2,11 @@ import { ServerlessFunction, Serverless } from '../serverlessPlugin';
 
 export default (serverless: Serverless) => {
     const handlerPath = 'swagger/';
+    const configInput = serverless?.configurationInput || serverless.service;
     const path = serverless.service.custom?.autoswagger?.swaggerPath ?? 'swagger';
-    const name = serverless.configurationInput?.service?.name;
-    const stage = serverless.configurationInput?.provider?.stage;
+    const name =
+        typeof configInput?.service == 'object' ? configInput.service.name : configInput.service;
+    const stage = configInput?.provider?.stage;
     return {
         swaggerUI: {
             name: name && stage ? `${name}-${stage}-swaggerUI` : undefined,

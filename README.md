@@ -57,7 +57,7 @@ You can then assign these typescript definitions to requests as `bodyType` on th
 You can also add expected responses to each of the http endpoint events. This is an object that contains the response code with some example details:
 
 ```js
-responses: {
+responseData: {
     // response with description and response body
     200: {
         description: 'this went well',
@@ -113,7 +113,9 @@ http: {
 ![Query String Parameters](./doc_images/queryStringParams.png)
 
 ### Exclude an endpoint
+
 You can exclude some endpoints from the swagger generation by adding `exclude` to the http event:
+
 ```
 http: {
     path: 'hello',
@@ -121,6 +123,7 @@ http: {
     exclude: true,
 }
 ```
+
 ## with Serverless Offline
 
 In the plugin list, you must list serverless-auto-swagger before the serverless-offline plugin. If you don't you won't get the required endpoints added to your local endpoints.

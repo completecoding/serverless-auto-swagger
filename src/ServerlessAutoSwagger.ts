@@ -54,19 +54,18 @@ class ServerlessAutoSwagger {
         };
     }
 
-
     registerOptions = () => {
-        this.serverless.configSchemaHandler.defineFunctionEventProperties('aws', 'http', {
+        this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', {
             properties: {
                 exclude: {
                     type: 'boolean',
                     nullable: true,
-                    defaultValue: false
+                    defaultValue: false,
                 },
                 swaggerTags: {
                     type: 'array',
                     nullable: true,
-                    items: {type: 'string'}
+                    items: { type: 'string' },
                 },
                 responses: {
                     type: 'object',
@@ -74,22 +73,22 @@ class ServerlessAutoSwagger {
                     additionalProperties: {
                         anyOf: [
                             {
-                                type: 'string'
+                                type: 'string',
                             },
                             {
                                 type: 'object',
                                 required: [],
                                 properties: {
                                     description: {
-                                        type: 'string'
+                                        type: 'string',
                                     },
                                     bodyType: {
-                                        type: 'string'
-                                    }
-                                }
-                            }
-                        ]
-                    }
+                                        type: 'string',
+                                    },
+                                },
+                            },
+                        ],
+                    },
                 },
                 queryStringParameters: {
                     type: 'object',
@@ -104,19 +103,19 @@ class ServerlessAutoSwagger {
                             },
                             type: {
                                 type: 'string',
-                                enum: ['string', 'integer']
+                                enum: ['string', 'integer'],
                             },
                             description: {
                                 type: 'string',
-                                nullable: true
+                                nullable: true,
                             },
                             minimum: {
                                 type: 'number',
-                                nullable: true
-                            }
-                        }
-                    }
-                }
+                                nullable: true,
+                            },
+                        },
+                    },
+                },
             },
             required: [],
         });
@@ -133,35 +132,34 @@ class ServerlessAutoSwagger {
     };
 
     gatherSwaggerFiles = async () => {
-        const swaggerFiles = this.serverless.service.custom?.autoswagger
-            ?.swaggerFiles as string[];
+        const swaggerFiles = this.serverless.service.custom?.autoswagger?.swaggerFiles as string[];
 
         if (!swaggerFiles || swaggerFiles.length < 1) {
             return;
         }
 
-        await Promise.all(swaggerFiles.map(async (filepath) => {
-            const fileData = fs.readFileSync(filepath, 'utf8');
+        await Promise.all(
+            swaggerFiles.map(async filepath => {
+                const fileData = fs.readFileSync(filepath, 'utf8');
 
-            const jsonData = JSON.parse(fileData);
+                const jsonData = JSON.parse(fileData);
 
+                const { paths = {}, definitions = {}, ...swagger } = jsonData;
 
-            const { paths = {}, definitions = {}, ...swagger } = jsonData;
-
-
-            this.swagger = {
-                ...this.swagger,
-                ...swagger,
-                paths: {
-                    ...this.swagger.paths,
-                    ...paths,
-                },
-                definitions: {
-                    ...this.swagger.definitions,
-                    ...definitions,
-                }
-            };
-        }));
+                this.swagger = {
+                    ...this.swagger,
+                    ...swagger,
+                    paths: {
+                        ...this.swagger.paths,
+                        ...paths,
+                    },
+                    definitions: {
+                        ...this.swagger.definitions,
+                        ...definitions,
+                    },
+                };
+            })
+        );
     };
 
     gatherTypes = async () => {
@@ -222,7 +220,7 @@ class ServerlessAutoSwagger {
         await this.gatherTypes();
 
         this.generatePaths();
-        
+
         this.serverless.cli.log(`Creating your Swagger File now`);
 
         // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
@@ -230,7 +228,7 @@ class ServerlessAutoSwagger {
         await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');
         if (this.serverless.service.provider.runtime.includes('python')) {
             const swaggerPythonString = `# this file was generated by serverless-auto-swagger
-docs = ${JSON.stringify(this.swagger, null, 2)}`
+docs = ${JSON.stringify(this.swagger, null, 2)}`;
             await writeFile('./swagger/swagger.py', swaggerPythonString);
         } else {
             const swaggerJavaScriptString = `// this file was generated by serverless-auto-swagger
@@ -286,15 +284,15 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: this.httpEventToParameters(http),
-                        responses: this.formatResponses(http.responses),
+                        responses: this.formatResponses(http.responseData || http.responses),
                         security: this.httpEventToSecurity(http),
                     };
                 });
         });
     };
 
-    formatResponses = (responses: HttpResponses | undefined) => {
-        if (!responses) {
+    formatResponses = (responseData: HttpResponses | undefined) => {
+        if (!responseData) {
             // could throw error
             return {
                 200: {
@@ -303,7 +301,7 @@ docs = ${JSON.stringify(this.swagger, null, 2)}`
             };
         }
         const formatted: { [key: string]: Response } = {};
-        Object.entries(responses).map(([statusCode, responseDetails]) => {
+        Object.entries(responseData).map(([statusCode, responseDetails]) => {
             if (typeof responseDetails == 'string') {
                 formatted[statusCode] = {
                     description: responseDetails,
