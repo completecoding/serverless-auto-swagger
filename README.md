@@ -127,10 +127,3 @@ http: {
 ## with Serverless Offline
 
 In the plugin list, you must list serverless-auto-swagger before the serverless-offline plugin. If you don't you won't get the required endpoints added to your local endpoints.
-
-
-
-## Contributing
-1. Clone repo
-2. cd serverless-auto-swagger && npm install
-3. node node ./node_modules/jest/bin/jest tests
