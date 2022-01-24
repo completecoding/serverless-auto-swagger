@@ -249,6 +249,11 @@ class ServerlessAutoSwagger {
         const functions = this.serverless.service.functions;
         Object.entries(functions).map(([functionName, config]) => {
             const events = config.events || [];
+            let stagePath = ""
+            if(this.serverless.configurationInput.provider){
+                stagePath = this.serverless.configurationInput.provider.stage ? `/${this.serverless.configurationInput.provider.stage}` : ""
+            }
+
             events
                 .filter(event => {
                     if (!((event as HttpEvent).http || (event as HttpApiEvent).httpApi)) {
@@ -272,6 +277,7 @@ class ServerlessAutoSwagger {
 
                     let path = http.path;
                     if (path[0] !== '/') path = `/${path}`;
+                    path = stagePath + path
 
                     if (!this.swagger.paths[path]) {
                         this.swagger.paths[path] = {};
