@@ -2,6 +2,23 @@
 
 This plugin allows you to automatically generate a swagger endpoint, describing your application endpoints. This is built from your existing serverless config and typescript definitions, reducing the duplication of work.
 
+## Fork Features
+- Enabled Authetication with ApiKey (Authorize)
+    - Using it you can Authorize yourself in swagger to execute requests
+- Enabled field Required in Parameters 
+    - Fixed "Required" in QueryParams and added it on HeaderParams
+- API Description and Summary
+    - You can now insert a Description or Summary to each end-point
+- Header Parameters
+    - Now you can use Headers Params as well (not only QueryParms)
+- Fixed Python Generation 
+    - Now the swagger files under "Resources" are working with Python
+- Stages in Path 
+    - You can decide if you want or not to use the actual stage on beginning of path
+- httpApi usage
+    - httpApi is the new, faster and cheaper "http". So i'm using it
+
+
 ## Install
 
 ```sh
