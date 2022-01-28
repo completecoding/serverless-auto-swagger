@@ -12,65 +12,33 @@ export default (serverless: Serverless) => {
 
   const useStage = serverless.service.custom?.autoswagger?.useStage
 
-  if (useStage) {
-    return {
-      swaggerUI: {
-        name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
-        handler: handlerPath + "swaggerhtml.handler",
-        disableLogs: true,
-        events: [
-          {
-            httpApi: {
-              method: "get",
-              path: `/${stage}/swagger`,
-            },
+  return {
+    swaggerUI: {
+      name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
+      handler: handlerPath + "swaggerhtml.handler",
+      disableLogs: true,
+      events: [
+        {
+          httpApi: {
+            method: "get",
+            path: useStage ? `/${stage}/swagger` : `/swagger`,
           },
-        ],
-      },
+        },
+      ],
+    },
 
-      swaggerJSON: {
-        name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
-        handler: handlerPath + "swaggerjson.handler",
-        disableLogs: true,
-        events: [
-          {
-            httpApi: {
-              method: "get",
-              path: `/${stage}/swaggerjson`,
-            },
+    swaggerJSON: {
+      name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
+      handler: handlerPath + "swaggerjson.handler",
+      disableLogs: true,
+      events: [
+        {
+          httpApi: {
+            method: "get",
+            path: useStage ? `/${stage}/swaggerjson` : `/swaggerjson`,
           },
-        ],
-      },
-    } as Record<string, ServerlessFunction>
-  } else {
-    return {
-      swaggerUI: {
-        name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
-        handler: handlerPath + "swaggerhtml.handler",
-        disableLogs: true,
-        events: [
-          {
-            httpApi: {
-              method: "get",
-              path: `/swagger`,
-            },
-          },
-        ],
-      },
-
-      swaggerJSON: {
-        name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
-        handler: handlerPath + "swaggerjson.handler",
-        disableLogs: true,
-        events: [
-          {
-            httpApi: {
-              method: "get",
-              path: `/swaggerjson`,
-            },
-          },
-        ],
-      },
-    } as Record<string, ServerlessFunction>
-  }
+        },
+      ],
+    },
+  } as Record<string, ServerlessFunction>
 }
