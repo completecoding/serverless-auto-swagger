@@ -14,7 +14,7 @@ Add the following plugin to your `serverless.yml`:
 
 ```yaml
 plugins:
-    - serverless-auto-swagger
+  - serverless-auto-swagger
 ```
 
 ## Usage
@@ -32,6 +32,8 @@ custom:
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
         swaggerPath?: 'string'
+        apiKeyName?: 'string'
+        useStage?: true | false
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
@@ -42,9 +44,22 @@ custom:
 
 `swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
 
+`apiKeyName` is a string to define an API KEY. This is the name of your api key used on auth. For example, if you send it as a header named `x-api-key`, then the `apiKeyName` should be `x-api-key`
+
+`useStage` is a bool to either use current stage in beginning of path or not. The Default is `false`. For example, if you use it enabled (`true`) and your stage is `dev` the swagger will be in `dev/swagger`
+
 ## Adding more details
 
 The default swagger file from vanilla Serverless framework will have the correct paths and methods but no details about the requests or responses.
+
+### API Summary and Details
+
+```js
+http: {
+    summary: 'This is a cool API',
+    description: 'I will describe my cool API soon',
+}
+```
 
 ### Adding Data Types
 
@@ -111,6 +126,30 @@ http: {
 ```
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
+
+### Header Params
+
+Works the same way as `queryStringParameters`, but for headers.
+
+To use it, just define it under `headerParameters`:
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    headerParameters: {
+        bob: {
+            required: true,
+            type: 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'integer',
+        },
+    },
+},
+```
 
 ### Exclude an endpoint
 

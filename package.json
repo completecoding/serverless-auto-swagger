@@ -9,7 +9,7 @@
         "url": "https://github.com/SamWSoftware/serverless-auto-swagger"
     },
     "scripts": {
-        "build": "tsc && cp ./src/resources/*.py ./dist/resources/",
+        "build": "tsc && copyfiles -f ./src/resources/*.py ./dist/resources/",
         "prepare-release": "standard-version",
         "prepublish": "npm run build",
         "precommit": "npm run test",
@@ -27,7 +27,7 @@
         "standard-version": "^9.3.1",
         "ts-jest": "26.5.4",
         "ts-loader": "^9.2.6",
-        "typescript": "^4.4.3"
+        "typescript": "^4.5.5"
     },
     "peerDependencies": {
         "serverless": "2.x"
