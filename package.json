@@ -17,6 +17,7 @@
         "test": "jest"
     },
     "dependencies": {
+        "copyfiles": "^2.4.1",
         "typeconv": "^1.4.1"
     },
     "devDependencies": {
