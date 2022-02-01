@@ -385,6 +385,7 @@ class ServerlessAutoSwagger {
                     name: param,
                     type: data.type || 'string',
                     description: data.description,
+                    required: data.required ?? false,
                 });
             });
         }
