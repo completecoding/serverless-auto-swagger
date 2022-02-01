@@ -195,6 +195,9 @@ describe('ServerlessAutoSwagger', () => {
                                     required: false,
                                     type: 'integer',
                                 },
+                                foo: {
+                                    type: 'string',
+                                },
                             },
                         },
                     },
@@ -217,11 +220,19 @@ describe('ServerlessAutoSwagger', () => {
                                 type: 'string',
                                 description: 'bob',
                                 in: 'query',
+                                required: true,
                             },
                             {
                                 name: 'count',
                                 type: 'integer',
                                 in: 'query',
+                                required: false,
+                            },
+                            {
+                                name: 'foo',
+                                type: 'string',
+                                in: 'query',
+                                required: false,
                             },
                         ],
                         responses: {
