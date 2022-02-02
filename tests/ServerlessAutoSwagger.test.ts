@@ -320,8 +320,8 @@ describe('ServerlessAutoSwagger', () => {
 
     describe('gatherSwaggerFiles', () => {
         const mockedJsonFiles = new Map<string, string>();
-        const spy = jest
-            .spyOn(fs, 'readFileSync')
+
+        jest.spyOn(fs, 'readFileSync')
             .mockImplementation((fileName: PathOrFileDescriptor): string => {
                 const content = mockedJsonFiles.get(fileName as string);
 
@@ -331,6 +331,7 @@ describe('ServerlessAutoSwagger', () => {
 
                 return content;
             });
+
         const mockJsonFile = (fileName: string, content: Record<string, unknown>): void => {
             mockedJsonFiles.set(fileName, JSON.stringify(content));
         };
