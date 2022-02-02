@@ -82,7 +82,7 @@ export interface FullHttpEvent {
     queryStringParameters?: Record<
       string,
       {
-        required: boolean
+        required?: boolean
         type: "string" | "integer"
         description?: string
         minimum?: number

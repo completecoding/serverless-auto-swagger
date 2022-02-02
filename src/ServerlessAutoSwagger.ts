@@ -488,7 +488,8 @@ class ServerlessAutoSwagger {
           required: data.required,
           type: data.type || "string",
           description: data.description,
-        })
+        required: data.required ?? false,
+                })
       })
     }
 
