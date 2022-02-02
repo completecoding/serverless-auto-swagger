@@ -15,7 +15,7 @@ export const writeFile = (filepath: string, content: string) => {
 }
 
 export function removeStringFromArray(arr: string[], value: string) {
-  var i = 0
+  let i = 0
   while (i < arr.length) {
     if (arr[i] === value) {
       arr.splice(i, 1)

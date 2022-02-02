@@ -254,7 +254,7 @@ class ServerlessAutoSwagger {
   generate_security = async () => {
     const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName
 
-    var securityDefinitions: { [key: string]: SecurityDefinition } = {}
+    const securityDefinitions: Record<string, SecurityDefinition> = {}
 
     securityDefinitions[apiKeyName] = {
       type: "apiKey",
@@ -265,7 +265,7 @@ class ServerlessAutoSwagger {
     if (apiKeyName) {
       this.swagger = {
         ...this.swagger,
-        securityDefinitions: securityDefinitions,
+        securityDefinitions,
       }
     } else {
       this.swagger = {
@@ -348,12 +348,12 @@ class ServerlessAutoSwagger {
           const apiKeyName =
             this.serverless.service.custom?.autoswagger?.apiKeyName
 
-          var security_key_name: { [key: string]: string[] } = {}
-          security_key_name[apiKeyName] = []
+          const securityKeyName: Record<string, string[]> = {}
+          securityKeyName[apiKeyName] = []
 
-          var security_key = [security_key_name] as MethodSecurity[]
+          const securityKey = [securityKeyName] as MethodSecurity[]
 
-          var securityDefinitions: { [key: string]: SecurityDefinition } = {}
+          const securityDefinitions: Record<string, SecurityDefinition> = {}
 
           securityDefinitions[apiKeyName] = {
             type: "apiKey",
@@ -372,7 +372,7 @@ class ServerlessAutoSwagger {
             responses: this.formatResponses(
               http.responseData || http.responses
             ),
-            security: security_key,
+            security: securityKey,
           }
         })
     })
