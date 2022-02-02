@@ -485,11 +485,10 @@ class ServerlessAutoSwagger {
         parameters.push({
           in: "query",
           name: param,
-          required: data.required,
           type: data.type || "string",
           description: data.description,
-        required: data.required ?? false,
-                })
+          required: data.required ?? false,
+        })
       })
     }
 
