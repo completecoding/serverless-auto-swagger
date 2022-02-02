@@ -161,7 +161,3 @@ export interface ServerlessCommand {
 export interface ServerlessHooks {
   [hook: string]: Function
 }
-
-export interface Teste {
-  teste?: string
-}
