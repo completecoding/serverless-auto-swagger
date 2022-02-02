@@ -19,12 +19,12 @@ const swaggerUI = `<!DOCTYPE html>
     <script>
        window.onload = function() {
            const ui = SwaggerUIBundle({
-              url: window.location.href+"json",
+              url: window.location.href + ".json",
               dom_id: '#swagger-ui',
               presets: [
                 SwaggerUIBundle.presets.apis,
                 SwaggerUIStandalonePreset
-                ],
+              ],
               layout: "StandaloneLayout"
            })
            window.ui = ui;
