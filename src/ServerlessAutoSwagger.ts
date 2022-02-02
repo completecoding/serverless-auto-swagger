@@ -69,7 +69,6 @@ class ServerlessAutoSwagger {
           exclude: {
             type: "boolean",
             nullable: true,
-            defaultValue: false,
           },
           swaggerTags: {
             type: "array",

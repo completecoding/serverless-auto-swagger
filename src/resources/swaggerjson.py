@@ -1,6 +1,6 @@
 import json
 
-if __name__ == "swaggerjson":
+if __name__ != "__main__":
     from swagger.swagger import docs
 else:
     from .swagger import docs
