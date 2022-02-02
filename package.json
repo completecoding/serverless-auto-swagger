@@ -31,7 +31,7 @@
     "copyfiles": "^2.4.1"
   },
   "peerDependencies": {
-    "serverless": "2.x"
+    "serverless": "^2 || ^3"
   },
   "engines": {
     "node": ">=10.0"
