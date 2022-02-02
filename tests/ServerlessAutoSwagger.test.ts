@@ -179,7 +179,7 @@ describe('ServerlessAutoSwagger', () => {
             });
         });
 
-        it('should generate an endpoint with parameters', () => {
+        it('should generate an endpoint with query parameters', () => {
             const serverlessAutoSwagger = new ServerlessAutoSwagger(
                 generateServerlessFromAnEndpoint([
                     {
@@ -235,6 +235,76 @@ describe('ServerlessAutoSwagger', () => {
                                 name: 'foo',
                                 type: 'string',
                                 in: 'query',
+                                required: false,
+                                description: undefined,
+                            },
+                        ],
+                        responses: {
+                            200: {
+                                description: '200 response',
+                            },
+                        },
+                    },
+                },
+            });
+        });
+
+        it('should generate an endpoint with header parameters', () => {
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+              generateServerlessFromAnEndpoint([
+                  {
+                      http: {
+                          path: 'goodbye',
+                          method: 'get',
+                          headerParameters: {
+                              bob: {
+                                  required: true,
+                                  type: 'string',
+                                  description: 'bob',
+                              },
+                              count: {
+                                  required: false,
+                                  type: 'integer',
+                              },
+                              foo: {
+                                  type: 'string',
+                              },
+                          },
+                      },
+                  },
+              ]),
+              {}
+            );
+            serverlessAutoSwagger.generatePaths();
+
+            expect(serverlessAutoSwagger.swagger.paths).toEqual({
+                '/goodbye': {
+                    get: {
+                        summary: 'mocked',
+                        description: '',
+                        tags: undefined,
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
+                        parameters: [
+                            {
+                                name: 'bob',
+                                type: 'string',
+                                description: 'bob',
+                                in: 'header',
+                                required: true,
+                            },
+                            {
+                                name: 'count',
+                                type: 'integer',
+                                in: 'header',
+                                required: false,
+                                description: undefined,
+                            },
+                            {
+                                name: 'foo',
+                                type: 'string',
+                                in: 'header',
                                 required: false,
                                 description: undefined,
                             },

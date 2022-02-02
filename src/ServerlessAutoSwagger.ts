@@ -457,13 +457,12 @@ class ServerlessAutoSwagger {
     }
 
     if ((httpEvent as FullHttpEvent["http"]).headerParameters) {
-      const rawHeaderParams = (httpEvent as FullHttpEvent["http"])
-        .headerParameters!
+      const rawHeaderParams = (httpEvent as FullHttpEvent["http"]).headerParameters!
       Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: "header",
           name: param,
-          required: data.required,
+          required: data.required ?? false,
           type: data.type || "string",
           description: data.description,
         })
