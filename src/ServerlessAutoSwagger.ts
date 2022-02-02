@@ -340,15 +340,15 @@ class ServerlessAutoSwagger {
           }
 
           this.swagger.paths[path][http.method] = {
-            summary: http.summary,
-            description: http.description || functionName,
+            summary: http.summary || functionName,
+            description: http.description ?? "",
             tags: http.swaggerTags,
             operationId: functionName,
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: this.httpEventToParameters(http),
             responses: this.formatResponses(
-              http.responseData || http.responses
+              http.responseData ?? http.responses
             )
           }
 
