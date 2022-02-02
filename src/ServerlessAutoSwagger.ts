@@ -423,7 +423,7 @@ class ServerlessAutoSwagger {
       httpEvent.path.match(/[^{\}]+(?=})/g)
     ) {
       const pathParameters = httpEvent.path.match(/[^{\}]+(?=})/g) || []
-      pathParameters.map((param) => {
+      pathParameters.forEach((param) => {
         parameters.push({
           name: param,
           in: "path",
@@ -432,6 +432,7 @@ class ServerlessAutoSwagger {
         })
       })
     }
+
     if ((httpEvent as FullHttpEvent["http"]).parameters?.path) {
       const rawPathParams =
         (httpEvent as FullHttpEvent["http"]).parameters?.path || {}
@@ -446,7 +447,7 @@ class ServerlessAutoSwagger {
         pathParameters = removeStringFromArray(pathParameters, param)
       })
 
-      pathParameters.map((param) => {
+      pathParameters.forEach((param) => {
         parameters.push({
           name: param,
           in: "path",
