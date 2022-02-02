@@ -30,9 +30,7 @@ const generateServerlessFromAnEndpoint = (
     };
 
     return {
-        cli: {
-            log: () => {},
-        },
+        cli: { log: () => {} },
         service: serviceDetails,
         configurationInput: serviceDetails,
         configSchemaHandler: {
@@ -76,6 +74,7 @@ describe('ServerlessAutoSwagger', () => {
                         summary: 'mocked',
                         description: '',
                         operationId: 'mocked',
+                        tags: undefined,
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
@@ -110,6 +109,7 @@ describe('ServerlessAutoSwagger', () => {
                         summary: 'mocked',
                         description: 'I like documentation',
                         operationId: 'mocked',
+                        tags: undefined,
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
@@ -159,6 +159,7 @@ describe('ServerlessAutoSwagger', () => {
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
+                        tags: undefined,
                         responses: {
                             200: {
                                 description: 'this went well',
@@ -211,6 +212,7 @@ describe('ServerlessAutoSwagger', () => {
                     get: {
                         summary: 'mocked',
                         description: '',
+                        tags: undefined,
                         operationId: 'mocked',
                         consumes: ['application/json'],
                         produces: ['application/json'],
@@ -227,12 +229,14 @@ describe('ServerlessAutoSwagger', () => {
                                 type: 'integer',
                                 in: 'query',
                                 required: false,
+                                description: undefined,
                             },
                             {
                                 name: 'foo',
                                 type: 'string',
                                 in: 'query',
                                 required: false,
+                                description: undefined,
                             },
                         ],
                         responses: {
@@ -303,6 +307,7 @@ describe('ServerlessAutoSwagger', () => {
                     post: {
                         summary: 'mocked',
                         description: '',
+                        tags: undefined,
                         operationId: 'mocked',
                         consumes: ['application/json'],
                         produces: ['application/json'],
@@ -373,6 +378,7 @@ describe('ServerlessAutoSwagger', () => {
                 schemes: ['https'],
                 paths: {},
                 definitions: {},
+                securityDefinitions: {},
                 foo: { bar: true },
             });
         });
@@ -406,6 +412,7 @@ describe('ServerlessAutoSwagger', () => {
                 info: { title: '', version: '1' },
                 schemes: ['http'],
                 paths: {},
+                securityDefinitions: {},
                 definitions: {},
             });
         });
@@ -464,6 +471,7 @@ describe('ServerlessAutoSwagger', () => {
                     '/bar': 'something else',
                     '/hello': 'world',
                 },
+                securityDefinitions: {},
                 definitions: {
                     Foo: {
                         type: 'string',

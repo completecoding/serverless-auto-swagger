@@ -30,6 +30,17 @@ export interface Serverless {
   }
 }
 
+export interface AutoSwaggerCustomConfig {
+  autoswagger?: {
+    apiKeyName?: string;
+    swaggerFiles?: string[];
+    generateSwaggerOnDeploy?: boolean;
+    typefiles?: string[];
+    useStage?: boolean;
+    swaggerPath?: string;
+  }
+}
+
 export interface ServerlessConfig {
   service: string
   provider: ServerlessProvider
@@ -39,7 +50,7 @@ export interface ServerlessConfig {
     Resources?: ServerlessResources
     Outputs?: ServerlessOutputs
   }
-  custom: { [key: string]: any }
+  custom?: Record<string, any> & AutoSwaggerCustomConfig;
 }
 
 export interface ServerlessFunctions {

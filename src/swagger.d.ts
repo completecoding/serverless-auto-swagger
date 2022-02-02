@@ -6,8 +6,8 @@ export interface Swagger {
   tags?: Tag[]
   schemes: string[]
   paths: Paths
-  securityDefinitions?: { [key: string]: SecurityDefinition }
-  definitions?: { [key: string]: Definition }
+  securityDefinitions?: Record<string, SecurityDefinition>
+  definitions?: Record<string, Definition>
   externalDocs?: ExternalDocs
 }
 
@@ -71,9 +71,8 @@ export interface Response {
   schema?: SchemaRef
 }
 
-export interface MethodSecurity {
-  [securityType: string]: string[]
-}
+type SecurityType = string;
+export type MethodSecurity = Record<SecurityType, string[]>;
 
 // Security Section
 export interface SecurityDefinition {
