@@ -2,23 +2,6 @@
 
 This plugin allows you to automatically generate a swagger endpoint, describing your application endpoints. This is built from your existing serverless config and typescript definitions, reducing the duplication of work.
 
-## Fork Features
-- Enabled Authetication with ApiKey (Authorize)
-    - Using it you can Authorize yourself in swagger to execute requests
-- Enabled field Required in Parameters 
-    - Fixed "Required" in QueryParams and added it on HeaderParams
-- API Description and Summary
-    - You can now insert a Description or Summary to each end-point
-- Header Parameters
-    - Now you can use Headers Params as well (not only QueryParms)
-- Fixed Python Generation 
-    - Now the swagger files under "Resources" are working with Python
-- Stages in Path 
-    - You can decide if you want or not to use the actual stage on beginning of path
-- httpApi usage
-    - httpApi is the new, faster and cheaper "http". So i'm using it
-
-
 ## Install
 
 ```sh
@@ -71,16 +54,23 @@ The default swagger file from vanilla Serverless framework will have the correct
 
 ### API Summary and Details
 
+The optional attributes `summary` and `description` can be used to describe each HTTP request in Swagger.
+
+`swaggerTags` is an optional array that can be used to group HTTP requests with a collapsible name
+(i.e. grouping two endpoints `GET /dogs` and `POST /dogs` together).
+If not specified, all HTTP requests will be grouped under `default`.
+
 ```js
 http: {
     summary: 'This is a cool API',
-    description: 'I will describe my cool API soon',
+    description: 'Cool API description is here',
+    swaggerTags: ['Dogs']
 }
 ```
 
 ### Adding Data Types
 
-This plugin uses typescript types to generate the data types for the endpoints. By default it pulls the types from `src/types/api-types.d.ts`.
+This plugin uses typescript types to generate the data types for the endpoints. By default, it pulls the types from `src/types/api-types.d.ts`.
 
 You can then assign these typescript definitions to requests as `bodyType` on the http or https config, or to the response as seen just below.
 
@@ -143,6 +133,32 @@ http: {
 ```
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
+
+### Multi-Valued Query String Parameters
+
+If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `itemsType`
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    queryStringParameters: {
+        bob: {
+            required: true,
+            type: 'array',
+            itemsType: 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'array',
+            itemsType: 'integer',
+        },
+    },
+},
+```
+
+![Query String Parameters](./doc_images/multivalued.png)
 
 ### Header Params
 

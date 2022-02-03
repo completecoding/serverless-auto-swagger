@@ -15,13 +15,13 @@ export default (serverless: Serverless) => {
   return {
     swaggerUI: {
       name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
-      handler: handlerPath + "swaggerhtml.handler",
+      handler: handlerPath + "swagger-html.handler",
       disableLogs: true,
       events: [
         {
           httpApi: {
             method: "get",
-            path: useStage ? `/${stage}/swagger` : `/swagger`,
+            path: useStage ? `/${stage}/${path}` : `/${path}`,
           },
         },
       ],
@@ -29,13 +29,13 @@ export default (serverless: Serverless) => {
 
     swaggerJSON: {
       name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
-      handler: handlerPath + "swaggerjson.handler",
+      handler: handlerPath + "swagger-json.handler",
       disableLogs: true,
       events: [
         {
           httpApi: {
             method: "get",
-            path: useStage ? `/${stage}/swaggerjson` : `/swaggerjson`,
+            path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
           },
         },
       ],

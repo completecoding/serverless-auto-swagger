@@ -147,6 +147,10 @@ class ServerlessAutoSwagger {
                   type: "number",
                   nullable: true,
                 },
+                itemsType: {
+                  type: "number",
+                  nullable: true,
+                },
               },
             },
           },
@@ -167,8 +171,8 @@ class ServerlessAutoSwagger {
   }
 
   gatherSwaggerFiles = async () => {
-    const swaggerFiles = this.serverless.service.custom?.autoswagger
-      ?.swaggerFiles as string[]
+    const swaggerFiles =
+      this.serverless.service.custom?.autoswagger?.swaggerFiles
 
     if (!swaggerFiles || swaggerFiles.length < 1) {
       return
@@ -211,8 +215,9 @@ class ServerlessAutoSwagger {
     })
     const { convert } = makeConverter(reader, writer)
     try {
-      const typeLocationOverride = this.serverless.service.custom?.autoswagger
-        ?.typefiles as string[]
+      const typeLocationOverride =
+        this.serverless.service.custom?.autoswagger?.typefiles
+
       const typesFile = typeLocationOverride || ["./src/types/api-types.d.ts"]
       await Promise.all(
         typesFile.map(async (filepath) => {
@@ -232,7 +237,7 @@ class ServerlessAutoSwagger {
             if (data.includes("anyOf")) {
               // anyOf caused some issues with certain swagger configs
               console.log("includes anyOf")
-              //const newDef = Object.values(definition).map(recursiveFixAnyOf);
+              // const newDef = Object.values(definition).map(recursiveFixAnyOf);
             }
 
             this.swagger.definitions = {
@@ -251,35 +256,27 @@ class ServerlessAutoSwagger {
     }
   }
 
-  generate_security = async () => {
+  generateSecurity = (): void => {
     const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName
 
-    var securityDefinitions: { [key: string]: SecurityDefinition } = {}
-
-    securityDefinitions[apiKeyName] = {
-      type: "apiKey",
-      name: apiKeyName,
-      in: "header",
-    }
-
     if (apiKeyName) {
-      this.swagger = {
-        ...this.swagger,
-        securityDefinitions: securityDefinitions,
+      const securityDefinitions: Record<string, SecurityDefinition> = {}
+      securityDefinitions[apiKeyName] = {
+        type: "apiKey",
+        name: apiKeyName,
+        in: "header",
       }
+
+      this.swagger = { ...this.swagger, securityDefinitions }
     } else {
-      this.swagger = {
-        ...this.swagger,
-        securityDefinitions: undefined,
-      }
+      this.swagger = { ...this.swagger, securityDefinitions: undefined }
     }
   }
 
   generateSwagger = async () => {
     await this.gatherSwaggerFiles()
     await this.gatherTypes()
-    await this.generate_security()
-
+    this.generateSecurity()
     this.generatePaths()
 
     this.serverless.cli.log(`Creating your Swagger File now`)
@@ -313,8 +310,9 @@ class ServerlessAutoSwagger {
 
   generatePaths = () => {
     const functions = this.serverless.service.functions
-    Object.entries(functions).map(([functionName, config]) => {
+    Object.entries(functions).forEach(([functionName, config]) => {
       const events = config.events || []
+
       events
         .filter((event) => {
           if (!((event as HttpEvent).http || (event as HttpApiEvent).httpApi)) {
@@ -330,7 +328,7 @@ class ServerlessAutoSwagger {
 
           return !http.exclude
         })
-        .map((event) => {
+        .forEach((event) => {
           let http =
             (event as HttpEvent).http || (event as HttpApiEvent).httpApi
           if (typeof http === "string") {
@@ -345,34 +343,32 @@ class ServerlessAutoSwagger {
             this.swagger.paths[path] = {}
           }
 
-          const apiKeyName =
-            this.serverless.service.custom?.autoswagger?.apiKeyName
-
-          var security_key_name: { [key: string]: string[] } = {}
-          security_key_name[apiKeyName] = []
-
-          var security_key = [security_key_name] as MethodSecurity[]
-
-          var securityDefinitions: { [key: string]: SecurityDefinition } = {}
-
-          securityDefinitions[apiKeyName] = {
-            type: "apiKey",
-            name: apiKeyName,
-            in: "header",
-          }
-
           this.swagger.paths[path][http.method] = {
-            summary: http.summary,
-            description: http.description || functionName,
+            summary: http.summary || functionName,
+            description: http.description ?? "",
             tags: http.swaggerTags,
             operationId: functionName,
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: this.httpEventToParameters(http),
             responses: this.formatResponses(
-              http.responseData || http.responses
+              http.responseData ?? http.responses
             ),
-            security: security_key,
+          }
+
+          const apiKeyName =
+            this.serverless.service.custom?.autoswagger?.apiKeyName
+
+          let security: MethodSecurity[] = []
+
+          if (apiKeyName) {
+            const methodSecurity: MethodSecurity = {}
+            methodSecurity[apiKeyName] = []
+            security.push(methodSecurity)
+          }
+
+          if (security.length) {
+            this.swagger.paths[path][http.method].security = security
           }
         })
     })
@@ -388,7 +384,7 @@ class ServerlessAutoSwagger {
       }
     }
     const formatted: { [key: string]: Response } = {}
-    Object.entries(responseData).map(([statusCode, responseDetails]) => {
+    Object.entries(responseData).forEach(([statusCode, responseDetails]) => {
       if (typeof responseDetails == "string") {
         formatted[statusCode] = {
           description: responseDetails,
@@ -407,11 +403,11 @@ class ServerlessAutoSwagger {
 
     return formatted
   }
-  httpEventToSecurity = (http: EitherHttpEvent) => {
-    // TODO - add security sections
-    http.path
-    return undefined
-  }
+
+  // httpEventToSecurity = (http: EitherHttpEvent) => {
+  //   // TODO - add security sections
+  //   return undefined
+  // }
 
   httpEventToParameters = (httpEvent: EitherHttpEvent) => {
     const parameters = []
@@ -431,7 +427,7 @@ class ServerlessAutoSwagger {
       httpEvent.path.match(/[^{\}]+(?=})/g)
     ) {
       const pathParameters = httpEvent.path.match(/[^{\}]+(?=})/g) || []
-      pathParameters.map((param) => {
+      pathParameters.forEach((param) => {
         parameters.push({
           name: param,
           in: "path",
@@ -440,11 +436,12 @@ class ServerlessAutoSwagger {
         })
       })
     }
+
     if ((httpEvent as FullHttpEvent["http"]).parameters?.path) {
       const rawPathParams =
         (httpEvent as FullHttpEvent["http"]).parameters?.path || {}
       let pathParameters = httpEvent.path.match(/[^{\}]+(?=})/g) || []
-      Object.entries(rawPathParams).map(([param, required]) => {
+      Object.entries(rawPathParams).forEach(([param, required]) => {
         parameters.push({
           name: param,
           in: "path",
@@ -454,7 +451,7 @@ class ServerlessAutoSwagger {
         pathParameters = removeStringFromArray(pathParameters, param)
       })
 
-      pathParameters.map((param) => {
+      pathParameters.forEach((param) => {
         parameters.push({
           name: param,
           in: "path",
@@ -467,11 +464,11 @@ class ServerlessAutoSwagger {
     if ((httpEvent as FullHttpEvent["http"]).headerParameters) {
       const rawHeaderParams = (httpEvent as FullHttpEvent["http"])
         .headerParameters!
-      Object.entries(rawHeaderParams).map(([param, data]) => {
+      Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: "header",
           name: param,
-          required: data.required,
+          required: data.required ?? false,
           type: data.type || "string",
           description: data.description,
         })
@@ -481,13 +478,15 @@ class ServerlessAutoSwagger {
     if ((httpEvent as FullHttpEvent["http"]).queryStringParameters) {
       const rawQueryParams = (httpEvent as FullHttpEvent["http"])
         .queryStringParameters!
-      Object.entries(rawQueryParams).map(([param, data]) => {
+      Object.entries(rawQueryParams).forEach(([param, data]) => {
         parameters.push({
           in: "query",
           name: param,
-          required: data.required,
           type: data.type || "string",
           description: data.description,
+          required: data.required ?? false,
+          ...(data.type === "array" && { items: { type: data.itemsType } }),
+          ...(data.type === "array" && { collectionFormat: "multi" }),
         })
       })
     }

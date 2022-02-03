@@ -30,9 +30,7 @@ const generateServerlessFromAnEndpoint = (
     };
 
     return {
-        cli: {
-            log: () => {},
-        },
+        cli: { log: () => {} },
         service: serviceDetails,
         configurationInput: serviceDetails,
         configSchemaHandler: {
@@ -76,6 +74,7 @@ describe('ServerlessAutoSwagger', () => {
                         summary: 'mocked',
                         description: '',
                         operationId: 'mocked',
+                        tags: undefined,
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
@@ -110,6 +109,7 @@ describe('ServerlessAutoSwagger', () => {
                         summary: 'mocked',
                         description: 'I like documentation',
                         operationId: 'mocked',
+                        tags: undefined,
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
@@ -159,6 +159,7 @@ describe('ServerlessAutoSwagger', () => {
                         consumes: ['application/json'],
                         produces: ['application/json'],
                         parameters: [],
+                        tags: undefined,
                         responses: {
                             200: {
                                 description: 'this went well',
@@ -178,7 +179,7 @@ describe('ServerlessAutoSwagger', () => {
             });
         });
 
-        it('should generate an endpoint with parameters', () => {
+        it('should generate an endpoint with query parameters', () => {
             const serverlessAutoSwagger = new ServerlessAutoSwagger(
                 generateServerlessFromAnEndpoint([
                     {
@@ -195,6 +196,9 @@ describe('ServerlessAutoSwagger', () => {
                                     required: false,
                                     type: 'integer',
                                 },
+                                foo: {
+                                    type: 'string',
+                                },
                             },
                         },
                     },
@@ -208,6 +212,7 @@ describe('ServerlessAutoSwagger', () => {
                     get: {
                         summary: 'mocked',
                         description: '',
+                        tags: undefined,
                         operationId: 'mocked',
                         consumes: ['application/json'],
                         produces: ['application/json'],
@@ -217,11 +222,91 @@ describe('ServerlessAutoSwagger', () => {
                                 type: 'string',
                                 description: 'bob',
                                 in: 'query',
+                                required: true,
                             },
                             {
                                 name: 'count',
                                 type: 'integer',
                                 in: 'query',
+                                required: false,
+                                description: undefined,
+                            },
+                            {
+                                name: 'foo',
+                                type: 'string',
+                                in: 'query',
+                                required: false,
+                                description: undefined,
+                            },
+                        ],
+                        responses: {
+                            200: {
+                                description: '200 response',
+                            },
+                        },
+                    },
+                },
+            });
+        });
+
+        it('should generate an endpoint with header parameters', () => {
+            const serverlessAutoSwagger = new ServerlessAutoSwagger(
+              generateServerlessFromAnEndpoint([
+                  {
+                      http: {
+                          path: 'goodbye',
+                          method: 'get',
+                          headerParameters: {
+                              bob: {
+                                  required: true,
+                                  type: 'string',
+                                  description: 'bob',
+                              },
+                              count: {
+                                  required: false,
+                                  type: 'integer',
+                              },
+                              foo: {
+                                  type: 'string',
+                              },
+                          },
+                      },
+                  },
+              ]),
+              {}
+            );
+            serverlessAutoSwagger.generatePaths();
+
+            expect(serverlessAutoSwagger.swagger.paths).toEqual({
+                '/goodbye': {
+                    get: {
+                        summary: 'mocked',
+                        description: '',
+                        tags: undefined,
+                        operationId: 'mocked',
+                        consumes: ['application/json'],
+                        produces: ['application/json'],
+                        parameters: [
+                            {
+                                name: 'bob',
+                                type: 'string',
+                                description: 'bob',
+                                in: 'header',
+                                required: true,
+                            },
+                            {
+                                name: 'count',
+                                type: 'integer',
+                                in: 'header',
+                                required: false,
+                                description: undefined,
+                            },
+                            {
+                                name: 'foo',
+                                type: 'string',
+                                in: 'header',
+                                required: false,
+                                description: undefined,
                             },
                         ],
                         responses: {
@@ -292,6 +377,7 @@ describe('ServerlessAutoSwagger', () => {
                     post: {
                         summary: 'mocked',
                         description: '',
+                        tags: undefined,
                         operationId: 'mocked',
                         consumes: ['application/json'],
                         produces: ['application/json'],
@@ -309,8 +395,8 @@ describe('ServerlessAutoSwagger', () => {
 
     describe('gatherSwaggerFiles', () => {
         const mockedJsonFiles = new Map<string, string>();
-        const spy = jest
-            .spyOn(fs, 'readFileSync')
+
+        jest.spyOn(fs, 'readFileSync')
             .mockImplementation((fileName: PathOrFileDescriptor): string => {
                 const content = mockedJsonFiles.get(fileName as string);
 
@@ -320,6 +406,7 @@ describe('ServerlessAutoSwagger', () => {
 
                 return content;
             });
+
         const mockJsonFile = (fileName: string, content: Record<string, unknown>): void => {
             mockedJsonFiles.set(fileName, JSON.stringify(content));
         };
@@ -361,6 +448,7 @@ describe('ServerlessAutoSwagger', () => {
                 schemes: ['https'],
                 paths: {},
                 definitions: {},
+                securityDefinitions: {},
                 foo: { bar: true },
             });
         });
@@ -394,6 +482,7 @@ describe('ServerlessAutoSwagger', () => {
                 info: { title: '', version: '1' },
                 schemes: ['http'],
                 paths: {},
+                securityDefinitions: {},
                 definitions: {},
             });
         });
@@ -452,6 +541,7 @@ describe('ServerlessAutoSwagger', () => {
                     '/bar': 'something else',
                     '/hello': 'world',
                 },
+                securityDefinitions: {},
                 definitions: {
                     Foo: {
                         type: 'string',
