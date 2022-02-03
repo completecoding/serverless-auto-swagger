@@ -147,7 +147,7 @@ class ServerlessAutoSwagger {
                   type: "number",
                   nullable: true,
                 },
-                itemsType: {
+                arrayItemsType: {
                   type: "number",
                   nullable: true,
                 },
@@ -485,8 +485,12 @@ class ServerlessAutoSwagger {
           type: data.type || "string",
           description: data.description,
           required: data.required ?? false,
-          ...(data.type === "array" && { items: { type: data.itemsType } }),
-          ...(data.type === "array" && { collectionFormat: "multi" }),
+          ...(data.type === "array"
+            ? {
+                items: { type: data.arrayItemsType },
+                collectionFormat: "multi",
+              }
+            : {}),
         })
       })
     }
