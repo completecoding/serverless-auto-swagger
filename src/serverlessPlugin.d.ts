@@ -32,12 +32,12 @@ export interface Serverless {
 
 export interface AutoSwaggerCustomConfig {
   autoswagger?: {
-    apiKeyName?: string;
-    swaggerFiles?: string[];
-    generateSwaggerOnDeploy?: boolean;
-    typefiles?: string[];
-    useStage?: boolean;
-    swaggerPath?: string;
+    apiKeyName?: string
+    swaggerFiles?: string[]
+    generateSwaggerOnDeploy?: boolean
+    typefiles?: string[]
+    useStage?: boolean
+    swaggerPath?: string
   }
 }
 
@@ -50,7 +50,7 @@ export interface ServerlessConfig {
     Resources?: ServerlessResources
     Outputs?: ServerlessOutputs
   }
-  custom?: Record<string, any> & AutoSwaggerCustomConfig;
+  custom?: Record<string, any> & AutoSwaggerCustomConfig
 }
 
 export interface ServerlessFunctions {
@@ -94,9 +94,10 @@ export interface FullHttpEvent {
       string,
       {
         required?: boolean
-        type: "string" | "integer"
+        type: "string" | "integer" | "array"
         description?: string
         minimum?: number
+        itemsType?: string
       }
     >
     parameters?: {

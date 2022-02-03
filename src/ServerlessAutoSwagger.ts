@@ -147,6 +147,10 @@ class ServerlessAutoSwagger {
                   type: "number",
                   nullable: true,
                 },
+                itemsType: {
+                  type: "number",
+                  nullable: true,
+                },
               },
             },
           },
@@ -167,8 +171,8 @@ class ServerlessAutoSwagger {
   }
 
   gatherSwaggerFiles = async () => {
-    const swaggerFiles = this.serverless.service.custom?.autoswagger
-      ?.swaggerFiles
+    const swaggerFiles =
+      this.serverless.service.custom?.autoswagger?.swaggerFiles
 
     if (!swaggerFiles || swaggerFiles.length < 1) {
       return
@@ -211,8 +215,8 @@ class ServerlessAutoSwagger {
     })
     const { convert } = makeConverter(reader, writer)
     try {
-      const typeLocationOverride = this.serverless.service.custom?.autoswagger
-        ?.typefiles
+      const typeLocationOverride =
+        this.serverless.service.custom?.autoswagger?.typefiles
 
       const typesFile = typeLocationOverride || ["./src/types/api-types.d.ts"]
       await Promise.all(
@@ -263,7 +267,7 @@ class ServerlessAutoSwagger {
         in: "header",
       }
 
-      this.swagger = { ...this.swagger, securityDefinitions };
+      this.swagger = { ...this.swagger, securityDefinitions }
     } else {
       this.swagger = { ...this.swagger, securityDefinitions: undefined }
     }
@@ -349,18 +353,18 @@ class ServerlessAutoSwagger {
             parameters: this.httpEventToParameters(http),
             responses: this.formatResponses(
               http.responseData ?? http.responses
-            )
+            ),
           }
 
           const apiKeyName =
             this.serverless.service.custom?.autoswagger?.apiKeyName
 
-          let security: MethodSecurity[] = [];
+          let security: MethodSecurity[] = []
 
           if (apiKeyName) {
             const methodSecurity: MethodSecurity = {}
             methodSecurity[apiKeyName] = []
-            security.push(methodSecurity);
+            security.push(methodSecurity)
           }
 
           if (security.length) {
@@ -458,7 +462,8 @@ class ServerlessAutoSwagger {
     }
 
     if ((httpEvent as FullHttpEvent["http"]).headerParameters) {
-      const rawHeaderParams = (httpEvent as FullHttpEvent["http"]).headerParameters!
+      const rawHeaderParams = (httpEvent as FullHttpEvent["http"])
+        .headerParameters!
       Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: "header",
@@ -480,6 +485,8 @@ class ServerlessAutoSwagger {
           type: data.type || "string",
           description: data.description,
           required: data.required ?? false,
+          ...(data.type === "array" && { items: { type: data.itemsType } }),
+          ...(data.type === "array" && { collectionFormat: "multi" }),
         })
       })
     }

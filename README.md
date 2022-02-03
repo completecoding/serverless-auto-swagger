@@ -53,9 +53,10 @@ custom:
 The default swagger file from vanilla Serverless framework will have the correct paths and methods but no details about the requests or responses.
 
 ### API Summary and Details
+
 The optional attributes `summary` and `description` can be used to describe each HTTP request in Swagger.
 
-`swaggerTags` is an optional array that can be used to group HTTP requests with a collapsible name 
+`swaggerTags` is an optional array that can be used to group HTTP requests with a collapsible name
 (i.e. grouping two endpoints `GET /dogs` and `POST /dogs` together).
 If not specified, all HTTP requests will be grouped under `default`.
 
@@ -132,6 +133,32 @@ http: {
 ```
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
+
+### Multi-Valued Query String Parameters
+
+If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `itemsType`
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    queryStringParameters: {
+        bob: {
+            required: true,
+            type: 'array',
+            itemsType: 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'array',
+            itemsType: 'integer',
+        },
+    },
+},
+```
+
+![Query String Parameters](./doc_images/multivalued.png)
 
 ### Header Params
 
