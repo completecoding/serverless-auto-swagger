@@ -136,7 +136,8 @@ http: {
 
 ### Multi-Valued Query String Parameters
 
-If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `itemsType`
+If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `arrayItemsType`
+
 
 ```
 http: {
