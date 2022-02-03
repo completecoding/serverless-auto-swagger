@@ -146,13 +146,13 @@ http: {
         bob: {
             required: true,
             type: 'array',
-            itemsType: 'string',
+            arrayItemsType : 'string',
             description: 'bob',
         },
         count: {
             required: false,
             type: 'array',
-            itemsType: 'integer',
+            arrayItemsType : 'integer',
         },
     },
 },

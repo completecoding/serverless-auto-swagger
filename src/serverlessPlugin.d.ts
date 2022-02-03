@@ -97,7 +97,7 @@ export interface FullHttpEvent {
         type: "string" | "integer" | "array"
         description?: string
         minimum?: number
-        itemsType?: string
+        arrayItemsType?: string
       }
     >
     parameters?: {
