@@ -13,11 +13,10 @@ All notable changes to this project will be documented in this file. See [standa
 * **script:** adding publish script to call np ([4932248](https://github.com/SamWSoftware/serverless-auto-swagger/commit/49322489d27d1db0cc1dd53a34824d2c59112620))
 * **swaggerFiles:** allow user to add json openAPI 2.0 files ([ba130a2](https://github.com/SamWSoftware/serverless-auto-swagger/commit/ba130a2d733a97d8069761ae36db455c172817ce))
 
-
 ### Bug Fixes
 
+* Add required parameter to Swagger for queryStringParameters ([#20](https://github.com/SamWSoftware/serverless-auto-swagger/issues/20)) ([6a6c89d](https://github.com/SamWSoftware/serverless-auto-swagger/commit/6a6c89dfe2fceafb271cd0423fd29a8877b85e5a)), closes [#11](https://github.com/SamWSoftware/serverless-auto-swagger/issues/11)
 * **types:** fixing responses on http, and conflicting types in tests ([138626f](https://github.com/SamWSoftware/serverless-auto-swagger/commit/138626fa2c6c320d30fd1064790ff981417b4ede))
-* **queryStringParameters:** pass `required` on to Swagger ([4c5ef7d](https://github.com/SamWSoftware/serverless-auto-swagger/commit/4c5ef7d9344e207d08f5461550857ebe2a31a3b0))
 
 ## [1.3.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.3.0...v1.3.1) (2021-11-23)
 

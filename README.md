@@ -14,7 +14,7 @@ Add the following plugin to your `serverless.yml`:
 
 ```yaml
 plugins:
-    - serverless-auto-swagger
+  - serverless-auto-swagger
 ```
 
 ## Usage
@@ -32,6 +32,8 @@ custom:
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
         swaggerPath?: 'string'
+        apiKeyName?: 'string'
+        useStage?: true | false
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
@@ -42,13 +44,33 @@ custom:
 
 `swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
 
+`apiKeyName` is a string to define an API KEY. This is the name of your api key used on auth. For example, if you send it as a header named `x-api-key`, then the `apiKeyName` should be `x-api-key`
+
+`useStage` is a bool to either use current stage in beginning of path or not. The Default is `false`. For example, if you use it enabled (`true`) and your stage is `dev` the swagger will be in `dev/swagger`
+
 ## Adding more details
 
 The default swagger file from vanilla Serverless framework will have the correct paths and methods but no details about the requests or responses.
 
+### API Summary and Details
+
+The optional attributes `summary` and `description` can be used to describe each HTTP request in Swagger.
+
+`swaggerTags` is an optional array that can be used to group HTTP requests with a collapsible name
+(i.e. grouping two endpoints `GET /dogs` and `POST /dogs` together).
+If not specified, all HTTP requests will be grouped under `default`.
+
+```js
+http: {
+    summary: 'This is a cool API',
+    description: 'Cool API description is here',
+    swaggerTags: ['Dogs']
+}
+```
+
 ### Adding Data Types
 
-This plugin uses typescript types to generate the data types for the endpoints. By default it pulls the types from `src/types/api-types.d.ts`.
+This plugin uses typescript types to generate the data types for the endpoints. By default, it pulls the types from `src/types/api-types.d.ts`.
 
 You can then assign these typescript definitions to requests as `bodyType` on the http or https config, or to the response as seen just below.
 
@@ -111,6 +133,57 @@ http: {
 ```
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
+
+### Multi-Valued Query String Parameters
+
+If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `arrayItemsType`
+
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    queryStringParameters: {
+        bob: {
+            required: true,
+            type: 'array',
+            arrayItemsType : 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'array',
+            arrayItemsType : 'integer',
+        },
+    },
+},
+```
+
+![Query String Parameters](./doc_images/multivalued.png)
+
+### Header Params
+
+Works the same way as `queryStringParameters`, but for headers.
+
+To use it, just define it under `headerParameters`:
+
+```
+http: {
+    path: 'goodbye',
+    method: 'get',
+    headerParameters: {
+        bob: {
+            required: true,
+            type: 'string',
+            description: 'bob',
+        },
+        count: {
+            required: false,
+            type: 'integer',
+        },
+    },
+},
+```
 
 ### Exclude an endpoint
 
