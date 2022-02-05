@@ -3,3 +3,8 @@ node_modules
 src
 jest.config.js
 tests
+.github
+.vscode
+.gitignore
+.prettierrc.json
+HowToContribute.md

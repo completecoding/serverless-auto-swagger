@@ -6,15 +6,19 @@ This plugin allows you to automatically generate a swagger endpoint, describing 
 
 ```sh
 yarn add --dev serverless-auto-swagger
-# or
-npm install -D serverless-auto-swagger
+# or§
+npm install -D serverless-auto-swagger§§§
 ```
 
-Add the following plugin to your `serverless.yml`:
+Add the following plugin to your `serverless.yml` or `serverless.ts`:
 
 ```yaml
 plugins:
   - serverless-auto-swagger
+```
+
+```json
+plugins: ['serverless-auto-swagger']
 ```
 
 ## Usage
@@ -137,7 +141,6 @@ http: {
 ### Multi-Valued Query String Parameters
 
 If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `arrayItemsType`
-
 
 ```
 http: {
