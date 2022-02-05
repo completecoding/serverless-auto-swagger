@@ -1,0 +1,16 @@
+{
+  "name": "nodejsv2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "swagger": "sls generate-swagger"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-auto-swagger": "file:../../../serverless-auto-swagger",
+    "serverless-offline": "^7.0.0"
+  }
+}

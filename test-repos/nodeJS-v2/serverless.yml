@@ -1,0 +1,14 @@
+service: serverless-test2
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  region: eu-central-1
+
+plugins:
+  - serverless-auto-swagger
+  - serverless-offline
+
+functions: ${file(./functions.js)}
