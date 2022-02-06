@@ -19,3 +19,12 @@ functions:
           responseData:
             200:
               description: this went well
+  googbye:
+    handler: handler.goodbye
+    events:
+      - http:
+          path: googbye
+          method: get
+          responseData:
+            200:
+              description: this also went well

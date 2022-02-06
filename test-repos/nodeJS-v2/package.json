@@ -11,6 +11,6 @@
   "license": "ISC",
   "devDependencies": {
     "serverless-auto-swagger": "file:../../../serverless-auto-swagger",
-    "serverless-offline": "^7.0.0"
+    "serverless-offline": "^7.1.0"
   }
 }

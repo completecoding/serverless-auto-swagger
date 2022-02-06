@@ -1,4 +1,4 @@
-service: serverless-test2
+service: nodeJS-v2
 frameworkVersion: '2'
 
 provider:
