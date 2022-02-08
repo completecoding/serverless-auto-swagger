@@ -1,6 +1,6 @@
 {
   "name": "serverless-auto-swagger",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Automatically generate a swagger file from your Serverless Framework config file",
   "main": "dist/index.js",
   "homepage": "https://github.com/SamWSoftware/serverless-auto-swagger",

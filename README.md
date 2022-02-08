@@ -56,7 +56,7 @@ custom:
 
 `basePath` is an optional string that can be prepended to every request (i.e. `http://localhost/basePath/my-endpoint`). Should include leading `/`.
 
-`schemes` is an optional array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes. If not specified, uses the same scheme as the API specification (reflecting Swagger's behavior)
+`schemes` is an optional array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes. If not provided, uses the scheme used to serve the API specification (reflecting Swagger's behavior)
 
 ## Adding more details
 

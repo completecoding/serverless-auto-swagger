@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.6.0...v1.7.0) (2022-02-08)
+
+### ⚠ BREAKING CHANGES
+
+* `schemes` now defaults to the scheme used to serve the API specification if not provided (#32)
+
+### Features
+
+* add `basePath` and `schemes` to custom config ([#32](https://github.com/SamWSoftware/serverless-auto-swagger/issues/32)) ([52118a5](https://github.com/SamWSoftware/serverless-auto-swagger/commit/52118a58c50f58a4ecdeb597c5a470c3abd1af3a))
+
+
+### Bug Fixes
+
+* make operationId unique ([#31](https://github.com/SamWSoftware/serverless-auto-swagger/issues/31)) ([f514234](https://github.com/SamWSoftware/serverless-auto-swagger/commit/f51423475a186bcee9e072a223f02e31b3b4b54e)), closes [#30](https://github.com/SamWSoftware/serverless-auto-swagger/issues/30)
+
 ## [1.6.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.5.0...v1.6.0) (2022-02-08)
 
 ### [1.5.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.5.0...v1.5.1) (2022-02-05)
