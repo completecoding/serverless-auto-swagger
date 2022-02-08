@@ -79,7 +79,7 @@ describe("ServerlessAutoSwagger", () => {
           post: {
             summary: "mocked",
             description: "",
-            operationId: "mocked",
+            operationId: "mocked.post",
             tags: undefined,
             consumes: ["application/json"],
             produces: ["application/json"],
@@ -114,7 +114,7 @@ describe("ServerlessAutoSwagger", () => {
           post: {
             summary: "mocked",
             description: "I like documentation",
-            operationId: "mocked",
+            operationId: "mocked.post",
             tags: undefined,
             consumes: ["application/json"],
             produces: ["application/json"],
@@ -161,7 +161,7 @@ describe("ServerlessAutoSwagger", () => {
           post: {
             summary: "mocked",
             description: "",
-            operationId: "mocked",
+            operationId: "mocked.post",
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: [],
@@ -219,7 +219,7 @@ describe("ServerlessAutoSwagger", () => {
             summary: "mocked",
             description: "",
             tags: undefined,
-            operationId: "mocked",
+            operationId: "mocked.get",
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: [
@@ -289,7 +289,7 @@ describe("ServerlessAutoSwagger", () => {
             summary: "mocked",
             description: "",
             tags: undefined,
-            operationId: "mocked",
+            operationId: "mocked.get",
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: [
@@ -358,7 +358,7 @@ describe("ServerlessAutoSwagger", () => {
             summary: "mocked",
             description: "",
             tags: undefined,
-            operationId: "mocked",
+            operationId: "mocked.get",
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: [
@@ -454,7 +454,7 @@ describe("ServerlessAutoSwagger", () => {
             summary: "mocked",
             description: "",
             tags: undefined,
-            operationId: "mocked",
+            operationId: "mocked.post",
             consumes: ["application/json"],
             produces: ["application/json"],
             parameters: [],
