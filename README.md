@@ -39,7 +39,7 @@ custom:
         apiKeyName?: 'string'
         useStage?: true | false
         basePath?: '/string'
-        schemes?: ['http', 'https']
+        schemes?: ['http', 'https', 'ws', 'wss']
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
