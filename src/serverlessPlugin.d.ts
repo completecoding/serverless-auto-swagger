@@ -8,7 +8,7 @@ export interface Serverless {
     provider?: {
       stage?: string
     }
-  }
+  },
   configSchemaHandler: {
     defineCustomProperties(schema: unknown): void
     defineFunctionEvent(
@@ -30,6 +30,9 @@ export interface Serverless {
   }
 }
 
+// ws and wss are WebSocket schemas
+type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss'
+
 export interface AutoSwaggerCustomConfig {
   autoswagger?: {
     apiKeyName?: string
@@ -38,6 +41,8 @@ export interface AutoSwaggerCustomConfig {
     typefiles?: string[]
     useStage?: boolean
     swaggerPath?: string
+    basePath?: string
+    schemes?: SwaggerScheme[]
   }
 }
 

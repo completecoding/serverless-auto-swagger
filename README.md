@@ -38,6 +38,8 @@ custom:
         swaggerPath?: 'string'
         apiKeyName?: 'string'
         useStage?: true | false
+        basePath?: '/string'
+        schemes?: ['http', 'https']
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
@@ -51,6 +53,10 @@ custom:
 `apiKeyName` is a string to define an API KEY. This is the name of your api key used on auth. For example, if you send it as a header named `x-api-key`, then the `apiKeyName` should be `x-api-key`
 
 `useStage` is a bool to either use current stage in beginning of path or not. The Default is `false`. For example, if you use it enabled (`true`) and your stage is `dev` the swagger will be in `dev/swagger`
+
+`basePath` is an optional string that can be prepended to every request (i.e. `http://localhost/basePath/my-endpoint`). Should include leading `/`.
+
+`schemes` is an optional array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes. If not specified, uses the same scheme as the API specification (reflecting Swagger's behavior)
 
 ## Adding more details
 
