@@ -59,6 +59,31 @@ const generateServerlessFromAnEndpoint = (
 }
 
 describe("ServerlessAutoSwagger", () => {
+  const mockedJsonFiles = new Map<string, string>()
+
+  jest
+    .spyOn<typeof fs, 'readFileSync'>(fs, "readFileSync")
+    .mockImplementation((fileName: PathOrFileDescriptor): string => {
+      const content = mockedJsonFiles.get(fileName as string)
+
+      if (!content) {
+        throw new Error(`file ${fileName} not mocked`)
+      }
+
+      return content
+    })
+
+  const mockJsonFile = (
+    fileName: string,
+    content: Record<string, unknown>
+  ): void => {
+    mockedJsonFiles.set(fileName, JSON.stringify(content))
+  }
+
+  beforeEach(() => {
+    mockedJsonFiles.clear()
+  })
+
   describe("generatePaths", () => {
     it("should generate minimal endpoint", () => {
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
@@ -413,7 +438,7 @@ describe("ServerlessAutoSwagger", () => {
       expect(serverlessAutoSwagger.swagger.paths).toEqual({})
     })
 
-    it("should add path without remove existings", () => {
+    it("should add path without remove existing", () => {
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
         generateServerlessFromAnEndpoint([
           {
@@ -469,38 +494,38 @@ describe("ServerlessAutoSwagger", () => {
     })
   })
 
-  describe("gatherSwaggerFiles", () => {
-    const mockedJsonFiles = new Map<string, string>()
+  describe('gatherSwaggerOverrides', () => {
+    it('should use defaults if overrides are not specified', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint(
+          [
+            {
+              http: {
+                path: "hello",
+                method: "post",
+                exclude: true,
+              },
+            },
+          ],
+        ),
+        {}
+      )
 
-    jest
-      .spyOn(fs, "readFileSync")
-      .mockImplementation((fileName: PathOrFileDescriptor): string => {
-        const content = mockedJsonFiles.get(fileName as string)
+      serverlessAutoSwagger.gatherSwaggerOverrides();
 
-        if (!content) {
-          throw new Error(`file ${fileName} not mocked`)
-        }
-
-        return content
+      expect(serverlessAutoSwagger.swagger).toEqual({
+        definitions: expect.any(Object),
+        info: expect.any(Object),
+        paths: expect.any(Object),
+        securityDefinitions: expect.any(Object),
+        swagger: '2.0'
       })
+    });
 
-    const mockJsonFile = (
-      fileName: string,
-      content: Record<string, unknown>
-    ): void => {
-      mockedJsonFiles.set(fileName, JSON.stringify(content))
-    }
-
-    beforeEach(() => {
-      mockedJsonFiles.clear()
-    })
-
-    it("should add additionalProperties", async () => {
-      mockJsonFile("test.json", {
-        foo: {
-          bar: true,
-        },
-      })
+    it('should use overrides if specified', () => {
+      const fileName = "test.json";
+      const swaggerDoc = { foo: { bar: true } };
+      mockJsonFile(fileName, swaggerDoc)
 
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
         generateServerlessFromAnEndpoint(
@@ -514,18 +539,59 @@ describe("ServerlessAutoSwagger", () => {
             },
           ],
           {
-            swaggerFiles: ["test.json"],
+            basePath: '/bp',
+            schemes: ['ws'],
+            swaggerFiles: [fileName]
           }
         ),
         {}
       )
 
-      await serverlessAutoSwagger.gatherSwaggerFiles()
+      serverlessAutoSwagger.gatherSwaggerOverrides();
+
+      expect(serverlessAutoSwagger.swagger).toEqual({
+        definitions: expect.any(Object),
+        info: expect.any(Object),
+        paths: expect.any(Object),
+        securityDefinitions: expect.any(Object),
+        swagger: '2.0',
+        schemes: ['ws'],
+        basePath: '/bp',
+        ...swaggerDoc
+      })
+    });
+  });
+
+  describe("gatherSwaggerFiles", () => {
+    it("should add additionalProperties", async () => {
+      mockJsonFile("test.json", {
+        foo: {
+          bar: true,
+        },
+      })
+
+      const swaggerFiles = ["test.json"]
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint(
+          [
+            {
+              http: {
+                path: "hello",
+                method: "post",
+                exclude: true,
+              },
+            },
+          ],
+          { swaggerFiles }
+        ),
+        {}
+      )
+
+      await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles)
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: "2.0",
         info: { title: "", version: "1" },
-        schemes: ["https"],
         paths: {},
         definitions: {},
         securityDefinitions: {},
@@ -537,6 +603,8 @@ describe("ServerlessAutoSwagger", () => {
       mockJsonFile("test.json", {
         schemes: ["http"],
       })
+
+      const swaggerFiles = ["test.json"];
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
         generateServerlessFromAnEndpoint(
           [
@@ -548,14 +616,12 @@ describe("ServerlessAutoSwagger", () => {
               },
             },
           ],
-          {
-            swaggerFiles: ["test.json"],
-          }
+          { swaggerFiles }
         ),
         {}
       )
 
-      await serverlessAutoSwagger.gatherSwaggerFiles()
+      await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles)
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: "2.0",
@@ -579,6 +645,7 @@ describe("ServerlessAutoSwagger", () => {
           },
         },
       })
+
       mockJsonFile("helloworld.json", {
         paths: {
           "/hello": "world",
@@ -592,6 +659,8 @@ describe("ServerlessAutoSwagger", () => {
           },
         },
       })
+
+      const swaggerFiles = ["helloworld.json", "foobar.json"];
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
         generateServerlessFromAnEndpoint(
           [
@@ -603,19 +672,16 @@ describe("ServerlessAutoSwagger", () => {
               },
             },
           ],
-          {
-            swaggerFiles: ["helloworld.json", "foobar.json"],
-          }
+          { swaggerFiles }
         ),
         {}
       )
 
-      await serverlessAutoSwagger.gatherSwaggerFiles()
+      await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles)
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: "2.0",
         info: { title: "", version: "1" },
-        schemes: ["https"],
         paths: {
           "/foo": "whatever",
           "/bar": "something else",

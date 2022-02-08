@@ -25,7 +25,6 @@ class ServerlessAutoSwagger {
       title: '',
       version: '1',
     },
-    schemes: ['https'],
     paths: {},
     definitions: {},
     securityDefinitions: {},
@@ -160,35 +159,40 @@ class ServerlessAutoSwagger {
     this.addEndpointsAndLambda();
   };
 
-  gatherSwaggerFiles = async () => {
-    const swaggerFiles = this.serverless.service.custom?.autoswagger?.swaggerFiles;
+  /** Updates this.swagger with serverless custom.autoswagger overrides */
+  gatherSwaggerOverrides = (): void => {
+    const autoswagger = this.serverless.service.custom?.autoswagger ?? {};
 
-    if (!swaggerFiles || swaggerFiles.length < 1) {
-      return;
-    }
+    if (autoswagger.basePath) this.swagger.basePath = autoswagger.basePath
+    if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes
 
-    await Promise.all(
-      swaggerFiles.map(async (filepath) => {
-        const fileData = fs.readFileSync(filepath, 'utf8');
+    // There must be at least one or this `if` will be false
+    if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles)
 
-        const jsonData = JSON.parse(fileData);
+  }
 
-        const { paths = {}, definitions = {}, ...swagger } = jsonData;
+  /** Updates this.swagger with swagger file overrides */
+  gatherSwaggerFiles = (swaggerFiles: string[]): void => {
+    swaggerFiles.forEach((filepath) => {
+      const fileData = fs.readFileSync(filepath, 'utf8');
 
-        this.swagger = {
-          ...this.swagger,
-          ...swagger,
-          paths: {
-            ...this.swagger.paths,
-            ...paths,
-          },
-          definitions: {
-            ...this.swagger.definitions,
-            ...definitions,
-          },
-        };
-      })
-    );
+      const jsonData = JSON.parse(fileData);
+
+      const { paths = {}, definitions = {}, ...swagger } = jsonData;
+
+      this.swagger = {
+        ...this.swagger,
+        ...swagger,
+        paths: {
+          ...this.swagger.paths,
+          ...paths,
+        },
+        definitions: {
+          ...this.swagger.definitions,
+          ...definitions,
+        },
+      };
+    });
   };
 
   gatherTypes = async () => {
@@ -259,7 +263,7 @@ class ServerlessAutoSwagger {
   };
 
   generateSwagger = async () => {
-    await this.gatherSwaggerFiles();
+    this.gatherSwaggerOverrides();
     await this.gatherTypes();
     this.generateSecurity();
     this.generatePaths();

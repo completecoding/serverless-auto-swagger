@@ -4,7 +4,7 @@ export interface Swagger {
   host?: string
   basePath?: string
   tags?: Tag[]
-  schemes: string[]
+  schemes?: string[]
   paths: Paths
   securityDefinitions?: Record<string, SecurityDefinition>
   definitions?: Record<string, Definition>
