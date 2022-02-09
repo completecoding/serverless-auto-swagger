@@ -6,8 +6,8 @@ This plugin allows you to automatically generate a swagger endpoint, describing 
 
 ```sh
 yarn add --dev serverless-auto-swagger
-# or§
-npm install -D serverless-auto-swagger§§§
+# or
+npm install -D serverless-auto-swagger
 ```
 
 Add the following plugin to your `serverless.yml` or `serverless.ts`:
@@ -17,7 +17,7 @@ plugins:
   - serverless-auto-swagger
 ```
 
-```json
+```ts
 plugins: ['serverless-auto-swagger']
 ```
 
