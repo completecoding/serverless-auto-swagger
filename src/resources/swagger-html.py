@@ -8,18 +8,10 @@ swagger_ui = """<!DOCTYPE html>
       rel="stylesheet"
       href="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui.css"
     />
-  </head>
-  <body>
-    <div id="swagger-ui"></div>
-    <script
-      src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"
-      crossorigin
-    ></script>
-    <script
-      src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js"
-      crossorigin
-    ></script>
-    <script>
+
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@4.5.0/swagger-ui-standalone-preset.js"></script>
+    <script defer>
       window.onload = () => {
         const ui = SwaggerUIBundle({
           url: window.location.href + '.json',
@@ -30,9 +22,11 @@ swagger_ui = """<!DOCTYPE html>
         window.ui = ui;
       };
     </script>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
   </body>
 </html>
-
 """
 
 
