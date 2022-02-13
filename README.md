@@ -37,6 +37,7 @@ custom:
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
         swaggerPath?: 'string'
         apiKeyName?: 'string'
+        customApiKeysHeader?: 'string[]'
         useStage?: true | false
         basePath?: '/string'
         schemes?: ['http', 'https', 'ws', 'wss']
@@ -51,6 +52,12 @@ custom:
 `swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
 
 `apiKeyName` is a string to define an API KEY. This is the name of your api key used on auth. For example, if you send it as a header named `x-api-key`, then the `apiKeyName` should be `x-api-key`
+
+`customApiKeysHeader` is a array of the string, custom header. For example, if you want to send the `authorization`, in addition to the `apiKey` and/or other value in the header that needs to be applied to all requests, you can do it here, similar to the `apiKeyName` property, but it allows sending as an array :
+
+```yml
+customApiKeysHeader: ['Authorization', 'x-api-key', 'other']
+```
 
 `useStage` is a bool to either use current stage in beginning of path or not. The Default is `false`. For example, if you use it enabled (`true`) and your stage is `dev` the swagger will be in `dev/swagger`
 

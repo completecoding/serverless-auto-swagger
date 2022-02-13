@@ -36,6 +36,7 @@ type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss'
 export interface AutoSwaggerCustomConfig {
   autoswagger?: {
     apiKeyName?: string
+    customApiKeysHeader?: string[]
     swaggerFiles?: string[]
     generateSwaggerOnDeploy?: boolean
     typefiles?: string[]
