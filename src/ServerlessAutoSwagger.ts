@@ -258,7 +258,8 @@ class ServerlessAutoSwagger {
       };
 
       this.swagger = { ...this.swagger, securityDefinitions };
-    } else if (customApiKeysHeader && customApiKeysHeader.length > 0) {
+    } else if (customApiKeysHeader?.length) {
+
       const securityDefinitions: Record<string, SecurityDefinition> = {};
       customApiKeysHeader.forEach((indexName) => {
         securityDefinitions[indexName] = {
