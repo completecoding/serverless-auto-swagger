@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.7.0...v1.8.0) (2022-02-17)
+
+### Features
+
+* Update Swagger-UI to 4.5.0, Add missing icons ([#32](https://github.com/SamWSoftware/serverless-auto-swagger/issues/34)) ([52118a5](https://github.com/SamWSoftware/serverless-auto-swagger/commit/2f808c7926fcbf36c5d4e290a085a2c259c1716b))
+
+
 ## [1.7.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.6.0...v1.7.0) (2022-02-08)
 
 ### ⚠ BREAKING CHANGES
