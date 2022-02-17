@@ -29,7 +29,7 @@ You can also run `sls generate-swagger` if you want to generate the swagger file
 
 ## Config Options
 
-```
+```yaml
 custom:
     autoswagger:
         generateSwaggerOnDeploy?: true | false
@@ -111,7 +111,7 @@ When you create a `POST` or `PUT` endpoint, you expect to receive a specific str
 
 You can do that by adding a `bodyType` to the http event:
 
-```
+```js
 http: {
     path: 'hello',
     method: 'post',
@@ -124,7 +124,7 @@ http: {
 
 If you want to specify the query string parameters on an endpoint you can do this by adding an object of `queryStringParameters` to the event (original I know). This has two required properties of `required` and `type` as well as an optional `description`.
 
-```
+```js
 http: {
     path: 'goodbye',
     method: 'get',
@@ -148,7 +148,7 @@ http: {
 
 If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `arrayItemsType`
 
-```
+```js
 http: {
     path: 'goodbye',
     method: 'get',
@@ -176,7 +176,7 @@ Works the same way as `queryStringParameters`, but for headers.
 
 To use it, just define it under `headerParameters`:
 
-```
+```js
 http: {
     path: 'goodbye',
     method: 'get',
@@ -198,7 +198,7 @@ http: {
 
 You can exclude some endpoints from the swagger generation by adding `exclude` to the http event:
 
-```
+```js
 http: {
     path: 'hello',
     method: 'post',
