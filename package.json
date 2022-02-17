@@ -13,7 +13,7 @@
     "prepare-release": "standard-version",
     "prepublish": "npm run build",
     "precommit": "npm run test",
-    "publish": "np",
+    "publish:manual": "np",
     "test": "jest"
   },
   "dependencies": {
