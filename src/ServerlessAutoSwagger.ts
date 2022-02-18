@@ -365,7 +365,7 @@ class ServerlessAutoSwagger {
             security.push(methodSecurity);
           }
 
-          if (apiKeyHeaders) {
+          if (apiKeyHeaders?.length) {
             const methodSecurity: MethodSecurity = {};
             apiKeyHeaders.forEach(indexName => {
               methodSecurity[indexName] = [];
