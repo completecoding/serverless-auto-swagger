@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.8.0...v2.0.0) (2022-02-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* `apiKeyName` no longer exists in custom configuration. Use `apiKeyHeaders: ['x-api-key']` in place of `apiKeyName: 'x-api-key'`
+
+### Features
+
+* add apiKeyHeaders array for multiple security headers ([#35](https://github.com/SamWSoftware/serverless-auto-swagger/issues/35)) ([7b43838](https://github.com/SamWSoftware/serverless-auto-swagger/commit/7b438388a72f6352ebbc0472f23f2d73c4452229))
+
+### Changes
+
+* Remove apiKeyName in favor of apiKeyHeaders ([87cf65a](https://github.com/SamWSoftware/serverless-auto-swagger/commit/87cf65a96a854f289c1d6ef0725a98d7be8333cf))
+
 ## [1.8.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.7.0...v1.8.0) (2022-02-17)
 
 ### Features
@@ -17,7 +32,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### Features
 
-* add `basePath` and `schemes` to custom config ([#32](https://github.com/SamWSoftware/serverless-auto-swagger/issues/32)) ([52118a5](https://github.com/SamWSoftware/serverless-auto-swagger/commit/52118a58c50f58a4ecdeb597c5a470c3abd1af3a))
+* add basePath and schemes to custom config ([#32](https://github.com/SamWSoftware/serverless-auto-swagger/issues/32)) ([52118a5](https://github.com/SamWSoftware/serverless-auto-swagger/commit/52118a58c50f58a4ecdeb597c5a470c3abd1af3a))
 
 
 ### Bug Fixes
