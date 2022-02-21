@@ -246,19 +246,9 @@ class ServerlessAutoSwagger {
   };
 
   generateSecurity = (): void => {
-    const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName;
     const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
 
-    if (apiKeyName) {
-      const securityDefinitions: Record<string, SecurityDefinition> = {};
-      securityDefinitions[apiKeyName] = {
-        type: 'apiKey',
-        name: apiKeyName,
-        in: 'header',
-      };
-
-      this.swagger = { ...this.swagger, securityDefinitions };
-    } else if (apiKeyHeaders?.length) {
+    if (apiKeyHeaders?.length) {
       const securityDefinitions: Record<string, SecurityDefinition> = {};
       apiKeyHeaders.forEach((indexName) => {
         securityDefinitions[indexName] = {
@@ -269,9 +259,10 @@ class ServerlessAutoSwagger {
       });
 
       this.swagger = { ...this.swagger, securityDefinitions };
-    } else {
-      this.swagger = { ...this.swagger, securityDefinitions: undefined };
     }
+
+    // If no apiKeyHeaders are specified, we don't want to override any existing `securityDefinitions`
+    //  that may be defined in a custom swagger json
   };
 
   generateSwagger = async () => {
@@ -354,16 +345,9 @@ class ServerlessAutoSwagger {
             responses: this.formatResponses(http.responseData ?? http.responses),
           };
 
-          const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName;
           const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
 
           let security: MethodSecurity[] = [];
-
-          if (apiKeyName) {
-            const methodSecurity: MethodSecurity = {};
-            methodSecurity[apiKeyName] = [];
-            security.push(methodSecurity);
-          }
 
           if (apiKeyHeaders?.length) {
             const methodSecurity: MethodSecurity = {};
