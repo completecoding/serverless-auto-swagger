@@ -338,7 +338,7 @@ class ServerlessAutoSwagger {
             summary: http.summary || functionName,
             description: http.description ?? '',
             tags: http.swaggerTags,
-            operationId: `${functionName}.${http.method}`,
+            operationId: `${functionName}.${http.method}.${http.path}`,
             consumes: ['application/json'],
             produces: ['application/json'],
             parameters: this.httpEventToParameters(http),
