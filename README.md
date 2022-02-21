@@ -32,7 +32,7 @@ You can also run `sls generate-swagger` if you want to generate the swagger file
 ```yaml
 custom:
     autoswagger:
-        apiType: 'http' | 'httpApi'
+        apiType?: 'http' | 'httpApi'
         generateSwaggerOnDeploy?: true | false
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
