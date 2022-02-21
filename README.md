@@ -51,7 +51,7 @@ custom:
 
 `swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
 
-`apiType` is the optional API type for which your Swagger UI and Swagger JSON should be deployed. Options are `http` and `httpApi`. Defaults to `httpApi` if not specified.
+`apiType` is the optional API type for which your Swagger UI and Swagger JSON lambdas should be deployed. Options are `http` and `httpApi`. Defaults to `httpApi` if not specified.
 
 `apiKeyHeaders` is an array of strings used to define API keys used in auth headers. For example, if you want to send the `Authorization` and `x-api-key`, then you would set:
 ```yml
