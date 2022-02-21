@@ -33,8 +33,11 @@ export interface Serverless {
 // ws and wss are WebSocket schemas
 type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss'
 
+type ApiType = 'http' | 'httpApi'
+
 export interface AutoSwaggerCustomConfig {
   autoswagger?: {
+    apiType?: ApiType
     apiKeyHeaders?: string[]
     swaggerFiles?: string[]
     generateSwaggerOnDeploy?: boolean

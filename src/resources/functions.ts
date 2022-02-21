@@ -1,4 +1,4 @@
-import { Serverless, ServerlessFunction } from "../serverlessPlugin"
+import { Serverless, ServerlessFunction } from "../serverlessPlugin";
 
 export default (serverless: Serverless) => {
   const handlerPath = "swagger/"
@@ -11,6 +11,7 @@ export default (serverless: Serverless) => {
   const stage = configInput?.provider?.stage
 
   const useStage = serverless.service.custom?.autoswagger?.useStage
+  const apiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
 
   return {
     swaggerUI: {
@@ -19,7 +20,7 @@ export default (serverless: Serverless) => {
       disableLogs: true,
       events: [
         {
-          httpApi: {
+          [apiType as 'httpApi']: {
             method: "get",
             path: useStage ? `/${stage}/${path}` : `/${path}`,
           },
@@ -33,7 +34,7 @@ export default (serverless: Serverless) => {
       disableLogs: true,
       events: [
         {
-          httpApi: {
+          [apiType as 'httpApi']: {
             method: "get",
             path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
           },
