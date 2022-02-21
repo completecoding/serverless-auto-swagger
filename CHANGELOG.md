@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.0.0...v2.1.0) (2022-02-21)
+
+
+### Features
+
+* add option to use REST API for swagger lambdas ([#44](https://github.com/SamWSoftware/serverless-auto-swagger/issues/44)) ([e034ab3](https://github.com/SamWSoftware/serverless-auto-swagger/commit/e034ab39dc973bed8a47731dcb58e560dc9fe404))
+  * `apiType: 'http' | 'httpApi'` – defaults to `httpApi` if not specified
+
+### Bug Fixes
+
+* use unique operationId per function path ([#43](https://github.com/SamWSoftware/serverless-auto-swagger/issues/43)) ([d28e6af](https://github.com/SamWSoftware/serverless-auto-swagger/commit/d28e6afc4cf16048c4ba91939ce300e6d89dbff5))
+
 ## [2.0.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v1.8.0...v2.0.0) (2022-02-21)
 
 
