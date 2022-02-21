@@ -32,6 +32,7 @@ You can also run `sls generate-swagger` if you want to generate the swagger file
 ```yaml
 custom:
     autoswagger:
+        apiType: 'http' | 'httpApi'
         generateSwaggerOnDeploy?: true | false
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
@@ -49,6 +50,8 @@ custom:
 `swaggerFiles` is an array of string which will merge custom json OpenApi 2.0 files to the generated swagger
 
 `swaggerPath` is a string for customize swagger path. Default is `swagger`. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}`
+
+`apiType` is the optional API type for which your Swagger UI and Swagger JSON lambdas should be deployed. Options are `http` and `httpApi`. Defaults to `httpApi` if not specified.
 
 `apiKeyHeaders` is an array of strings used to define API keys used in auth headers. For example, if you want to send the `Authorization` and `x-api-key`, then you would set:
 ```yml
