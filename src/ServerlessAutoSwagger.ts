@@ -247,6 +247,7 @@ class ServerlessAutoSwagger {
 
   generateSecurity = (): void => {
     const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName;
+    const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
 
     if (apiKeyName) {
       const securityDefinitions: Record<string, SecurityDefinition> = {};
@@ -255,6 +256,17 @@ class ServerlessAutoSwagger {
         name: apiKeyName,
         in: 'header',
       };
+
+      this.swagger = { ...this.swagger, securityDefinitions };
+    } else if (apiKeyHeaders?.length) {
+      const securityDefinitions: Record<string, SecurityDefinition> = {};
+      apiKeyHeaders.forEach((indexName) => {
+        securityDefinitions[indexName] = {
+          type: 'apiKey',
+          name: indexName,
+          in: 'header',
+        };
+      });
 
       this.swagger = { ...this.swagger, securityDefinitions };
     } else {
@@ -343,12 +355,21 @@ class ServerlessAutoSwagger {
           };
 
           const apiKeyName = this.serverless.service.custom?.autoswagger?.apiKeyName;
+          const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
 
           let security: MethodSecurity[] = [];
 
           if (apiKeyName) {
             const methodSecurity: MethodSecurity = {};
             methodSecurity[apiKeyName] = [];
+            security.push(methodSecurity);
+          }
+
+          if (apiKeyHeaders?.length) {
+            const methodSecurity: MethodSecurity = {};
+            apiKeyHeaders.forEach(indexName => {
+              methodSecurity[indexName] = [];
+            });
             security.push(methodSecurity);
           }
 
