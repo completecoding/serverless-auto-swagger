@@ -13,6 +13,8 @@ export default (serverless: Serverless) => {
   const useStage = serverless.service.custom?.autoswagger?.useStage
   const apiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
 
+  if (!['http', 'httpApi'].includes(apiType)) throw new Error(`[apiType] must be "http" or "httpApi". Received: "${apiType}"`)
+
   return {
     swaggerUI: {
       name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
