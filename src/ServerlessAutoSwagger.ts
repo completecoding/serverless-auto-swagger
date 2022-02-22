@@ -150,6 +150,12 @@ class ServerlessAutoSwagger {
   };
 
   predeploy = async () => {
+    const stage = this.serverless.service.provider.stage;
+    const specifiedStages = this.serverless.service.custom?.autoswagger?.stages;
+    if(specifiedStages && specifiedStages.indexOf(stage) === -1) {
+      console.log(`Not deploying for stage: ${stage} due to custom.autoswagger.stages configuration.`);
+      return;
+    }
     const generateSwaggerOnDeploy =
       this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy;
     if (generateSwaggerOnDeploy === undefined || generateSwaggerOnDeploy) {
