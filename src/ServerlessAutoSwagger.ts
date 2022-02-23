@@ -153,7 +153,7 @@ class ServerlessAutoSwagger {
     const stage = this.serverless.service.provider.stage;
     const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
     if (excludedStages?.includes(stage)) {
-      console.log(`Not deploying for stage: ${stage} due to custom.autoswagger.excludeStages configuration.`);
+      console.log(`Swagger lambdas will not be deployed for stage [${stage}], as they have been marked for exclusion.`);
       return;
     }
     const generateSwaggerOnDeploy =
