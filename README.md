@@ -41,6 +41,7 @@ custom:
         useStage?: true | false
         basePath?: '/string'
         schemes?: ['http', 'https', 'ws', 'wss']
+        excludeStages?: ['production', 'anyOtherStage']
 ```
 
 `generateSwaggerOnDeploy` is a boolean which decides whether to generate a new swagger file on deployment. Default is `true`.
@@ -63,6 +64,8 @@ apiKeyHeaders: ['Authorization', 'x-api-key']
 `basePath` is an optional string that can be prepended to every request (i.e. `http://localhost/basePath/my-endpoint`). Should include leading `/`.
 
 `schemes` is an optional array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes. If not provided, uses the scheme used to serve the API specification (reflecting Swagger's behavior)
+
+`excludeStages` is an optional array of strings that should contain stages you do **not** want Swagger UI and Swagger JSON to be deployed in.
 
 ## Adding more details
 
