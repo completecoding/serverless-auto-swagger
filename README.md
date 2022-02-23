@@ -65,7 +65,7 @@ apiKeyHeaders: ['Authorization', 'x-api-key']
 
 `schemes` is an optional array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes. If not provided, uses the scheme used to serve the API specification (reflecting Swagger's behavior)
 
-`excludeStages` is an optional array of strings that should contain stages you do **not** want Swagger UI and Swagger JSON to be deployed in.
+`excludeStages` is an optional array of strings that contains stages in which Swagger UI and Swagger JSON lambdas should **not** be deployed in.
 
 ## Adding more details
 
