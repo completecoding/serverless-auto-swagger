@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.1.0...v2.2.0) (2022-02-23)
+
+
+### Features
+
+* add option to exclude specific stages ([#46](https://github.com/SamWSoftware/serverless-auto-swagger/issues/46)) ([#47](https://github.com/SamWSoftware/serverless-auto-swagger/issues/47)) ([89335dd](https://github.com/SamWSoftware/serverless-auto-swagger/commit/89335ddde741bf4b9f244d6f2c03d47f7a065800))
+  * Example of new option: `excludeStages: ['prod']` (skip deployment of swagger.json and Swagger UI in `prod` stage)
+
 ## [2.1.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.0.0...v2.1.0) (2022-02-21)
 
 
