@@ -152,7 +152,7 @@ class ServerlessAutoSwagger {
   predeploy = async () => {
     const stage = this.serverless.service.provider.stage;
     const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
-    if(excludedStages && excludedStages.indexOf(stage) !== -1) {
+    if (excludedStages?.includes(stage)) {
       console.log(`Not deploying for stage: ${stage} due to custom.autoswagger.excludeStages configuration.`);
       return;
     }
