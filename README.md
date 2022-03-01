@@ -37,7 +37,7 @@ custom:
         typefiles?: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
         swaggerFiles?: ['./doc/endpointFromPlugin.json', './doc/iCannotPutThisInHttpEvent.json', './doc/aDefinitionWithoutTypescript.json']
         swaggerPath?: 'string'
-        apiKeyHeaders?: 'string[]'
+        apiKeyHeaders?: ['Authorization', 'anyOtherName']
         useStage?: true | false
         basePath?: '/string'
         schemes?: ['http', 'https', 'ws', 'wss']
