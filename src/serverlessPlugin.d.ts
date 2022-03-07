@@ -1,184 +1,169 @@
+import type { AWS, AwsLambdaRuntime, ServiceName } from '@serverless/typescript';
+
 export interface Serverless {
   cli: {
-    log: Function
-  }
-  service: ServerlessConfig
+    log(str: string, error?: unknown): void;
+  };
+  service: ServerlessConfig;
   configurationInput: {
-    service?: string | { name?: string }
-    provider?: {
-      stage?: string
-    }
-  },
+    service?: ServiceName | { name?: string }; // I think { name: string } is for v2 compatibility?
+    provider?: Pick<AWS['provider'], 'stage'>;
+  };
   configSchemaHandler: {
-    defineCustomProperties(schema: unknown): void
-    defineFunctionEvent(
-      provider: string,
-      event: string,
-      schema: Record<string, unknown>
-    ): void
-    defineFunctionEventProperties(
-      provider: string,
-      existingEvent: string,
-      schema: unknown
-    ): void
-    defineFunctionProperties(provider: string, schema: unknown): void
-    defineProvider(provider: string, options?: Record<string, unknown>): void
-    defineTopLevelProperty(
-      provider: string,
-      schema: Record<string, unknown>
-    ): void
-  }
+    defineCustomProperties(schema: unknown): void;
+    defineFunctionEvent(provider: string, event: string, schema: Record<string, unknown>): void;
+    defineFunctionEventProperties(provider: string, existingEvent: string, schema: unknown): void;
+    defineFunctionProperties(provider: string, schema: unknown): void;
+    defineProvider(provider: string, options?: Record<string, unknown>): void;
+    defineTopLevelProperty(provider: string, schema: Record<string, unknown>): void;
+  };
 }
 
 // ws and wss are WebSocket schemas
-type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss'
+type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss';
 
-type ApiType = 'http' | 'httpApi'
+type ApiType = 'http' | 'httpApi';
 
 export interface AutoSwaggerCustomConfig {
   autoswagger?: {
-    apiType?: ApiType
-    apiKeyHeaders?: string[]
-    swaggerFiles?: string[]
-    generateSwaggerOnDeploy?: boolean
-    typefiles?: string[]
-    useStage?: boolean
-    swaggerPath?: string
-    basePath?: string
-    schemes?: SwaggerScheme[]
-    excludeStages?: string[]
-  }
+    apiType?: ApiType;
+    apiKeyHeaders?: string[];
+    swaggerFiles?: string[];
+    generateSwaggerOnDeploy?: boolean;
+    typefiles?: string[];
+    useStage?: boolean;
+    swaggerPath?: string;
+    basePath?: string;
+    schemes?: SwaggerScheme[];
+    excludeStages?: string[];
+  };
 }
 
-export interface ServerlessConfig {
-  service: string
-  provider: ServerlessProvider
-  plugins: string[]
-  functions: ServerlessFunctions
+export interface ServerlessConfig extends AWS {
+  service: string;
+  provider: AWS['provider'];
+  plugins?: AWS['plugins'];
+  functions: ServerlessFunctions;
   resources?: {
-    Resources?: ServerlessResources
-    Outputs?: ServerlessOutputs
-  }
-  custom?: Record<string, any> & AutoSwaggerCustomConfig
+    Resources?: ServerlessResources;
+    Outputs?: ServerlessOutputs;
+  };
+  custom?: AWS['custom'] & AutoSwaggerCustomConfig;
 }
 
-export interface ServerlessFunctions {
-  [functionName: string]: ServerlessFunction
+export interface ServerlessFunctions extends AWS['functions'] {
+  [functionName: string]: ServerlessFunction;
 }
 
+// AWS['functions']['functionName']
 export interface ServerlessFunction {
-  handler: string
-  name?: string
-  description?: string
-  runtime?: string
-  events?: ServerlessFunctionEvent[]
+  handler: string;
+  name?: string;
+  description?: string;
+  disableLogs?: boolean;
+  runtime?: AwsLambdaRuntime;
+  events?: ServerlessFunctionEvent[];
 }
 
-type ServerlessFunctionEvent = HttpEvent | HttpApiEvent
+export type ServerlessFunctionEvent = HttpEvent | HttpApiEvent;
 
-type HttpEvent = FullHttpEvent | { http: string }
+type HttpEvent = FullHttpEvent | { http: string };
 
+type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'head' | 'options' | 'patch' | 'trace';
+
+// AWS['functions']['functionName']['events']
 export interface FullHttpEvent {
   http: {
-    path: string
-    method: string
-    cors?: boolean | CorsConfig
-    swaggerTags?: string[]
-    summary?: string
-    description?: string
-    responseData?: HttpResponses
-    responses?: HttpResponses // Ideally don't use as it conflicts with serverless offline
-    exclude?: boolean
-    bodyType?: string
+    __type: 'http';
+    path: string;
+    method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
+    cors?: boolean | unknown;
+    swaggerTags?: string[];
+    summary?: string;
+    description?: string;
+    responseData?: HttpResponses;
+    responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
+    exclude?: boolean;
+    bodyType?: string;
     headerParameters?: Record<
       string,
       {
-        required?: boolean
-        type: "string" | "integer"
-        description?: string
-        minimum?: number
+        required?: boolean;
+        type: 'string' | 'integer';
+        description?: string;
+        minimum?: number;
       }
-    >
+    >;
     queryStringParameters?: Record<
       string,
       {
-        required?: boolean
-        type: "string" | "integer" | "array"
-        description?: string
-        minimum?: number
-        arrayItemsType?: string
+        required?: boolean;
+        type: 'string' | 'integer' | 'array';
+        description?: string;
+        minimum?: number;
+        arrayItemsType?: string;
       }
-    >
+    >;
     parameters?: {
-      path?: { [key: string]: boolean }
-      headers?: {
-        [key: string]: boolean | { required: boolean; mappedValue: string }
-      }
-    }
-  }
+      path?: Record<string, boolean>;
+      headers?: Record<string, boolean | { required: boolean; mappedValue: string }>;
+    };
+  };
 }
 
-type HttpApiEvent = FullHttpApiEvent | { httpApi: string }
+type HttpApiEvent = FullHttpApiEvent | { httpApi: string };
+
+// AWS['functions']['functionName']['events']
 export interface FullHttpApiEvent {
   httpApi: {
-    path: string
-    method: string
-    swaggerTags?: string[]
-    description?: string
-    summary?: string
-    responseData?: HttpResponses
-    responses?: HttpResponses // Ideally don't use as it conflicts with serverless offline
-    exclude?: boolean
-    bodyType?: string
-    headerParameters?: string
-    queryStringParameterType?: string
-  }
+    __type: 'httpApi';
+    path: string;
+    method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
+    swaggerTags?: string[];
+    description?: string;
+    summary?: string;
+    responseData?: HttpResponses;
+    responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
+    exclude?: boolean;
+    bodyType?: string;
+    headerParameters?: string;
+    queryStringParameterType?: string;
+  };
 }
 
 export interface HttpResponses {
   [statusCode: string]:
     | string
     | {
-        description?: string
-        bodyType?: string
-      }
+        description?: string;
+        bodyType?: string;
+      };
 }
 
-export interface CorsConfig {}
-
-export interface ServerlessProvider {
-  name: string
-  runtime: string
-  stage: string
-  region: string
-  profile: string
-  environment: { [key: string]: string }
-}
-
+// AWS['resources']['Resources']
 export interface ServerlessResources {
   [resourceName: string]: {
-    type: string
-    properties: any
-  }
+    Type: string;
+    Properties: any;
+  };
 }
 
+// AWS['resources']['Outputs']
 export interface ServerlessOutputs {
   [key: string]: {
-    Description: string
-    Value: string | { [key: string]: string | string[] }
+    Description: string;
+    Value: string | Record<string, string | string[]>;
     Export: {
-      Name: string
-    }
-  }
+      Name: string;
+    };
+  };
 }
 
-export interface ServerlessOptions {}
+export type ServerlessOptions = Record<string, never>;
 
 export interface ServerlessCommand {
-  lifecycleEvents: string[]
-  usage?: string
+  lifecycleEvents: string[];
+  usage?: string;
 }
 
-export interface ServerlessHooks {
-  [hook: string]: Function
-}
+export type ServerlessHooks = Record<string, () => Promise<void>>;

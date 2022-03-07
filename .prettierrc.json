@@ -3,7 +3,6 @@
   "singleQuote": true,
   "trailingComma": "es5",
   "arrowParens": "always",
-  "printWidth": 100,
   "bracketSpacing": true,
   "overrides": [
     {
@@ -12,5 +11,8 @@
         "trailingComma": "none"
       }
     }
-  ]
+  ],
+  "semi": true,
+  "printWidth": 120,
+  "bracketSameLine": true
 }
