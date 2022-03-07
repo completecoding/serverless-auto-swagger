@@ -1,7 +1,7 @@
 describe('empty tests', () => {
-    test('test', () => {
-        expect(true).toBe(true);
-    });
+  test('test', () => {
+    expect(true).toBe(true);
+  });
 
-    //TODO add more tests
+  //TODO add more tests
 });

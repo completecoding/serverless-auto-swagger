@@ -218,7 +218,7 @@ class ServerlessAutoSwagger {
             // change the #/components/schema to #/definitions
             const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
-            const definitions: { [key: string]: Definition } = JSON.parse(definitionsData).components.schemas;
+            const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
 
             if (data.includes('anyOf')) {
               // anyOf caused some issues with certain swagger configs
