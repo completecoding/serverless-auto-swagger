@@ -4,6 +4,7 @@ import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
 import {
+  HttpApiEvent,
   HttpApiEventOrString,
   HttpEvent,
   HttpEventOrString,
@@ -296,15 +297,16 @@ class ServerlessAutoSwagger {
     };
   };
 
-  addSwaggerPath = (functionName: string, http: HttpEventOrString['http'] | HttpApiEventOrString['httpApi']) => {
+  addSwaggerPath = (functionName: string, http: EitherHttpEvent | string) => {
     if (typeof http === 'string') {
       // TODO they're using the shorthand - parse that into object.
+      //  You'll also have to remove the `typeof http !== 'string'` check from the function calling this one
       return;
     }
 
     let path = http.path;
     if (path[0] !== '/') path = `/${path}`;
-    if (!this.swagger.paths[path]) this.swagger.paths[path] = {};
+    this.swagger.paths[path] ??= {};
 
     const method = http.method.toLowerCase() as Lowercase<HttpMethod>;
 
@@ -325,11 +327,9 @@ class ServerlessAutoSwagger {
     const security: MethodSecurity[] = [];
 
     if (apiKeyHeaders?.length) {
-      const methodSecurity: MethodSecurity = {};
-      apiKeyHeaders.forEach((indexName) => {
-        methodSecurity[indexName] = [];
-      });
-      security.push(methodSecurity);
+      security.push(
+        apiKeyHeaders.reduce((acc, indexName: string) => ({ ...acc, [indexName]: [] }), {} as MethodSecurity)
+      );
     }
 
     if (security.length) {
@@ -388,7 +388,8 @@ class ServerlessAutoSwagger {
     type: 'string',
   });
 
-  // This is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props), so we can lie to the compiler to make typing simpler
+  // The arg is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props),
+  //  so we can lie to the compiler to make typing simpler
   httpEventToParameters = (httpEvent: HttpEvent): Parameter[] => {
     const parameters: Parameter[] = [];
 
@@ -404,12 +405,11 @@ class ServerlessAutoSwagger {
       });
     }
 
-    const paramRegex = /[^{}]+(?=})/g;
-
     if (httpEvent.parameters?.path) {
-      let pathParameters = httpEvent.path.match(paramRegex) || [];
+      const match = httpEvent.path.match(/[^{}]+(?=})/g);
+      let pathParameters = match ?? [];
 
-      if (!httpEvent.path.match(paramRegex)) {
+      if (!match) {
         const rawPathParams = httpEvent.parameters.path;
 
         Object.entries(rawPathParams).forEach(([param, required]) => {
@@ -457,6 +457,6 @@ class ServerlessAutoSwagger {
   };
 }
 
-// type EitherHttpEvent = HttpEvent | HttpApiEvent;
+type EitherHttpEvent = HttpEvent | HttpApiEvent;
 
 export default ServerlessAutoSwagger;
