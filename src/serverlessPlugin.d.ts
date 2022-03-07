@@ -65,70 +65,64 @@ export interface ServerlessFunction {
   events?: ServerlessFunctionEvent[];
 }
 
-export type ServerlessFunctionEvent = HttpEvent | HttpApiEvent;
+export type ServerlessFunctionEvent = HttpEventOrString | HttpApiEventOrString;
 
-type HttpEvent = FullHttpEvent | { http: string };
+type HttpEventOrString = { http: HttpEvent | string };
 
 type HttpMethod = 'get' | 'post' | 'put' | 'delete' | 'head' | 'options' | 'patch' | 'trace';
 
-// AWS['functions']['functionName']['events']
-export interface FullHttpEvent {
-  http: {
-    __type: 'http';
-    path: string;
-    method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
-    cors?: boolean | unknown;
-    swaggerTags?: string[];
-    summary?: string;
-    description?: string;
-    responseData?: HttpResponses;
-    responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
-    exclude?: boolean;
-    bodyType?: string;
-    headerParameters?: Record<
-      string,
-      {
-        required?: boolean;
-        type: 'string' | 'integer';
-        description?: string;
-        minimum?: number;
-      }
-    >;
-    queryStringParameters?: Record<
-      string,
-      {
-        required?: boolean;
-        type: 'string' | 'integer' | 'array';
-        description?: string;
-        minimum?: number;
-        arrayItemsType?: string;
-      }
-    >;
-    parameters?: {
-      path?: Record<string, boolean>;
-      headers?: Record<string, boolean | { required: boolean; mappedValue: string }>;
-    };
+// AWS['functions']['functionName']['events']['http']
+export interface HttpEvent {
+  path: string;
+  method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
+  cors?: boolean | unknown;
+  swaggerTags?: string[];
+  summary?: string;
+  description?: string;
+  responseData?: HttpResponses;
+  responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
+  exclude?: boolean;
+  bodyType?: string;
+  headerParameters?: Record<
+    string,
+    {
+      required?: boolean;
+      type: 'string' | 'integer';
+      description?: string;
+      minimum?: number;
+    }
+  >;
+  queryStringParameters?: Record<
+    string,
+    {
+      required?: boolean;
+      type: 'string' | 'integer' | 'array';
+      description?: string;
+      minimum?: number;
+      arrayItemsType?: string;
+    }
+  >;
+  parameters?: {
+    path?: Record<string, boolean>;
+    headers?: Record<string, boolean | { required: boolean; mappedValue: string }>;
   };
 }
 
-type HttpApiEvent = FullHttpApiEvent | { httpApi: string };
+type HttpApiEventOrString = { httpApi: HttpApiEvent | string };
 
-// AWS['functions']['functionName']['events']
-export interface FullHttpApiEvent {
-  httpApi: {
-    __type: 'httpApi';
-    path: string;
-    method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
-    swaggerTags?: string[];
-    description?: string;
-    summary?: string;
-    responseData?: HttpResponses;
-    responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
-    exclude?: boolean;
-    bodyType?: string;
-    headerParameters?: string;
-    queryStringParameterType?: string;
-  };
+// AWS['functions']['functionName']['events']['httpApi']
+export interface HttpApiEvent {
+  path: string;
+  method: Uppercase<HttpMethod> | Lowercase<HttpMethod>;
+  swaggerTags?: string[];
+  description?: string;
+  summary?: string;
+  responseData?: HttpResponses;
+  responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
+  exclude?: boolean;
+  bodyType?: string;
+  headerParameters?: string;
+  queryStringParameterType?: string;
 }
 
 export interface HttpResponses {

@@ -4,10 +4,9 @@ import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
 import {
-  FullHttpApiEvent,
-  FullHttpEvent,
-  HttpApiEvent,
+  HttpApiEventOrString,
   HttpEvent,
+  HttpEventOrString,
   HttpMethod,
   HttpResponses,
   Serverless,
@@ -297,7 +296,7 @@ class ServerlessAutoSwagger {
     };
   };
 
-  addSwaggerPath = (functionName: string, http: HttpEvent['http'] | HttpApiEvent['httpApi']) => {
+  addSwaggerPath = (functionName: string, http: HttpEventOrString['http'] | HttpApiEventOrString['httpApi']) => {
     if (typeof http === 'string') {
       // TODO they're using the shorthand - parse that into object.
       return;
@@ -316,7 +315,8 @@ class ServerlessAutoSwagger {
       operationId: `${functionName}.${method}.${http.path}`,
       consumes: ['application/json'],
       produces: ['application/json'],
-      parameters: this.httpEventToParameters(http),
+      // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
+      parameters: this.httpEventToParameters(http as HttpEvent),
       responses: this.formatResponses(http.responseData ?? http.responses),
     };
 
@@ -342,7 +342,7 @@ class ServerlessAutoSwagger {
     Object.entries(functions).forEach(([functionName, config]) => {
       const events = config.events ?? [];
       events
-        .map((event) => (event as HttpEvent).http || (event as HttpApiEvent).httpApi)
+        .map((event) => (event as HttpEventOrString).http || (event as HttpApiEventOrString).httpApi)
         .filter((http) => !!http && typeof http !== 'string' && !http.exclude)
         .forEach((http) => this.addSwaggerPath(functionName, http));
     });
@@ -388,9 +388,9 @@ class ServerlessAutoSwagger {
     type: 'string',
   });
 
-  httpEventToParameters = (httpEvent: EitherHttpEvent): Parameter[] => {
+  // This is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props), so we can lie to the compiler to make typing simpler
+  httpEventToParameters = (httpEvent: HttpEvent): Parameter[] => {
     const parameters: Parameter[] = [];
-    if (httpEvent.__type === 'httpApi') return parameters;
 
     if (httpEvent.bodyType) {
       parameters.push({
@@ -457,6 +457,6 @@ class ServerlessAutoSwagger {
   };
 }
 
-type EitherHttpEvent = FullHttpEvent['http'] | FullHttpApiEvent['httpApi'];
+// type EitherHttpEvent = HttpEvent | HttpApiEvent;
 
 export default ServerlessAutoSwagger;

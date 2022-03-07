@@ -1,9 +1,9 @@
 import * as fs from 'fs-extra';
 import { PathOrFileDescriptor } from 'fs-extra';
 import ServerlessAutoSwagger from '../src/ServerlessAutoSwagger';
-import { FullHttpEvent, Serverless, ServerlessConfig } from '../src/serverlessPlugin';
+import { HttpEventOrString, Serverless, ServerlessConfig } from '../src/serverlessPlugin';
 
-const generateServerlessFromAnEndpoint = (events: FullHttpEvent[], autoswaggerOptions = {}): Serverless => {
+const generateServerlessFromAnEndpoint = (events: HttpEventOrString[], autoswaggerOptions = {}): Serverless => {
   const serviceDetails: ServerlessConfig = {
     service: '',
     provider: {
@@ -25,9 +25,6 @@ const generateServerlessFromAnEndpoint = (events: FullHttpEvent[], autoswaggerOp
       autoswagger: autoswaggerOptions,
     },
   };
-
-  const a = events[0].http.path;
-  const b = events[0].http.method;
 
   return {
     cli: { log: () => {} },
@@ -435,8 +432,8 @@ describe('ServerlessAutoSwagger', () => {
       );
       serverlessAutoSwagger.swagger.paths = {
         '/should': {
-          still: {
-            operationId: 'be here',
+          get: {
+            operationId: 'still be here',
             consumes: [],
             produces: [],
             parameters: [],
@@ -449,8 +446,8 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger.paths).toEqual({
         '/should': {
-          still: {
-            operationId: 'be here',
+          get: {
+            operationId: 'still be here',
             consumes: [],
             produces: [],
             parameters: [],

@@ -1,4 +1,4 @@
-import { FullHttpApiEvent, Serverless, ServerlessFunction } from '../serverlessPlugin';
+import { HttpApiEvent, Serverless, ServerlessFunction } from '../serverlessPlugin';
 
 export default (serverless: Serverless): Record<string, ServerlessFunction> => {
   const handlerPath = 'swagger/';
@@ -24,8 +24,8 @@ export default (serverless: Serverless): Record<string, ServerlessFunction> => {
           [apiType as 'httpApi']: {
             method: 'get',
             path: useStage ? `/${stage}/${path}` : `/${path}`,
-          },
-        } as FullHttpApiEvent,
+          } as HttpApiEvent,
+        },
       ],
     },
 
@@ -38,8 +38,8 @@ export default (serverless: Serverless): Record<string, ServerlessFunction> => {
           [apiType as 'httpApi']: {
             method: 'get',
             path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
-          },
-        } as FullHttpApiEvent,
+          } as HttpApiEvent,
+        },
       ],
     },
   };
