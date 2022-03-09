@@ -42,12 +42,8 @@ describe('test of recursiveFixAnyOf', () => {
       },
     };
 
-    console.log(recursiveFixAnyOf);
-
-    const result = recursiveFixAnyOf(definition);
-
-    expect(result).toMatchObject(definition);
+    expect(recursiveFixAnyOf(definition)).toMatchObject(definition);
   });
 
-  //TODO add more tests
+  // TODO add more tests
 });

@@ -9,7 +9,7 @@
     "url": "https://github.com/SamWSoftware/serverless-auto-swagger"
   },
   "scripts": {
-    "build": "tsc && copyfiles -f ./src/resources/*.py ./dist/resources/",
+    "build": "tsc -p tsconfig.build.json && copyfiles -f ./src/resources/*.py ./dist/resources/",
     "check-types": "tsc --noEmit",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "npm run lint -- --fix",
@@ -55,6 +55,9 @@
     "node": ">=12"
   },
   "lint-staged": {
+    "**/*.ts": [
+      "npm run lint:fix"
+    ],
     "**/*.{ts,js,json,md,yaml}": [
       "prettier --write"
     ]
