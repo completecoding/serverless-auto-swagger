@@ -1,0 +1,30 @@
+service: python3-v2
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: python3.8
+
+plugins:
+  - serverless-auto-swagger
+  - serverless-offline
+
+functions:
+  hello:
+    handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+          responseData:
+            200:
+              description: this went well
+  googbye:
+    handler: handler.goodbye
+    events:
+      - http:
+          path: googbye
+          method: get
+          responseData:
+            200:
+              description: this also went well

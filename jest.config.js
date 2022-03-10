@@ -4,4 +4,5 @@ module.exports = {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
   },
+  globalSetup: '<rootDir>/tests/scripts/jestGenerateAutoSwagger.ts',
 };
