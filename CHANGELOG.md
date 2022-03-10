@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.2.0...v2.3.0) (2022-03-10)
+
+### Features
+
+- use lowercase http method ([#53](https://github.com/SamWSoftware/serverless-auto-swagger/issues/53)) ([3c67fc1](https://github.com/SamWSoftware/serverless-auto-swagger/commit/3c67fc15e22fd5c4a0dd574b0596dae9ade5f94b))
+
+### Bug Fixes
+
+- change `null` to `None` for Python ([#54](https://github.com/SamWSoftware/serverless-auto-swagger/issues/54)) ([447044d](https://github.com/SamWSoftware/serverless-auto-swagger/commit/447044deb57da1477c22a84e968e27e145711816))
+
 ## [2.2.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.1.0...v2.2.0) (2022-02-23)
 
 ### Features
