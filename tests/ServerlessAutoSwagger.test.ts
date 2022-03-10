@@ -350,6 +350,76 @@ describe("ServerlessAutoSwagger", () => {
       })
     })
 
+    it("should generate an endpoint with formData parameters", () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: "goodbye",
+              method: "get",
+              formDataParameters: {
+                pdf: {
+                  required: true,
+                  type: "file",
+                  description: "upload file here",
+                },
+                count: {
+                  required: false,
+                  type: "integer",
+                },
+                foo: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        ]),
+        {}
+      )
+      serverlessAutoSwagger.generatePaths()
+
+      expect(serverlessAutoSwagger.swagger.paths).toEqual({
+        "/goodbye": {
+          get: {
+            summary: "mocked",
+            description: "",
+            tags: undefined,
+            operationId: "mocked.get.goodbye",
+            consumes: ["application/json"],
+            produces: ["application/json"],
+            parameters: [
+              {
+                name: "pdf",
+                type: "file",
+                description: "upload file here",
+                in: "formData",
+                required: true,
+              },
+              {
+                name: "count",
+                type: "integer",
+                in: "formData",
+                required: false,
+                description: undefined,
+              },
+              {
+                name: "foo",
+                type: "string",
+                in: "formData",
+                required: false,
+                description: undefined,
+              },
+            ],
+            responses: {
+              200: {
+                description: "200 response",
+              },
+            },
+          },
+        },
+      })
+    })
+
     it("should generate an endpoint with multi-valued query parameters", () => {
       const serverlessAutoSwagger = new ServerlessAutoSwagger(
         generateServerlessFromAnEndpoint([

@@ -99,6 +99,14 @@ export interface FullHttpEvent {
         minimum?: number
       }
     >
+    formDataParameters?: Record<
+      string,
+      {
+        required?: boolean
+        type: "string" | "number" | "boolean" | "integer" | "array" | "file"
+        description?: string
+      }
+    >
     queryStringParameters?: Record<
       string,
       {

@@ -470,6 +470,19 @@ class ServerlessAutoSwagger {
       });
     }
 
+    if ((httpEvent as FullHttpEvent['http']).formDataParameters) {
+      const rawFormDataParameters = (httpEvent as FullHttpEvent['http']).formDataParameters!;
+      Object.entries(rawFormDataParameters).forEach(([param, data]) => {
+        parameters.push({
+          in: 'formData',
+          name: param,
+          required: data.required ?? false,
+          type: data.type || 'string',
+          description: data.description,
+        });
+      });
+    }
+
     if ((httpEvent as FullHttpEvent['http']).queryStringParameters) {
       const rawQueryParams = (httpEvent as FullHttpEvent['http']).queryStringParameters!;
       Object.entries(rawQueryParams).forEach(([param, data]) => {
