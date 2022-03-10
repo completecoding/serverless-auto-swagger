@@ -18,7 +18,7 @@ plugins:
 ```
 
 ```ts
-plugins: ['serverless-auto-swagger']
+plugins: ['serverless-auto-swagger'];
 ```
 
 ## Usage
@@ -28,6 +28,7 @@ This plugin is designed to work with vanilla Serverless Framework. All you need 
 You can also run `sls generate-swagger` if you want to generate the swagger file without deploying the application.
 
 ## Config Options
+
 All config options are optional. Defaults are shown in the table below.
 
 ```yaml
@@ -46,7 +47,7 @@ custom:
 ```
 
 | Option                    | Description                                                                                                           | Default                                                                    | Example                                                  |
-|---------------------------|-----------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------|----------------------------------------------------------|
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------- |
 | `generateSwaggerOnDeploy` | Boolean which indicates whether to generate a new swagger file on deployment                                          | `true`                                                                     |                                                          |
 | `typefiles`               | Array of strings which defines where to find the typescript types to use for the request and response bodies          | `./src/types/api-types.d.ts`                                               |                                                          |
 | `swaggerFiles`            | Array of string which will merge custom json OpenApi 2.0 files to the generated swagger                               | `[]`                                                                       |                                                          |
@@ -57,7 +58,6 @@ custom:
 | `basePath`                | String that can be prepended to every request. Should include leading `/`                                             | -                                                                          | `/some-base` => `http://localhost/some-base/my-endpoint` |
 | `schemes`                 | Array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes                                      | Scheme used to serve the API specification (reflecting Swagger's behavior) |                                                          |
 | `excludeStages`           | Array of strings that contains stages in which Swagger UI and Swagger JSON lambdas should **not** be deployed in.     | `[]`                                                                       |                                                          |
-
 
 ## Adding more details
 

@@ -4,17 +4,18 @@ import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
 import {
-  FullHttpApiEvent,
-  FullHttpEvent,
   HttpApiEvent,
+  HttpApiEventOrString,
   HttpEvent,
+  HttpEventOrString,
+  HttpMethod,
   HttpResponses,
   Serverless,
   ServerlessCommand,
   ServerlessHooks,
   ServerlessOptions,
 } from './serverlessPlugin';
-import { Definition, MethodSecurity, Response, SecurityDefinition, Swagger } from './swagger';
+import { Definition, MethodSecurity, Parameter, Response, SecurityDefinition, Swagger } from './swagger';
 
 class ServerlessAutoSwagger {
   serverless: Serverless;
@@ -30,7 +31,7 @@ class ServerlessAutoSwagger {
     securityDefinitions: {},
   };
 
-  commands: { [key: string]: ServerlessCommand } = {};
+  commands: Record<string, ServerlessCommand> = {};
   hooks: ServerlessHooks = {};
 
   constructor(serverless: Serverless, options: ServerlessOptions) {
@@ -48,8 +49,8 @@ class ServerlessAutoSwagger {
 
     this.hooks = {
       'generate-swagger:generateSwagger': this.generateSwagger,
-      'before:offline:start:init': this.predeploy,
-      'before:package:cleanup': this.predeploy,
+      'before:offline:start:init': this.preDeploy,
+      'before:package:cleanup': this.preDeploy,
     };
   }
 
@@ -149,15 +150,14 @@ class ServerlessAutoSwagger {
     });
   };
 
-  predeploy = async () => {
-    const stage = this.serverless.service.provider.stage;
+  preDeploy = async () => {
+    const stage = this.serverless.service.provider.stage as string;
     const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
     if (excludedStages?.includes(stage)) {
       console.log(`Swagger lambdas will not be deployed for stage [${stage}], as they have been marked for exclusion.`);
       return;
     }
-    const generateSwaggerOnDeploy =
-      this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy;
+    const generateSwaggerOnDeploy = this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy;
     if (generateSwaggerOnDeploy === undefined || generateSwaggerOnDeploy) {
       await this.generateSwagger();
     }
@@ -169,13 +169,12 @@ class ServerlessAutoSwagger {
   gatherSwaggerOverrides = (): void => {
     const autoswagger = this.serverless.service.custom?.autoswagger ?? {};
 
-    if (autoswagger.basePath) this.swagger.basePath = autoswagger.basePath
-    if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes
+    if (autoswagger.basePath) this.swagger.basePath = autoswagger.basePath;
+    if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes;
 
     // There must be at least one or this `if` will be false
-    if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles)
-
-  }
+    if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles);
+  };
 
   /** Updates this.swagger with swagger file overrides */
   gatherSwaggerFiles = (swaggerFiles: string[]): void => {
@@ -189,14 +188,8 @@ class ServerlessAutoSwagger {
       this.swagger = {
         ...this.swagger,
         ...swagger,
-        paths: {
-          ...this.swagger.paths,
-          ...paths,
-        },
-        definitions: {
-          ...this.swagger.definitions,
-          ...definitions,
-        },
+        paths: { ...this.swagger.paths, ...paths },
+        definitions: { ...this.swagger.definitions, ...definitions },
       };
     });
   };
@@ -226,8 +219,7 @@ class ServerlessAutoSwagger {
             // change the #/components/schema to #/definitions
             const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
-            const definitions: { [key: string]: Definition } =
-              JSON.parse(definitionsData).components.schemas;
+            const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
 
             if (data.includes('anyOf')) {
               // anyOf caused some issues with certain swagger configs
@@ -282,7 +274,7 @@ class ServerlessAutoSwagger {
     // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
     await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');
 
-    if (this.serverless.service.provider.runtime.includes('python')) {
+    if (this.serverless.service.provider.runtime?.includes('python')) {
       const swaggerStr = JSON.stringify(this.swagger, null, 2)
         .replace(/true/g, 'True')
         .replace(/false/g, 'False')
@@ -308,66 +300,54 @@ class ServerlessAutoSwagger {
     };
   };
 
+  addSwaggerPath = (functionName: string, http: EitherHttpEvent | string) => {
+    if (typeof http === 'string') {
+      // TODO they're using the shorthand - parse that into object.
+      //  You'll also have to remove the `typeof http !== 'string'` check from the function calling this one
+      return;
+    }
+
+    let path = http.path;
+    if (path[0] !== '/') path = `/${path}`;
+    this.swagger.paths[path] ??= {};
+
+    const method = http.method.toLowerCase() as Lowercase<HttpMethod>;
+
+    this.swagger.paths[path][method] = {
+      summary: http.summary || functionName,
+      description: http.description ?? '',
+      tags: http.swaggerTags,
+      operationId: `${functionName}.${method}.${http.path}`,
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
+      parameters: this.httpEventToParameters(http as HttpEvent),
+      responses: this.formatResponses(http.responseData ?? http.responses),
+    };
+
+    const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
+
+    const security: MethodSecurity[] = [];
+
+    if (apiKeyHeaders?.length) {
+      security.push(
+        apiKeyHeaders.reduce((acc, indexName: string) => ({ ...acc, [indexName]: [] }), {} as MethodSecurity)
+      );
+    }
+
+    if (security.length) {
+      this.swagger.paths[path][method]!.security = security;
+    }
+  };
+
   generatePaths = () => {
-    const functions = this.serverless.service.functions;
+    const functions = this.serverless.service.functions ?? {};
     Object.entries(functions).forEach(([functionName, config]) => {
-      const events = config.events || [];
-
+      const events = config.events ?? [];
       events
-        .filter((event) => {
-          if (!((event as HttpEvent).http || (event as HttpApiEvent).httpApi)) {
-            return false;
-          }
-
-          const http = (event as HttpEvent).http || (event as HttpApiEvent).httpApi;
-
-          if (typeof http === 'string') {
-            return false;
-          }
-
-          return !http.exclude;
-        })
-        .forEach((event) => {
-          let http = (event as HttpEvent).http || (event as HttpApiEvent).httpApi;
-          if (typeof http === 'string') {
-            // TODO they're using the shorthand - parse that into object.
-            return;
-          }
-
-          let path = http.path;
-          if (path[0] !== '/') path = `/${path}`;
-
-          if (!this.swagger.paths[path]) {
-            this.swagger.paths[path] = {};
-          }
-
-          this.swagger.paths[path][http.method] = {
-            summary: http.summary || functionName,
-            description: http.description ?? '',
-            tags: http.swaggerTags,
-            operationId: `${functionName}.${http.method}.${http.path}`,
-            consumes: ['application/json'],
-            produces: ['application/json'],
-            parameters: this.httpEventToParameters(http),
-            responses: this.formatResponses(http.responseData ?? http.responses),
-          };
-
-          const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
-
-          let security: MethodSecurity[] = [];
-
-          if (apiKeyHeaders?.length) {
-            const methodSecurity: MethodSecurity = {};
-            apiKeyHeaders.forEach(indexName => {
-              methodSecurity[indexName] = [];
-            });
-            security.push(methodSecurity);
-          }
-
-          if (security.length) {
-            this.swagger.paths[path][http.method].security = security;
-          }
-        });
+        .map((event) => (event as HttpEventOrString).http || (event as HttpApiEventOrString).httpApi)
+        .filter((http) => !!http && typeof http !== 'string' && !http.exclude)
+        .forEach((http) => this.addSwaggerPath(functionName, http));
     });
   };
 
@@ -380,7 +360,7 @@ class ServerlessAutoSwagger {
         },
       };
     }
-    const formatted: { [key: string]: Response } = {};
+    const formatted: Record<string, Response> = {};
     Object.entries(responseData).forEach(([statusCode, responseDetails]) => {
       if (typeof responseDetails == 'string') {
         formatted[statusCode] = {
@@ -388,9 +368,7 @@ class ServerlessAutoSwagger {
         };
         return;
       }
-      let response: Response = {
-        description: responseDetails.description || `${statusCode} response`,
-      };
+      const response: Response = { description: responseDetails.description || `${statusCode} response` };
       if (responseDetails.bodyType) {
         response.schema = { $ref: `#/definitions/${responseDetails.bodyType}` };
       }
@@ -406,8 +384,18 @@ class ServerlessAutoSwagger {
   //   return undefined
   // }
 
-  httpEventToParameters = (httpEvent: EitherHttpEvent) => {
-    const parameters = [];
+  pathToParam = (pathParam: string, required = true): Parameter => ({
+    name: pathParam,
+    in: 'path',
+    required,
+    type: 'string',
+  });
+
+  // The arg is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props),
+  //  so we can lie to the compiler to make typing simpler
+  httpEventToParameters = (httpEvent: HttpEvent): Parameter[] => {
+    const parameters: Parameter[] = [];
+
     if (httpEvent.bodyType) {
       parameters.push({
         in: 'body',
@@ -419,64 +407,43 @@ class ServerlessAutoSwagger {
         },
       });
     }
-    if (
-      !(httpEvent as FullHttpEvent['http']).parameters?.path &&
-      httpEvent.path.match(/[^{\}]+(?=})/g)
-    ) {
-      const pathParameters = httpEvent.path.match(/[^{\}]+(?=})/g) || [];
-      pathParameters.forEach((param) => {
-        parameters.push({
-          name: param,
-          in: 'path',
-          required: true,
-          type: 'string',
+
+    if (httpEvent.parameters?.path) {
+      const match = httpEvent.path.match(/[^{}]+(?=})/g);
+      let pathParameters = match ?? [];
+
+      if (!match) {
+        const rawPathParams = httpEvent.parameters.path;
+
+        Object.entries(rawPathParams).forEach(([param, required]) => {
+          parameters.push(this.pathToParam(param, required));
+          pathParameters = removeStringFromArray(pathParameters, param);
         });
-      });
+      }
+
+      pathParameters.forEach((param) => parameters.push(this.pathToParam(param)));
     }
 
-    if ((httpEvent as FullHttpEvent['http']).parameters?.path) {
-      const rawPathParams = (httpEvent as FullHttpEvent['http']).parameters?.path || {};
-      let pathParameters = httpEvent.path.match(/[^{\}]+(?=})/g) || [];
-      Object.entries(rawPathParams).forEach(([param, required]) => {
-        parameters.push({
-          name: param,
-          in: 'path',
-          required,
-          type: 'string',
-        });
-        pathParameters = removeStringFromArray(pathParameters, param);
-      });
-
-      pathParameters.forEach((param) => {
-        parameters.push({
-          name: param,
-          in: 'path',
-          required: true,
-          type: 'string',
-        });
-      });
-    }
-
-    if ((httpEvent as FullHttpEvent['http']).headerParameters) {
-      const rawHeaderParams = (httpEvent as FullHttpEvent['http']).headerParameters!;
+    if (httpEvent.headerParameters) {
+      const rawHeaderParams = httpEvent.headerParameters;
       Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: 'header',
           name: param,
           required: data.required ?? false,
-          type: data.type || 'string',
+          type: data.type ?? 'string',
           description: data.description,
         });
       });
     }
 
-    if ((httpEvent as FullHttpEvent['http']).queryStringParameters) {
-      const rawQueryParams = (httpEvent as FullHttpEvent['http']).queryStringParameters!;
+    if (httpEvent.queryStringParameters) {
+      const rawQueryParams = httpEvent.queryStringParameters;
       Object.entries(rawQueryParams).forEach(([param, data]) => {
         parameters.push({
           in: 'query',
           name: param,
-          type: data.type || 'string',
+          type: data.type ?? 'string',
           description: data.description,
           required: data.required ?? false,
           ...(data.type === 'array'
@@ -493,6 +460,6 @@ class ServerlessAutoSwagger {
   };
 }
 
-type EitherHttpEvent = FullHttpEvent['http'] | FullHttpApiEvent['httpApi'];
+type EitherHttpEvent = HttpEvent | HttpApiEvent;
 
 export default ServerlessAutoSwagger;

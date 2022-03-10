@@ -7,9 +7,8 @@
     "noImplicitReturns": false,
     "strict": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "skipLibCheck": true
   },
-  "include": ["./src"],
-  "exclude": ["./tests"]
+  "include": ["src/**/*", "tests/**/*"]
 }

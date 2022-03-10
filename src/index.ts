@@ -1,5 +1,5 @@
-"use strict"
+'use strict';
 
-import ServerlessAutoSwagger from "./ServerlessAutoSwagger"
+import ServerlessAutoSwagger from './ServerlessAutoSwagger';
 
-module.exports = ServerlessAutoSwagger
+module.exports = ServerlessAutoSwagger;
