@@ -39,9 +39,6 @@
     "queryStringParameters": {
       "additionalProperties": {
         "properties": {
-          "arrayItemsType": {
-            "type": "number"
-          },
           "description": {
             "type": "string"
           },
@@ -54,11 +51,28 @@
           },
           "type": {
             "default": "string",
-            "enum": ["string", "integer"],
+            "enum": ["string", "integer", "array"],
             "type": "string"
+          },
+          "arrayItemsType": {
+            "type": "string",
+            "enum": ["string", "integer"]
           }
         },
         "required": [],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "type": { "const": "array" }
+              },
+              "required": ["type"]
+            },
+            "then": {
+              "required": ["arrayItemsType"]
+            }
+          }
+        ],
         "type": "object"
       },
       "nullable": true,
