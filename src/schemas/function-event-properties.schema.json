@@ -1,0 +1,124 @@
+{
+  "properties": {
+    "bodyType": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "exclude": {
+      "nullable": true,
+      "type": "boolean"
+    },
+    "headerParameters": {
+      "additionalProperties": {
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "required": {
+            "default": false,
+            "type": "boolean"
+          },
+          "type": {
+            "default": "string",
+            "enum": ["string", "integer"],
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "nullable": true,
+      "required": [],
+      "type": "object"
+    },
+    "queryStringParameters": {
+      "additionalProperties": {
+        "properties": {
+          "arrayItemsType": {
+            "type": "number"
+          },
+          "description": {
+            "type": "string"
+          },
+          "minimum": {
+            "type": "number"
+          },
+          "required": {
+            "default": false,
+            "type": "boolean"
+          },
+          "type": {
+            "default": "string",
+            "enum": ["string", "integer"],
+            "type": "string"
+          }
+        },
+        "required": [],
+        "type": "object"
+      },
+      "nullable": true,
+      "required": [],
+      "type": "object"
+    },
+    "responseData": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "properties": {
+              "bodyType": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "nullable": true,
+      "type": "object"
+    },
+    "responses": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "properties": {
+              "bodyType": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        ]
+      },
+      "nullable": true,
+      "type": "object"
+    },
+    "swaggerTags": {
+      "items": {
+        "type": "string"
+      },
+      "nullable": true,
+      "type": "array"
+    }
+  },
+  "required": []
+}

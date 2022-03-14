@@ -16,6 +16,8 @@ import {
   ServerlessOptions,
 } from './serverlessPlugin';
 import { Definition, MethodSecurity, Parameter, Response, SecurityDefinition, Swagger } from './swagger';
+import * as customPropertiesSchema from './schemas/custom-properties.schema.json';
+import * as functionEventPropertiesSchema from './schemas/function-event-properties.schema.json';
 
 class ServerlessAutoSwagger {
   serverless: Serverless;
@@ -55,99 +57,9 @@ class ServerlessAutoSwagger {
   }
 
   registerOptions = () => {
-    this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', {
-      properties: {
-        exclude: {
-          type: 'boolean',
-          nullable: true,
-        },
-        swaggerTags: {
-          type: 'array',
-          nullable: true,
-          items: { type: 'string' },
-        },
-        responses: {
-          type: 'object',
-          nullable: true,
-          additionalProperties: {
-            anyOf: [
-              {
-                type: 'string',
-              },
-              {
-                type: 'object',
-                required: [],
-                properties: {
-                  description: {
-                    type: 'string',
-                  },
-                  bodyType: {
-                    type: 'string',
-                  },
-                },
-              },
-            ],
-          },
-        },
-        headerParameters: {
-          type: 'object',
-          nullable: true,
-          required: [],
-          additionalProperties: {
-            type: 'object',
-            required: ['required', 'type'],
-            properties: {
-              required: {
-                type: 'boolean',
-              },
-              type: {
-                type: 'string',
-                enum: ['string', 'integer'],
-              },
-              description: {
-                type: 'string',
-                nullable: true,
-              },
-              minimum: {
-                type: 'number',
-                nullable: true,
-              },
-            },
-          },
-        },
-        queryStringParameters: {
-          type: 'object',
-          nullable: true,
-          required: [],
-          additionalProperties: {
-            type: 'object',
-            required: ['required', 'type'],
-            properties: {
-              required: {
-                type: 'boolean',
-              },
-              type: {
-                type: 'string',
-                enum: ['string', 'integer'],
-              },
-              description: {
-                type: 'string',
-                nullable: true,
-              },
-              minimum: {
-                type: 'number',
-                nullable: true,
-              },
-              arrayItemsType: {
-                type: 'number',
-                nullable: true,
-              },
-            },
-          },
-        },
-      },
-      required: [],
-    });
+    // TODO: Test custom properties configuration
+    this.serverless.configSchemaHandler?.defineCustomProperties(customPropertiesSchema);
+    this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', functionEventPropertiesSchema);
   };
 
   preDeploy = async () => {
