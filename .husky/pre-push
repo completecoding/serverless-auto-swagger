@@ -1,0 +1,14 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo 'Linting...'
+npm run lint
+
+echo 'Checking types...'
+npm run check-types
+
+echo 'Running unit tests...'
+npm run test:ci
+
+echo 'Checking dependencies for vulnerabilities...'
+npm audit --production --audit-level high

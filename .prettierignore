@@ -1,0 +1,10 @@
+# IDE stuff
+.idea
+
+# Compiled stuff
+.build
+node_modules
+
+# Other
+.husky
+coverage
