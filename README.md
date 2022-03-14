@@ -195,6 +195,30 @@ http: {
 },
 ```
 
+### Form data Params
+
+Works the same way as `queryStringParameters`, but for Formdata.
+
+To use it, just define it under `formDataParameters`:
+
+```js
+http: {
+    path: 'goodbye',
+    method: 'get',
+    formDataParameters: {
+        pdf: {
+            required: true,
+            type: 'file',
+            description: 'upload pdf file',
+        },
+        name: {
+            required: false,
+            type: 'string',
+        },
+    },
+},
+```
+
 ### Exclude an endpoint
 
 You can exclude some endpoints from the swagger generation by adding `exclude` to the http event:
