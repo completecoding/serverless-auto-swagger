@@ -1,4 +1,4 @@
-# CustomServerless Auto Swagger
+# Serverless Auto Swagger
 
 This plugin allows you to automatically generate a swagger endpoint, describing your application endpoints. This is built from your existing serverless config and typescript definitions, reducing the duplication of work.
 
@@ -23,7 +23,7 @@ plugins: ['serverless-auto-swagger'];
 
 ## Usage
 
-This plugin is designed to work with vanilla CustomServerless Framework. All you need to do is add this plugin to your plugin list and it will generate the swagger file and add the endpoints required. When you deploy your API, your new swagger UI will be available at `https://{your-url-domain}/swagger`.
+This plugin is designed to work with vanilla Serverless Framework. All you need to do is add this plugin to your plugin list and it will generate the swagger file and add the endpoints required. When you deploy your API, your new swagger UI will be available at `https://{your-url-domain}/swagger`.
 
 You can also run `sls generate-swagger` if you want to generate the swagger file without deploying the application.
 
@@ -61,7 +61,7 @@ custom:
 
 ## Adding more details
 
-The default swagger file from vanilla CustomServerless framework will have the correct paths and methods but no details about the requests or responses.
+The default swagger file from vanilla Serverless framework will have the correct paths and methods but no details about the requests or responses.
 
 ### API Summary and Details
 
@@ -207,6 +207,6 @@ http: {
 }
 ```
 
-## with CustomServerless Offline
+## with Serverless Offline
 
 In the plugin list, you must list serverless-auto-swagger before the serverless-offline plugin. If you don't you won't get the required endpoints added to your local endpoints.

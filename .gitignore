@@ -6,15 +6,13 @@
 node_modules
 jspm_packages
 
-# CustomServerless directories
+# Serverless directories
 .serverless
 .dynamodb
-.serverless
 
 # Webpack directories
 .webpack
 
-.serverless
 build
 
 .DS_Store
