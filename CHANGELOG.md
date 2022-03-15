@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.3.0...v2.4.0) (2022-03-15)
+
+
+### Features
+
+* add/update schema validation ([#58](https://github.com/SamWSoftware/serverless-auto-swagger/issues/58)) ([7b60108](https://github.com/SamWSoftware/serverless-auto-swagger/commit/7b601089f85bd13868da7e72cb8bfa777fc7d2d8))
+
 ## [2.3.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.2.0...v2.3.0) (2022-03-10)
 
 ### Features
