@@ -1,12 +1,21 @@
 'use strict';
-import { AwsLambdaRuntime } from '@serverless/typescript';
-import * as ServerlessNamespace from 'serverless';
-import { AwsFunctionHandler, Custom, Event, Functions, Http, HttpApiEvent, Provider, Serverless } from 'serverless/aws';
-import { HttpMethod } from './common.types';
+import type { AwsLambdaRuntime } from '@serverless/typescript';
+import { configSchemaHandler } from 'serverless';
+import type {
+  AwsFunctionHandler,
+  Custom,
+  Event,
+  Functions,
+  Http,
+  HttpApiEvent,
+  Provider,
+  Serverless,
+} from 'serverless/aws';
+import type { HttpMethod } from './common.types';
 
 export type CustomServerless = {
   service: ServerlessConfig;
-  configSchemaHandler: ServerlessNamespace['configSchemaHandler'];
+  configSchemaHandler: configSchemaHandler;
   configurationInput: {
     service?: Serverless['service']; // I think { name: string } is for v2 compatibility?
     provider?: Provider;

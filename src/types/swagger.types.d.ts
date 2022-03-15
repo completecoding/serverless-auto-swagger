@@ -1,4 +1,4 @@
-import { HttpMethod } from './common.types';
+import type { HttpMethod } from './common.types';
 
 export interface Swagger {
   swagger: string;

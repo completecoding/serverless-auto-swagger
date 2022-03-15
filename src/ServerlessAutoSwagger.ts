@@ -1,15 +1,15 @@
 'use strict';
 import * as fs from 'fs-extra';
-import * as Serverless from 'serverless';
-import { Service } from 'serverless/aws';
-import { Logging } from 'serverless/classes/Plugin';
+import type { Options } from 'serverless';
+import type { Service } from 'serverless/aws';
+import type { Logging } from 'serverless/classes/Plugin';
 import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
 import * as customPropertiesSchema from './schemas/custom-properties.schema.json';
 import * as functionEventPropertiesSchema from './schemas/function-event-properties.schema.json';
-import { HttpMethod } from './types/common.types';
-import {
+import type { HttpMethod } from './types/common.types';
+import type {
   CustomHttpApiEvent,
   CustomHttpEvent,
   CustomServerless,
@@ -20,11 +20,19 @@ import {
   ServerlessCommand,
   ServerlessHooks,
 } from './types/serverless-plugin.types';
-import { Definition, MethodSecurity, Parameter, Response, SecurityDefinition, Swagger } from './types/swagger.types';
+
+import type {
+  Definition,
+  MethodSecurity,
+  Parameter,
+  Response,
+  SecurityDefinition,
+  Swagger,
+} from './types/swagger.types';
 
 export default class ServerlessAutoSwagger {
   serverless: CustomServerless;
-  options: Serverless.Options;
+  options: Options;
   swagger: Swagger = {
     swagger: '2.0',
     info: {
@@ -40,7 +48,7 @@ export default class ServerlessAutoSwagger {
   commands: Record<string, ServerlessCommand> = {};
   hooks: ServerlessHooks = {};
 
-  constructor(serverless: CustomServerless, options: Serverless.Options, { log }: Logging) {
+  constructor(serverless: CustomServerless, options: Options, { log }: Logging) {
     this.serverless = serverless;
     this.options = options;
     this.log = log;
