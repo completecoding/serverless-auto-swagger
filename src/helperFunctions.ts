@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Definition } from './swagger';
+import { Definition } from './types/swagger.types';
 
 export const writeFile = (filepath: string, content: string) => {
   return new Promise((resolve, reject) => {

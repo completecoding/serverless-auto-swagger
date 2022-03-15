@@ -1,27 +1,30 @@
 'use strict';
 import * as fs from 'fs-extra';
+import * as Serverless from 'serverless';
+import { Service } from 'serverless/aws';
+import { Logging } from 'serverless/classes/Plugin';
 import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
 import { removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
-import {
-  HttpApiEvent,
-  HttpApiEventOrString,
-  HttpEvent,
-  HttpEventOrString,
-  HttpMethod,
-  HttpResponses,
-  Serverless,
-  ServerlessCommand,
-  ServerlessHooks,
-  ServerlessOptions,
-} from './serverlessPlugin';
-import { Definition, MethodSecurity, Parameter, Response, SecurityDefinition, Swagger } from './swagger';
 import * as customPropertiesSchema from './schemas/custom-properties.schema.json';
 import * as functionEventPropertiesSchema from './schemas/function-event-properties.schema.json';
+import { HttpMethod } from './types/common.types';
+import {
+  CustomHttpApiEvent,
+  CustomHttpEvent,
+  CustomServerless,
+  HeaderParameters,
+  HttpResponses,
+  PathParameters,
+  QueryStringParameters,
+  ServerlessCommand,
+  ServerlessHooks,
+} from './types/serverless-plugin.types';
+import { Definition, MethodSecurity, Parameter, Response, SecurityDefinition, Swagger } from './types/swagger.types';
 
-class ServerlessAutoSwagger {
-  serverless: Serverless;
-  options: ServerlessOptions;
+export default class ServerlessAutoSwagger {
+  serverless: CustomServerless;
+  options: Serverless.Options;
   swagger: Swagger = {
     swagger: '2.0',
     info: {
@@ -32,13 +35,15 @@ class ServerlessAutoSwagger {
     definitions: {},
     securityDefinitions: {},
   };
+  log: Logging['log'];
 
   commands: Record<string, ServerlessCommand> = {};
   hooks: ServerlessHooks = {};
 
-  constructor(serverless: Serverless, options: ServerlessOptions) {
+  constructor(serverless: CustomServerless, options: Serverless.Options, { log }: Logging) {
     this.serverless = serverless;
     this.options = options;
+    this.log = log;
 
     this.registerOptions();
 
@@ -63,17 +68,17 @@ class ServerlessAutoSwagger {
   };
 
   preDeploy = async () => {
-    const stage = this.serverless.service.provider.stage as string;
+    const stage = this.serverless.service.provider.stage;
     const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
-    if (excludedStages?.includes(stage)) {
-      console.log(`Swagger lambdas will not be deployed for stage [${stage}], as they have been marked for exclusion.`);
+    if (excludedStages?.includes(stage!)) {
+      this.log.notice(
+        `Swagger lambdas will not be deployed for stage [${stage}], as they have been marked for exclusion.`
+      );
       return;
     }
-    const generateSwaggerOnDeploy = this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy;
-    if (generateSwaggerOnDeploy === undefined || generateSwaggerOnDeploy) {
-      await this.generateSwagger();
-    }
 
+    const generateSwaggerOnDeploy = this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy ?? true;
+    if (generateSwaggerOnDeploy) await this.generateSwagger();
     this.addEndpointsAndLambda();
   };
 
@@ -108,12 +113,14 @@ class ServerlessAutoSwagger {
 
   gatherTypes = async () => {
     // get the details from the package.json? for info
-    this.swagger.info.title = this.serverless.service.service;
+    const service: string | Service = this.serverless.service.service;
+    if (typeof service === 'string') this.swagger.info.title = service;
+    else this.swagger.info.title = service.name;
 
     const reader = getTypeScriptReader();
     const writer = getOpenApiWriter({
       format: 'json',
-      title: this.serverless.service.service,
+      title: this.swagger.info.title,
       version: 'v1',
       schemaVersion: '2.0',
     });
@@ -151,7 +158,7 @@ class ServerlessAutoSwagger {
       );
       // TODO change this to store these as temporary and only include definitions used elsewhere.
     } catch (error) {
-      this.serverless.cli.log('unable to get types', error);
+      this.log.error(`Unable to get types: ${error}`);
     }
   };
 
@@ -181,7 +188,7 @@ class ServerlessAutoSwagger {
     this.generateSecurity();
     this.generatePaths();
 
-    this.serverless.cli.log(`Creating your Swagger File now`);
+    this.log.verbose('Creating your Swagger File now');
 
     // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
     await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');
@@ -212,7 +219,7 @@ class ServerlessAutoSwagger {
     };
   };
 
-  addSwaggerPath = (functionName: string, http: EitherHttpEvent | string) => {
+  addSwaggerPath = (functionName: string, http: CustomHttpEvent | CustomHttpApiEvent | string) => {
     if (typeof http === 'string') {
       // TODO they're using the shorthand - parse that into object.
       //  You'll also have to remove the `typeof http !== 'string'` check from the function calling this one
@@ -233,7 +240,7 @@ class ServerlessAutoSwagger {
       consumes: ['application/json'],
       produces: ['application/json'],
       // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
-      parameters: this.httpEventToParameters(http as HttpEvent),
+      parameters: this.httpEventToParameters(http as CustomHttpEvent),
       responses: this.formatResponses(http.responseData ?? http.responses),
     };
 
@@ -257,20 +264,16 @@ class ServerlessAutoSwagger {
     Object.entries(functions).forEach(([functionName, config]) => {
       const events = config.events ?? [];
       events
-        .map((event) => (event as HttpEventOrString).http || (event as HttpApiEventOrString).httpApi)
+        .map((event) => event.http || event.httpApi)
         .filter((http) => !!http && typeof http !== 'string' && !http.exclude)
-        .forEach((http) => this.addSwaggerPath(functionName, http));
+        .forEach((http) => this.addSwaggerPath(functionName, http!));
     });
   };
 
   formatResponses = (responseData: HttpResponses | undefined) => {
     if (!responseData) {
       // could throw error
-      return {
-        200: {
-          description: '200 response',
-        },
-      };
+      return { 200: { description: '200 response' } };
     }
     const formatted: Record<string, Response> = {};
     Object.entries(responseData).forEach(([statusCode, responseDetails]) => {
@@ -305,7 +308,7 @@ class ServerlessAutoSwagger {
 
   // The arg is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props),
   //  so we can lie to the compiler to make typing simpler
-  httpEventToParameters = (httpEvent: HttpEvent): Parameter[] => {
+  httpEventToParameters = (httpEvent: CustomHttpEvent): Parameter[] => {
     const parameters: Parameter[] = [];
 
     if (httpEvent.bodyType) {
@@ -325,19 +328,19 @@ class ServerlessAutoSwagger {
       let pathParameters = match ?? [];
 
       if (!match) {
-        const rawPathParams = httpEvent.parameters.path;
+        const rawPathParams: PathParameters['path'] = httpEvent.parameters.path;
 
-        Object.entries(rawPathParams).forEach(([param, required]) => {
+        Object.entries(rawPathParams ?? {}).forEach(([param, required]) => {
           parameters.push(this.pathToParam(param, required));
           pathParameters = removeStringFromArray(pathParameters, param);
         });
       }
 
-      pathParameters.forEach((param) => parameters.push(this.pathToParam(param)));
+      pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
     }
 
     if (httpEvent.headerParameters) {
-      const rawHeaderParams = httpEvent.headerParameters;
+      const rawHeaderParams: HeaderParameters = httpEvent.headerParameters;
       Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: 'header',
@@ -350,7 +353,7 @@ class ServerlessAutoSwagger {
     }
 
     if (httpEvent.queryStringParameters) {
-      const rawQueryParams = httpEvent.queryStringParameters;
+      const rawQueryParams: QueryStringParameters = httpEvent.queryStringParameters;
       Object.entries(rawQueryParams).forEach(([param, data]) => {
         parameters.push({
           in: 'query',
@@ -371,7 +374,3 @@ class ServerlessAutoSwagger {
     return parameters;
   };
 }
-
-type EitherHttpEvent = HttpEvent | HttpApiEvent;
-
-export default ServerlessAutoSwagger;

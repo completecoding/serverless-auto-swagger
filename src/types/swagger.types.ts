@@ -1,4 +1,4 @@
-import { HttpMethod } from './serverlessPlugin';
+import { HttpMethod } from './common.types';
 
 export interface Swagger {
   swagger: string;
@@ -22,6 +22,7 @@ export interface Info {
   contact?: Contact;
   license?: License;
 }
+
 export interface Contact {
   name?: string;
   url?: string;

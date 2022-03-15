@@ -1,5 +1,5 @@
 import { recursiveFixAnyOf } from '../src/helperFunctions';
-import { Definition } from '../src/swagger';
+import { Definition } from '../src/types/swagger.types';
 
 describe('test of recursiveFixAnyOf', () => {
   test('without AnyOf', () => {
