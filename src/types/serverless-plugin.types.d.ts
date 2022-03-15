@@ -19,7 +19,7 @@ type SwaggerScheme = 'http' | 'https' | 'ws' | 'wss';
 
 export type ApiType = 'http' | 'httpApi';
 
-export interface AutoSwaggerCustom {
+export interface AutoSwaggerCustomConfig {
   apiType?: ApiType;
   apiKeyHeaders?: string[];
   swaggerFiles?: string[];
@@ -32,7 +32,7 @@ export interface AutoSwaggerCustom {
   excludeStages?: string[];
 }
 
-export type CustomWithAutoSwagger = Custom & { autoswagger?: AutoSwaggerCustom };
+export type CustomWithAutoSwagger = Custom & { autoswagger?: AutoSwaggerCustomConfig };
 
 export interface ServerlessConfig extends Serverless {
   functions?: ServerlessFunctions;
