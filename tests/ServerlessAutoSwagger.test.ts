@@ -1,9 +1,28 @@
+'use strict';
 import * as fs from 'fs-extra';
 import { PathOrFileDescriptor } from 'fs-extra';
+import { Options } from 'serverless';
+import { Logging } from 'serverless/classes/Plugin';
 import ServerlessAutoSwagger from '../src/ServerlessAutoSwagger';
-import { HttpEventOrString, Serverless, ServerlessConfig } from '../src/serverlessPlugin';
+import { CustomServerless, ServerlessConfig, ServerlessFunctionEvent } from '../src/types/serverless-plugin.types';
 
-const generateServerlessFromAnEndpoint = (events: HttpEventOrString[], autoswaggerOptions = {}): Serverless => {
+const log = {
+  notice: jest.fn(),
+  error: jest.fn(),
+  verbose: jest.fn(),
+} as Partial<Logging['log']> as Logging['log'];
+
+const logging: Logging = { log, writeText: () => undefined };
+
+const options: Options = {
+  stage: 'test',
+  region: 'local',
+};
+
+const generateServerlessFromAnEndpoint = (
+  events: ServerlessFunctionEvent[],
+  autoswaggerOptions = {}
+): CustomServerless => {
   const serviceDetails: ServerlessConfig = {
     service: '',
     provider: {
@@ -27,16 +46,15 @@ const generateServerlessFromAnEndpoint = (events: HttpEventOrString[], autoswagg
   };
 
   return {
-    cli: { log: () => {} },
     service: serviceDetails,
     configurationInput: serviceDetails,
     configSchemaHandler: {
-      defineCustomProperties: (schema: unknown) => {},
-      defineFunctionEvent: (provider: string, event: string, schema: Record<string, unknown>) => {},
-      defineFunctionEventProperties: (provider: string, existingEvent: string, schema: unknown) => {},
-      defineFunctionProperties: (provider: string, schema: unknown) => {},
-      defineProvider: (provider: string, options?: Record<string, unknown>) => {},
-      defineTopLevelProperty: (provider: string, schema: Record<string, unknown>) => {},
+      defineCustomProperties: () => undefined,
+      defineFunctionEvent: () => undefined,
+      defineFunctionEventProperties: () => undefined,
+      defineFunctionProperties: () => undefined,
+      defineProvider: () => undefined,
+      defineTopLevelProperty: () => undefined,
     },
   };
 };
@@ -75,7 +93,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -110,7 +129,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -157,7 +177,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -214,7 +235,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -284,7 +306,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -353,7 +376,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -411,7 +435,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.generatePaths();
 
@@ -428,7 +453,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
       serverlessAutoSwagger.swagger.paths = {
         '/should': {
@@ -486,7 +512,8 @@ describe('ServerlessAutoSwagger', () => {
             },
           },
         ]),
-        {}
+        options,
+        logging
       );
 
       serverlessAutoSwagger.gatherSwaggerOverrides();
@@ -522,7 +549,8 @@ describe('ServerlessAutoSwagger', () => {
             swaggerFiles: [fileName],
           }
         ),
-        {}
+        options,
+        logging
       );
 
       serverlessAutoSwagger.gatherSwaggerOverrides();
@@ -562,7 +590,8 @@ describe('ServerlessAutoSwagger', () => {
           ],
           { swaggerFiles }
         ),
-        {}
+        options,
+        logging
       );
 
       await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles);
@@ -596,7 +625,8 @@ describe('ServerlessAutoSwagger', () => {
           ],
           { swaggerFiles }
         ),
-        {}
+        options,
+        logging
       );
 
       await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles);
@@ -652,7 +682,8 @@ describe('ServerlessAutoSwagger', () => {
           ],
           { swaggerFiles }
         ),
-        {}
+        options,
+        logging
       );
 
       await serverlessAutoSwagger.gatherSwaggerFiles(swaggerFiles);

@@ -1,0 +1,68 @@
+{
+  "properties": {
+    "autoswagger": {
+      "additionalProperties": false,
+      "nullable": true,
+      "properties": {
+        "apiKeyHeaders": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "apiType": {
+          "default": "httpApi",
+          "enum": ["http", "httpApi"],
+          "type": "string"
+        },
+        "basePath": {
+          "type": "string"
+        },
+        "excludeStages": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "generateSwaggerOnDeploy": {
+          "default": true,
+          "type": "boolean"
+        },
+        "schemes": {
+          "items": {
+            "enum": ["http", "https", "ws", "wss"],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "swaggerFiles": {
+          "default": ["./src/types/api-types.d.ts"],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "swaggerPath": {
+          "default": "swagger",
+          "type": "string"
+        },
+        "typefiles": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "useStage": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [],
+      "type": "object"
+    }
+  },
+  "type": "object"
+}

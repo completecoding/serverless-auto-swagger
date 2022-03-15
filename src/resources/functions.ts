@@ -1,6 +1,7 @@
-import { HttpApiEvent, Serverless, ServerlessFunction } from '../serverlessPlugin';
+'use strict';
+import { ApiType, CustomServerless, ServerlessFunction } from '../types/serverless-plugin.types';
 
-export default (serverless: Serverless): Record<string, ServerlessFunction> => {
+export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON', ServerlessFunction> => {
   const handlerPath = 'swagger/';
   const configInput = serverless?.configurationInput || serverless.service;
   const path = serverless.service.custom?.autoswagger?.swaggerPath ?? 'swagger';
@@ -8,39 +9,39 @@ export default (serverless: Serverless): Record<string, ServerlessFunction> => {
   const stage = configInput?.provider?.stage;
 
   const useStage = serverless.service.custom?.autoswagger?.useStage;
-  const apiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
+  const apiType: ApiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
 
   if (!['http', 'httpApi'].includes(apiType)) {
-    throw new Error(`[custom.autoswagger.apiType] must be "http" or "httpApi". Received: "${apiType}"`);
+    throw new Error(`custom.autoswagger.apiType must be "http" or "httpApi". Received: "${apiType}"`);
   }
 
-  return {
-    swaggerUI: {
-      name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
-      handler: handlerPath + 'swagger-html.handler',
-      disableLogs: true,
-      events: [
-        {
-          [apiType as 'httpApi']: {
-            method: 'get',
-            path: useStage ? `/${stage}/${path}` : `/${path}`,
-          } as HttpApiEvent,
+  const swaggerUI: ServerlessFunction = {
+    name: name && stage ? `${name}-${stage}-swagger-ui` : undefined,
+    handler: handlerPath + 'swagger-html.handler',
+    disableLogs: true,
+    events: [
+      {
+        [apiType as 'httpApi']: {
+          method: 'get' as const,
+          path: useStage ? `/${stage}/${path}` : `/${path}`,
         },
-      ],
-    },
-
-    swaggerJSON: {
-      name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
-      handler: handlerPath + 'swagger-json.handler',
-      disableLogs: true,
-      events: [
-        {
-          [apiType as 'httpApi']: {
-            method: 'get',
-            path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
-          } as HttpApiEvent,
-        },
-      ],
-    },
+      },
+    ],
   };
+
+  const swaggerJSON: ServerlessFunction = {
+    name: name && stage ? `${name}-${stage}-swagger-json` : undefined,
+    handler: handlerPath + 'swagger-json.handler',
+    disableLogs: true,
+    events: [
+      {
+        [apiType as 'httpApi']: {
+          method: 'get' as const,
+          path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
+        },
+      },
+    ],
+  };
+
+  return { swaggerUI, swaggerJSON };
 };

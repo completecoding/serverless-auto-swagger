@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { Definition } from './swagger';
+import type { Definition } from './types/swagger.types';
 
 export const writeFile = (filepath: string, content: string) => {
   return new Promise((resolve, reject) => {
@@ -24,19 +24,18 @@ export function removeStringFromArray(arr: string[], value: string): string[] {
 }
 
 export const recursiveFixAnyOf = (definition: Definition) => {
-  switch (definition.type) {
-    case 'object':
-      return Object.entries(definition.properties ?? {}).reduce(
-        (acc, [propertyKey, definition]) => {
-          if (propertyKey === 'anyOf') {
-            // fix it
-            acc.enum = definition.anyOf!.map((anyOfObj) => anyOfObj.const);
-          }
-          acc.properties![propertyKey] = recursiveFixAnyOf(definition);
-          return acc;
-        },
-        { ...definition, properties: {} } as Definition
-      );
+  if (definition.type === 'object') {
+    return Object.entries(definition.properties ?? {}).reduce(
+      (acc, [propertyKey, def]) => {
+        if (propertyKey === 'anyOf') {
+          // fix it
+          acc.enum = def.anyOf!.map((anyOfObj) => anyOfObj.const);
+        }
+        acc.properties![propertyKey] = recursiveFixAnyOf(def);
+        return acc;
+      },
+      { ...definition, properties: {} } as Definition
+    );
   }
 
   return definition;

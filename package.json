@@ -31,6 +31,7 @@
     "@jest/types": "^27.4.2",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^27.4.0",
+    "@types/serverless": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
     "copyfiles": "^2.4.1",
