@@ -72,7 +72,7 @@ export default class ServerlessAutoSwagger {
     const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
     if (excludedStages?.includes(stage!)) {
       this.log.notice(
-        `Swagger lambdas will not be deployed for stage [${stage}], as they have been marked for exclusion.`
+        `Swagger lambdas will not be deployed for stage [${stage}], as it has been marked for exclusion.`
       );
       return;
     }
@@ -151,7 +151,7 @@ export default class ServerlessAutoSwagger {
               ...definitions,
             };
           } catch (error) {
-            console.log(`couldn't read types from file: ${filepath}`);
+            this.log.error(`Couldn't read types from file: ${filepath}`);
             return;
           }
         })
@@ -188,7 +188,7 @@ export default class ServerlessAutoSwagger {
     this.generateSecurity();
     this.generatePaths();
 
-    this.log.verbose('Creating your Swagger File now');
+    this.log.notice('Creating Swagger file...');
 
     // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
     await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');

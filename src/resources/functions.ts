@@ -12,9 +12,7 @@ export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON
   const apiType: ApiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
 
   if (!['http', 'httpApi'].includes(apiType)) {
-    throw new serverless.classes.Error(
-      `[custom.autoswagger.apiType] must be "http" or "httpApi". Received: "${apiType}"`
-    );
+    throw new Error(`custom.autoswagger.apiType must be "http" or "httpApi". Received: "${apiType}"`);
   }
 
   const swaggerUI: ServerlessFunction = {

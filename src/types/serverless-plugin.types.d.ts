@@ -6,7 +6,6 @@ import { HttpMethod } from './common.types';
 
 export type CustomServerless = {
   service: ServerlessConfig;
-  classes: any;
   configSchemaHandler: ServerlessNamespace['configSchemaHandler'];
   configurationInput: {
     service?: Serverless['service']; // I think { name: string } is for v2 compatibility?

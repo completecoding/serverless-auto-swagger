@@ -47,7 +47,6 @@ const generateServerlessFromAnEndpoint = (
 
   return {
     service: serviceDetails,
-    classes: { Error: () => undefined },
     configurationInput: serviceDetails,
     configSchemaHandler: {
       defineCustomProperties: () => undefined,
