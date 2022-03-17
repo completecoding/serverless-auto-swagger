@@ -354,17 +354,10 @@ export default class ServerlessAutoSwagger {
         parameters.push(this.pathToParam(param, paramInfo));
         pathParameters = removeStringFromArray(pathParameters, param);
       });
-      pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
-    } else if (match) {
-      pathParameters.forEach((param) => {
-        parameters.push({
-          name: param,
-          in: 'path',
-          required: true,
-          type: 'string',
-        });
-      });
     }
+
+    // If no match, will just be [] anyway
+    pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
 
     if (httpEvent.headerParameters) {
       const rawHeaderParams: HeaderParameters = httpEvent.headerParameters;
