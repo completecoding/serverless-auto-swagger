@@ -14,6 +14,7 @@ import type {
 import type { HttpMethod } from './common.types';
 
 export type CustomServerless = {
+  cli?: { log: (text: string) => void }; // deprecated and replaced in v3.0.0
   service: ServerlessConfig;
   configSchemaHandler: configSchemaHandler;
   configurationInput: {
@@ -82,8 +83,12 @@ export type HeaderParameters = Record<
   }
 >;
 
+type SimplePath = Record<string, boolean>;
+type PathWithDescription = Record<string, { required?: boolean; description?: string }>;
+export type PathParameterPath = SimplePath | PathWithDescription;
+
 export type PathParameters = {
-  path?: Record<string, boolean>;
+  path?: PathParameterPath;
   headers?: Record<string, boolean | { required: boolean; mappedValue: string }>;
 };
 

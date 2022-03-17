@@ -15,6 +15,7 @@ import type {
   CustomServerless,
   HeaderParameters,
   HttpResponses,
+  PathParameterPath,
   PathParameters,
   QueryStringParameters,
   ServerlessCommand,
@@ -48,10 +49,17 @@ export default class ServerlessAutoSwagger {
   commands: Record<string, ServerlessCommand> = {};
   hooks: ServerlessHooks = {};
 
-  constructor(serverless: CustomServerless, options: Options, { log }: Logging) {
+  // IO is only injected in Serverless v3.0.0 (can experiment with `import { writeText, log, progress } from '@serverless/utils/log'; in a future PR)
+  constructor(serverless: CustomServerless, options: Options, io?: Logging) {
     this.serverless = serverless;
     this.options = options;
-    this.log = log;
+
+    if (io) this.log = io.log;
+    else
+      this.log = {
+        notice: this.serverless.cli?.log ?? console.log,
+        error: console.error,
+      } as Logging['log'];
 
     this.registerOptions();
 
@@ -307,12 +315,18 @@ export default class ServerlessAutoSwagger {
   //   return undefined
   // }
 
-  pathToParam = (pathParam: string, required = true): Parameter => ({
-    name: pathParam,
-    in: 'path',
-    required,
-    type: 'string',
-  });
+  pathToParam = (pathParam: string, paramInfoOrRequired?: PathParameterPath[string]): Parameter => {
+    const isObj = typeof paramInfoOrRequired === 'object';
+    const required = (isObj ? paramInfoOrRequired.required : paramInfoOrRequired) ?? true;
+
+    return {
+      name: pathParam,
+      in: 'path',
+      required,
+      description: isObj ? paramInfoOrRequired.description : undefined,
+      type: 'string',
+    };
+  };
 
   // The arg is actually type `HttpEvent | HttpApiEvent`, but we only use it if it has httpEvent props (or shared props),
   //  so we can lie to the compiler to make typing simpler
@@ -331,21 +345,19 @@ export default class ServerlessAutoSwagger {
       });
     }
 
-    if (httpEvent.parameters?.path) {
-      const match = httpEvent.path.match(/[^{}]+(?=})/g);
-      let pathParameters = match ?? [];
+    const rawPathParams: PathParameters['path'] = httpEvent.parameters?.path;
+    const match = httpEvent.path.match(/[^{}]+(?=})/g);
+    let pathParameters = match ?? [];
 
-      if (!match) {
-        const rawPathParams: PathParameters['path'] = httpEvent.parameters.path;
-
-        Object.entries(rawPathParams ?? {}).forEach(([param, required]) => {
-          parameters.push(this.pathToParam(param, required));
-          pathParameters = removeStringFromArray(pathParameters, param);
-        });
-      }
-
-      pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
+    if (rawPathParams) {
+      Object.entries(rawPathParams ?? {}).forEach(([param, paramInfo]) => {
+        parameters.push(this.pathToParam(param, paramInfo));
+        pathParameters = removeStringFromArray(pathParameters, param);
+      });
     }
+
+    // If no match, will just be [] anyway
+    pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
 
     if (httpEvent.headerParameters) {
       const rawHeaderParams: HeaderParameters = httpEvent.headerParameters;
