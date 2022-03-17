@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.4.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.4.0...v2.4.1) (2022-03-17)
+
+### Features
+
+- a `description` can now be added to path params. ([#62](https://github.com/SamWSoftware/serverless-auto-swagger/issues/62)) ([5b552f4](https://github.com/SamWSoftware/serverless-auto-swagger/commit/5b552f4518d632c627fed53390501b9cb0503b4e))
+  ```yaml
+  hello:
+    path: /hello/{name}/{simpleParam}
+    method: get
+    parameters:
+      name:
+        description: the name to say hello to
+        required: true
+      simpleParam: true
+  ```
+
+### Bug Fixes
+
+- backwards compatibility and path parameters ([#62](https://github.com/SamWSoftware/serverless-auto-swagger/issues/62)) ([5b552f4](https://github.com/SamWSoftware/serverless-auto-swagger/commit/5b552f4518d632c627fed53390501b9cb0503b4e))
+  - `v2.4.0` implemented Serverless v3 logging without regard to those using Serverless v2 still. Added support for v2 again.
+  - `v2.3.0` broke path parameters. This has been addressed.
+
 ## [2.4.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.3.0...v2.4.0) (2022-03-15)
 
 ### Features
