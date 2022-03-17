@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 - a `description` can now be added to path params. ([#62](https://github.com/SamWSoftware/serverless-auto-swagger/issues/62)) ([5b552f4](https://github.com/SamWSoftware/serverless-auto-swagger/commit/5b552f4518d632c627fed53390501b9cb0503b4e))
   ```yaml
-  hello:
+  http:
     path: /hello/{name}/{simpleParam}
     method: get
     parameters:
