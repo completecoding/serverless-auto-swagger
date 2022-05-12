@@ -362,8 +362,15 @@ export default class ServerlessAutoSwagger {
     // If no match, will just be [] anyway
     pathParameters.forEach((param: string) => parameters.push(this.pathToParam(param)));
 
-    if (httpEvent.headerParameters) {
-      const rawHeaderParams: HeaderParameters = httpEvent.headerParameters;
+    if (httpEvent.headerParameters || httpEvent.request?.parameters?.headers) {
+      // If no headerParameters are provided, try to use the builtin headers
+      const rawHeaderParams: HeaderParameters =
+        httpEvent.headerParameters ??
+        Object.entries(httpEvent.request!.parameters!.headers!).reduce(
+          (acc, [name, required]) => ({ ...acc, [name]: { required, type: 'string' } }),
+          {}
+        );
+
       Object.entries(rawHeaderParams).forEach(([param, data]) => {
         parameters.push({
           in: 'header',
@@ -375,8 +382,15 @@ export default class ServerlessAutoSwagger {
       });
     }
 
-    if (httpEvent.queryStringParameters) {
-      const rawQueryParams: QueryStringParameters = httpEvent.queryStringParameters;
+    if (httpEvent.queryStringParameters || httpEvent.request?.parameters?.querystrings) {
+      // If no queryStringParameters are provided, try to use the builtin query strings
+      const rawQueryParams: QueryStringParameters =
+        httpEvent.queryStringParameters ??
+        Object.entries(httpEvent.request!.parameters!.querystrings!).reduce(
+          (acc, [name, required]) => ({ ...acc, [name]: { required, type: 'string' } }),
+          {}
+        );
+
       Object.entries(rawQueryParams).forEach(([param, data]) => {
         parameters.push({
           in: 'query',
