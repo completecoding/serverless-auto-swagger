@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.4.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.4.0...v2.4.1) (2022-03-17)
+## [2.4.2](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.4.1...v2.4.2) (2022-05-12)
+
+### Features
+
+- Allow plugin to work when node_modules are in a different directory than serverless.yml ([#70](https://github.com/SamWSoftware/serverless-auto-swagger/pull/70))
+
+### Changes
+
+- Update documentation to correctly specify usage requirements ([#70](https://github.com/SamWSoftware/serverless-auto-swagger/pull/70))
+
+## [2.4.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.4.0...v2.4.1) (2022-03-17)
 
 ### Features
 
