@@ -1,5 +1,6 @@
 'use strict';
-import * as fs from 'fs-extra';
+import { copy, readFileSync } from 'fs-extra';
+import { dirname } from 'path';
 import type { Options } from 'serverless';
 import type { Service } from 'serverless/aws';
 import type { Logging } from 'serverless/classes/Plugin';
@@ -112,7 +113,7 @@ export default class ServerlessAutoSwagger {
   /** Updates this.swagger with swagger file overrides */
   gatherSwaggerFiles = (swaggerFiles: string[]): void => {
     swaggerFiles.forEach((filepath) => {
-      const fileData = fs.readFileSync(filepath, 'utf8');
+      const fileData = readFileSync(filepath, 'utf8');
 
       const jsonData = JSON.parse(fileData);
 
@@ -148,7 +149,7 @@ export default class ServerlessAutoSwagger {
       await Promise.all(
         typesFile.map(async (filepath) => {
           try {
-            const fileData = fs.readFileSync(filepath, 'utf8');
+            const fileData = readFileSync(filepath, 'utf8');
 
             const { data } = await convert({ data: fileData });
             // change the #/components/schema to #/definitions
@@ -207,7 +208,9 @@ export default class ServerlessAutoSwagger {
     this.log.notice('Creating Swagger file...');
 
     // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
-    await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger');
+    const packagePath = dirname(require.resolve('serverless-auto-swagger/package.json'));
+    const resourcesPath = `${packagePath}/dist/resources`;
+    await copy(resourcesPath, './swagger');
 
     if (this.serverless.service.provider.runtime?.includes('python')) {
       const swaggerStr = JSON.stringify(this.swagger, null, 2)
@@ -218,7 +221,7 @@ export default class ServerlessAutoSwagger {
       swaggerPythonString += `\ndocs = ${swaggerStr}`;
       await writeFile('./swagger/swagger.py', swaggerPythonString);
     } else {
-      await fs.copy('./node_modules/serverless-auto-swagger/dist/resources', './swagger', {
+      await copy(resourcesPath, './swagger', {
         filter: (src) => src.slice(-2) === 'js',
       });
 
