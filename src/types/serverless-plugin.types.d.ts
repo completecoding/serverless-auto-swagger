@@ -103,7 +103,6 @@ export interface CustomHttpEvent extends Http {
   bodyType?: string;
   headerParameters?: HeaderParameters;
   queryStringParameters?: QueryStringParameters;
-  parameters?: PathParameters;
 }
 
 export interface CustomHttpApiEvent extends HttpApiEvent {

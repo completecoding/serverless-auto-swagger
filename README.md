@@ -147,6 +147,8 @@ http: {
 
 ![Query String Parameters](./doc_images/queryStringParams.png)
 
+If no `queryStringParameters` are defined, the plugin will do its best to generate headers based on any Serverless `request.parameters.querystrings` that are defined.
+
 ### Multi-Valued Query String Parameters
 
 If you use multi-value query string parameters (array), then you must specify that your `type` is `array` and specify your data type (string or integer) in `arrayItemsType`
@@ -196,6 +198,12 @@ http: {
     },
 },
 ```
+
+If no `headerParameters` are defined, the plugin will do its best to generate headers based on any Serverless `request.parameters.headers` that are defined.
+
+### Path Parameters
+
+Path parameters are resolved first by looking at `request.parameters.paths`, and then by resolving any additional parameters in the http event path (i.e. `/{id}`).
 
 ### Exclude an endpoint
 
