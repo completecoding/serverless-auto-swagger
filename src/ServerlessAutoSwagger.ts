@@ -346,7 +346,6 @@ export default class ServerlessAutoSwagger {
       });
     }
 
-    // If no custom parameters are defined, use the Serverless request.parameters.paths
     const rawPathParams: PathParameters['path'] = httpEvent.request?.parameters?.paths;
     const match = httpEvent.path.match(/[^{}]+(?=})/g);
     let pathParameters = match ?? [];
