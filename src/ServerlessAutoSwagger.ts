@@ -342,13 +342,12 @@ export default class ServerlessAutoSwagger {
         name: 'body',
         description: 'Body required in the request',
         required: true,
-        schema: {
-          $ref: `#/definitions/${httpEvent.bodyType}`,
-        },
+        schema: { $ref: `#/definitions/${httpEvent.bodyType}` },
       });
     }
 
-    const rawPathParams: PathParameters['path'] = httpEvent.parameters?.path;
+    // If no custom parameters are defined, use the Serverless request.parameters.paths
+    const rawPathParams: PathParameters['path'] = httpEvent.request?.parameters?.paths;
     const match = httpEvent.path.match(/[^{}]+(?=})/g);
     let pathParameters = match ?? [];
 

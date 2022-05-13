@@ -108,11 +108,7 @@ describe('ServerlessAutoSwagger', () => {
             consumes: ['application/json'],
             produces: ['application/json'],
             parameters: [],
-            responses: {
-              200: {
-                description: '200 response',
-              },
-            },
+            responses: { 200: { description: '200 response' } },
           },
         },
       });
@@ -144,11 +140,7 @@ describe('ServerlessAutoSwagger', () => {
             consumes: ['application/json'],
             produces: ['application/json'],
             parameters: [],
-            responses: {
-              200: {
-                description: '200 response',
-              },
-            },
+            responses: { 200: { description: '200 response' } },
           },
         },
       });
@@ -200,6 +192,59 @@ describe('ServerlessAutoSwagger', () => {
               400: { description: 'failed Post' },
               502: { description: 'server error' },
             },
+          },
+        },
+      });
+    });
+
+    it('should generate an endpoint with path parameters', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: 'test/{path}',
+              method: 'get',
+              request: {
+                parameters: {
+                  paths: {
+                    pathParam2: false,
+                  },
+                },
+              },
+            },
+          },
+        ]),
+        options,
+        logging
+      );
+      serverlessAutoSwagger.generatePaths();
+
+      expect(serverlessAutoSwagger.swagger.paths).toEqual({
+        '/test/{path}': {
+          get: {
+            summary: 'mocked',
+            description: '',
+            tags: undefined,
+            operationId: 'mocked.get.test/{path}',
+            consumes: ['application/json'],
+            produces: ['application/json'],
+            parameters: [
+              {
+                name: 'pathParam2',
+                type: 'string',
+                in: 'path',
+                required: false,
+                description: undefined,
+              },
+              {
+                name: 'path',
+                type: 'string',
+                description: undefined,
+                in: 'path',
+                required: true,
+              },
+            ],
+            responses: { 200: { description: '200 response' } },
           },
         },
       });
