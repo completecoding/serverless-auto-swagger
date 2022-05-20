@@ -157,6 +157,8 @@ export default class ServerlessAutoSwagger {
 
             const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
 
+            // TODO: Handle `anyOf` in swagger configs
+
             this.swagger.definitions = {
               ...this.swagger.definitions,
               ...definitions,
