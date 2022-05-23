@@ -157,11 +157,7 @@ export default class ServerlessAutoSwagger {
 
             const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
 
-            if (data.includes('anyOf')) {
-              // anyOf caused some issues with certain swagger configs
-              console.log('includes anyOf');
-              // const newDef = Object.values(definition).map(recursiveFixAnyOf);
-            }
+            // TODO: Handle `anyOf` in swagger configs
 
             this.swagger.definitions = {
               ...this.swagger.definitions,
