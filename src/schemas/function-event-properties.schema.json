@@ -132,6 +132,20 @@
       },
       "nullable": true,
       "type": "array"
+    },
+    "consumes": {
+      "default": ["application/json"],
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "produces": {
+      "default": ["application/json"],
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
     }
   },
   "required": []
