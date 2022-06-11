@@ -217,6 +217,18 @@ http: {
 }
 ```
 
+### MIME Types
+You can specify the MIME types by adding `consumes` and `produces` the http event.
+Default for both is `['application/json']`
+```js
+http: {
+    path: 'hello',
+    method: 'post',
+    consumes: ['application/json', 'application/pdf'],
+    produces: ['application/json', 'application/pdf'],
+}
+```
+
 ## with Serverless Offline
 
 In the plugin list, you must list `serverless-auto-swagger` before the `serverless-offline` plugin.
