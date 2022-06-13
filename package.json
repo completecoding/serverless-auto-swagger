@@ -30,7 +30,7 @@
   "devDependencies": {
     "@jest/types": "^28.1.0",
     "@types/fs-extra": "^9.0.13",
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^28.1.1",
     "@types/serverless": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
@@ -42,7 +42,7 @@
     "husky": "^8.0.1",
     "is-ci": "^3.0.1",
     "jest": "^28.1.0",
-    "lint-staged": "^12.3.5",
+    "lint-staged": "^13.0.1",
     "prettier": "^2.5.1",
     "standard-version": "^9.3.1",
     "ts-jest": "^28.0.2",

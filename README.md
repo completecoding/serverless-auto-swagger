@@ -218,8 +218,9 @@ http: {
 ```
 
 ### MIME Types
-You can specify the MIME types by adding `consumes` and `produces` the http event.
-Default for both is `['application/json']`
+
+You can specify the MIME types by adding `consumes` and `produces` to the http event. Default for both is `['application/json']`
+
 ```js
 http: {
     path: 'hello',
