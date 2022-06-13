@@ -12,7 +12,7 @@ const log = {
   verbose: jest.fn(),
 } as Partial<Logging['log']> as Logging['log'];
 
-const logging: Logging = { log, writeText: () => undefined };
+const logging: Logging = { log, writeText: () => undefined } as unknown as Logging;
 
 const options: Options = {
   stage: 'test',
@@ -465,6 +465,78 @@ describe('ServerlessAutoSwagger', () => {
                 description: undefined,
               },
             ],
+            responses: {
+              200: {
+                description: '200 response',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should generate an endpoint with consumes parameter', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: 'goodbye',
+              method: 'get',
+              consumes: ['application/json', 'application/pdf'],
+            },
+          },
+        ]),
+        options,
+        logging
+      );
+      serverlessAutoSwagger.generatePaths();
+
+      expect(serverlessAutoSwagger.swagger.paths).toEqual({
+        '/goodbye': {
+          get: {
+            summary: 'mocked',
+            description: '',
+            tags: undefined,
+            operationId: 'mocked.get.goodbye',
+            consumes: ['application/json', 'application/pdf'],
+            produces: ['application/json'],
+            parameters: [],
+            responses: {
+              200: {
+                description: '200 response',
+              },
+            },
+          },
+        },
+      });
+    });
+
+    it('should generate an endpoint with produces parameter', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: 'goodbye',
+              method: 'get',
+              produces: ['application/json', 'application/pdf'],
+            },
+          },
+        ]),
+        options,
+        logging
+      );
+      serverlessAutoSwagger.generatePaths();
+
+      expect(serverlessAutoSwagger.swagger.paths).toEqual({
+        '/goodbye': {
+          get: {
+            summary: 'mocked',
+            description: '',
+            tags: undefined,
+            operationId: 'mocked.get.goodbye',
+            consumes: ['application/json'],
+            produces: ['application/json', 'application/pdf'],
+            parameters: [],
             responses: {
               200: {
                 description: '200 response',

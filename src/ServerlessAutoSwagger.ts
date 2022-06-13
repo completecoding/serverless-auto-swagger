@@ -252,8 +252,8 @@ export default class ServerlessAutoSwagger {
       description: http.description ?? '',
       tags: http.swaggerTags,
       operationId: `${functionName}.${method}.${http.path}`,
-      consumes: ['application/json'],
-      produces: ['application/json'],
+      consumes: http.consumes ?? ['application/json'],
+      produces: http.produces ?? ['application/json'],
       // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
       parameters: this.httpEventToParameters(http as CustomHttpEvent),
       responses: this.formatResponses(http.responseData ?? http.responses),
