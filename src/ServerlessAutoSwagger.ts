@@ -55,7 +55,7 @@ export default class ServerlessAutoSwagger {
     this.serverless = serverless;
     this.options = options;
 
-    if (io) this.log = io.log;
+    if (io?.log) this.log = io.log;
     else
       this.log = {
         notice: this.serverless.cli?.log ?? console.log,
