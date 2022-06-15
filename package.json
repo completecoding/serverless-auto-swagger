@@ -1,6 +1,6 @@
 {
   "name": "@sebastijan94/serverless-auto-swagger",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Automatically generate a swagger file from your Serverless Framework config file",
   "main": "dist/index.js",
   "homepage": "https://github.com/sebastijan94/serverless-auto-swagger",
@@ -9,7 +9,7 @@
     "url": "https://github.com/sebastijan94/serverless-auto-swagger"
   },
   "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json && copyfiles -f ./src/resources/*.py ./dist/resources/",
