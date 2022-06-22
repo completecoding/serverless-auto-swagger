@@ -44,7 +44,7 @@ custom:
         apiKeyHeaders: ['Authorization', 'anyOtherName']
         useStage: true | false
         basePath: '/string'
-        host: 'some-host'
+        host: 'http://some-host'
         schemes: ['http', 'https', 'ws', 'wss']
         excludeStages: ['production', 'anyOtherStage']
 ```
