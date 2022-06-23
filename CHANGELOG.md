@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.7.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.6.0...v2.7.0) (2022-06-23)
+
+### Features
+
+- add custom host option ([#79](https://github.com/SamWSoftware/serverless-auto-swagger/issues/79)) ([ffa9d1c](https://github.com/SamWSoftware/serverless-auto-swagger/commit/ffa9d1cdcfd6580b3d05d296313154a8e64fd316))
+
+### Bug Fixes
+
+- check for log function before assigning ([3ccd039](https://github.com/SamWSoftware/serverless-auto-swagger/commit/3ccd0394bca8f7e89dbcdc86db1241c7c3f529e3))
+
 ## [2.6.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.5.1...v2.6.0) (2022-06-13)
 
 ### Features
