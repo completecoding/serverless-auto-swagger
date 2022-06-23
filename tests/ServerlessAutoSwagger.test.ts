@@ -838,7 +838,7 @@ describe('ServerlessAutoSwagger', () => {
         swagger: '2.0',
         schemes: ['ws'],
         basePath: '/bp',
-        host: 'some-host'
+        host: 'some-host',
         ...swaggerDoc,
       });
     });
