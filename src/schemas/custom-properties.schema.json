@@ -19,6 +19,9 @@
         "basePath": {
           "type": "string"
         },
+        "host": {
+          "type": "string"
+        },
         "excludeStages": {
           "default": [],
           "items": {

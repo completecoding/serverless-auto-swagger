@@ -44,6 +44,7 @@ custom:
         apiKeyHeaders: ['Authorization', 'anyOtherName']
         useStage: true | false
         basePath: '/string'
+        host: 'http://some-host'
         schemes: ['http', 'https', 'ws', 'wss']
         excludeStages: ['production', 'anyOtherStage']
 ```
@@ -58,6 +59,7 @@ custom:
 | `apiKeyHeaders`           | Array of strings used to define API keys used in auth headers                                                         | `[]`                                                                       | `apiKeyHeaders: ['Authorization', 'x-api-key']`          |
 | `useStage`                | Boolean to either use current stage in beginning of path or not                                                       | `false`                                                                    | `true` => `dev/swagger` for stage `dev`                  |
 | `basePath`                | String that can be prepended to every request. Should include leading `/`                                             | -                                                                          | `/some-base` => `http://localhost/some-base/my-endpoint` |
+| `host`                    | String that overrides the host. With this you can set your custom domain for your application endpoints               | -                                                                          | `http://some-host` => `{http://some-host}/my-endpoint`   |
 | `schemes`                 | Array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes                                      | Scheme used to serve the API specification (reflecting Swagger's behavior) |                                                          |
 | `excludeStages`           | Array of strings that contains stages in which Swagger UI and Swagger JSON lambdas should **not** be deployed in.     | `[]`                                                                       |                                                          |
 

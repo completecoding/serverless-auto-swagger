@@ -104,6 +104,7 @@ export default class ServerlessAutoSwagger {
     const autoswagger = this.serverless.service.custom?.autoswagger ?? {};
 
     if (autoswagger.basePath) this.swagger.basePath = autoswagger.basePath;
+    if (autoswagger.host) this.swagger.host = autoswagger.host;
     if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes;
 
     // There must be at least one or this `if` will be false
