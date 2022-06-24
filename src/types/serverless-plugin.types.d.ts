@@ -39,6 +39,7 @@ export interface AutoSwaggerCustomConfig {
   basePath?: string;
   host?: string;
   schemes?: SwaggerScheme[];
+  title?: string;
   excludeStages?: string[];
 }
 

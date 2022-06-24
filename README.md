@@ -36,6 +36,7 @@ All config options are optional. Defaults are shown in the table below.
 ```yaml
 custom:
     autoswagger:
+        title: 'string'
         apiType: 'http' | 'httpApi'
         generateSwaggerOnDeploy: true | false
         typefiles: ['./src/types/typefile1.d.ts', './src/subfolder/helper.d.ts']
@@ -52,6 +53,7 @@ custom:
 | Option                    | Description                                                                                                           | Default                                                                    | Example                                                  |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------- |
 | `generateSwaggerOnDeploy` | Boolean which indicates whether to generate a new swagger file on deployment                                          | `true`                                                                     |                                                          |
+| `title`                   | String to overwrite the project title with a custom one                                                               | `-`                                                                        |                                                          |
 | `typefiles`               | Array of strings which defines where to find the typescript types to use for the request and response bodies          | `['./src/types/api-types.d.ts']`                                           |                                                          |
 | `swaggerFiles`            | Array of string which will merge custom json OpenApi 2.0 files to the generated swagger                               | `[]`                                                                       |                                                          |
 | `swaggerPath`             | String for customize swagger path. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}` | `swagger`                                                                  | `my-swagger` => `https://{your-url-domain}/my-swagger`   |

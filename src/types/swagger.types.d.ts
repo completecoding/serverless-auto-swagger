@@ -15,7 +15,7 @@ export interface Swagger {
 
 // Info Section
 export interface Info {
-  title: string;
+  title?: string;
   description?: string;
   version: string;
   termsOfService?: string;
