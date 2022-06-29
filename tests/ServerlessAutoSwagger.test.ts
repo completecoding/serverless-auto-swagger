@@ -820,6 +820,7 @@ describe('ServerlessAutoSwagger', () => {
           {
             basePath: '/bp',
             host: 'some-host',
+            title: 'Serverless service name',
             schemes: ['ws'],
             swaggerFiles: [fileName],
           }
@@ -874,7 +875,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: 'Serverless service name', version: '1' },
         paths: {},
         definitions: {},
         securityDefinitions: {},
@@ -909,7 +910,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: 'Serverless service name', version: '1' },
         schemes: ['http'],
         paths: {},
         securityDefinitions: {},
@@ -966,7 +967,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: 'Serverless service name', version: '1' },
         paths: {
           '/foo': 'whatever',
           '/bar': 'something else',
