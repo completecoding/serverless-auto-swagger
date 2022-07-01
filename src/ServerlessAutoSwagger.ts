@@ -38,7 +38,7 @@ export default class ServerlessAutoSwagger {
   swagger: Swagger = {
     swagger: '2.0',
     info: {
-      title: 'Serverless service name',
+      title: '',
       version: '1',
     },
     paths: {},
