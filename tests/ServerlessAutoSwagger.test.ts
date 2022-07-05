@@ -820,6 +820,7 @@ describe('ServerlessAutoSwagger', () => {
           {
             basePath: '/bp',
             host: 'some-host',
+            title: 'My API Title',
             schemes: ['ws'],
             swaggerFiles: [fileName],
           }
@@ -832,7 +833,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         definitions: expect.any(Object),
-        info: expect.any(Object),
+        info: { title: 'My API Title', version: '1' },
         paths: expect.any(Object),
         securityDefinitions: expect.any(Object),
         swagger: '2.0',

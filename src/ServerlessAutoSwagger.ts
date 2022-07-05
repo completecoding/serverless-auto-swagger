@@ -106,6 +106,7 @@ export default class ServerlessAutoSwagger {
     if (autoswagger.basePath) this.swagger.basePath = autoswagger.basePath;
     if (autoswagger.host) this.swagger.host = autoswagger.host;
     if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes;
+    if (autoswagger.title) this.swagger.info.title = autoswagger.title;
 
     // There must be at least one or this `if` will be false
     if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles);
@@ -197,8 +198,8 @@ export default class ServerlessAutoSwagger {
   };
 
   generateSwagger = async () => {
-    this.gatherSwaggerOverrides();
     await this.gatherTypes();
+    this.gatherSwaggerOverrides();
     this.generateSecurity();
     this.generatePaths();
 
