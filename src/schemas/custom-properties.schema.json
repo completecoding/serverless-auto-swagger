@@ -11,6 +11,9 @@
           },
           "type": "array"
         },
+        "title": {
+          "type": "string"
+        },
         "apiType": {
           "default": "httpApi",
           "enum": ["http", "httpApi"],
