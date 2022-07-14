@@ -82,6 +82,7 @@ export default class ServerlessAutoSwagger {
     // TODO: Test custom properties configuration
     this.serverless.configSchemaHandler?.defineCustomProperties(customPropertiesSchema);
     this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', functionEventPropertiesSchema);
+    this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'httpApi', functionEventPropertiesSchema);
   };
 
   preDeploy = async () => {
