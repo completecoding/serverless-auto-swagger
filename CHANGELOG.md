@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.8.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.8.0...v2.8.1) (2022-07-14)
+
+### Bug Fixes
+
+- add custom schema to httpApi also ([4f25ce6](https://github.com/SamWSoftware/serverless-auto-swagger/commit/4f25ce67d48a36638e8841b1f24820923980541c))
+
 ## [2.8.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.7.0...v2.8.0) (2022-07-05)
 
 ### Features
