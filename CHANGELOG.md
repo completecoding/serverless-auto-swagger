@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.9.2](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.9.1...v2.9.2) (2022-09-30)
+
+### Bug Fixes
+
+- remove log ([2ff5bf2](https://github.com/SamWSoftware/serverless-auto-swagger/commit/2ff5bf25554785f53566a61a0a7f5b22d42c6f01))
+
 ### [2.9.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.9.0...v2.9.1) (2022-09-30)
 
 ### Bug Fixes
