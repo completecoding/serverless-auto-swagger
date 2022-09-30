@@ -62,7 +62,6 @@ export default class ServerlessAutoSwagger {
         error: console.error,
       } as Logging['log'];
 
-    this.log.notice('Test 6');
     this.registerOptions();
 
     this.commands = {
