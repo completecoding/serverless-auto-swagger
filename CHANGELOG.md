@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.9.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.8.2...v2.9.0) (2022-09-30)
+
+### Features
+
+- add lambda authorizer ([68f8c98](https://github.com/SamWSoftware/serverless-auto-swagger/commit/68f8c988de6824d56ca553d95b15bc948a1c8a50))
+
 ### [2.8.2](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.8.1...v2.8.2) (2022-07-14)
 
 ### Bug Fixes
