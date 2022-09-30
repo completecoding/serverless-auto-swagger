@@ -37,7 +37,7 @@
           "type": "boolean"
         },
         "lambdaAuthorizer": {
-          "oneOf": [
+          "anyOf": [
             { "type": "string" },
             {
               "type": "object",
@@ -46,7 +46,7 @@
                 "arn": { "type": "string" },
                 "identitySource": { "type": "string" },
                 "identityValidationExpression": { "type": "string" },
-                "resultTtlInSeconds": { "type": ["integer", "string"] },
+                "resultTtlInSeconds": { "type": ["string"] },
                 "type": { "type": "string" }
               }
             },

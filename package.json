@@ -9,7 +9,11 @@
     "url": "https://github.com/SamWSoftware/serverless-auto-swagger"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && copyfiles -f ./src/resources/*.py ./dist/resources/",
+    "start": "npm run build:watch",
+    "compile": "tsc -p tsconfig.build.json",
+    "build": "npm run compile",
+    "build:watch": "npm run compile -- --watch",
+    "postbuild": "copyfiles -f ./src/resources/*.py ./dist/resources/",
     "check-types": "tsc --noEmit",
     "lint": "eslint 'src/**/*.ts'",
     "lint:fix": "npm run lint -- --fix",
