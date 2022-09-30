@@ -36,6 +36,38 @@
           "default": true,
           "type": "boolean"
         },
+        "lambdaAuthorizer": {
+          "oneOf": [
+            { "type": "string" },
+            {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "arn": { "type": "string" },
+                "identitySource": { "type": "string" },
+                "identityValidationExpression": { "type": "string" },
+                "resultTtlInSeconds": { "type": ["integer", "string"] },
+                "type": { "type": "string" }
+              }
+            },
+            {
+              "type": "object",
+              "properties": {
+                "name": { "type": "string" },
+                "scopes": { "type": "array", "items": { "type": "string" } }
+              },
+              "required": ["name"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "scopes": { "type": "array", "items": { "type": "string" } }
+              },
+              "required": ["name"]
+            }
+          ]
+        },
         "schemes": {
           "items": {
             "enum": ["http", "https", "ws", "wss"],

@@ -41,6 +41,7 @@ export interface AutoSwaggerCustomConfig {
   schemes?: SwaggerScheme[];
   title?: string;
   excludeStages?: string[];
+  lambdaAuthorizer?: Http['authorizer'] | HttpApiEvent['authorizer'];
 }
 
 export type CustomWithAutoSwagger = Custom & { autoswagger?: AutoSwaggerCustomConfig };

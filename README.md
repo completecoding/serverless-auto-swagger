@@ -21,11 +21,11 @@ plugins:
 plugins: ['serverless-auto-swagger'];
 ```
 
-**_NOTE_**: This plugin _must_ come before any transform plugins (i.e. `serverless-webpack` or `serverless-plugin-typescript`), and _must_ come before `serverless-offline` if included.
+**_NOTE_**: This plugin should come before any transform plugins (i.e. `serverless-webpack` or `serverless-plugin-typescript`), and _must_ come before `serverless-offline` if included.
 
 ## Usage
 
-This plugin is designed to work with vanilla Serverless Framework. All you need to do is add this plugin to your plugin list and it will generate the swagger file and add the endpoints required. When you deploy your API, your new swagger UI will be available at `https://{your-url-domain}/swagger`.
+This plugin is designed to work with vanilla Serverless Framework. All you need to do is add this plugin to your plugin list, and it will generate the swagger file and add the endpoints required. When you deploy your API, your new swagger UI will be available at `https://{your-url-domain}/swagger`.
 
 You can also run `sls generate-swagger` if you want to generate the swagger file without deploying the application.
 
@@ -48,22 +48,24 @@ custom:
         host: 'http://some-host'
         schemes: ['http', 'https', 'ws', 'wss']
         excludeStages: ['production', 'anyOtherStage']
+        lambdaAuthorizer?: ${self:custom.myAuthorizer}
 ```
 
 | Option                    | Description                                                                                                           | Default                                                                    | Example                                                  |
 | ------------------------- | --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `apiKeyHeaders`           | Array of strings used to define API keys used in auth headers                                                         | `[]`                                                                       | `apiKeyHeaders: ['Authorization', 'x-api-key']`          |
+| `apiType`                 | API type for which your Swagger UI and Swagger JSON lambdas should be deployed. Options are `http` and `httpApi`      | `httpApi`                                                                  |                                                          |
+| `basePath`                | String that can be prepended to every request. Should include leading `/`                                             | -                                                                          | `/some-base` => `http://localhost/some-base/my-endpoint` |
+| `excludeStages`           | Array of strings that contains stages in which Swagger UI and Swagger JSON lambdas should **not** be deployed in.     | `[]`                                                                       |                                                          |
 | `generateSwaggerOnDeploy` | Boolean which indicates whether to generate a new swagger file on deployment                                          | `true`                                                                     |                                                          |
-| `title`                   | String to overwrite the project title with a custom one                                                               | Serverless service name                                                    |                                                          |
-| `typefiles`               | Array of strings which defines where to find the typescript types to use for the request and response bodies          | `['./src/types/api-types.d.ts']`                                           |                                                          |
+| `host`                    | String that overrides the host. With this you can set your custom domain for your application endpoints               | -                                                                          | `http://some-host` => `{http://some-host}/my-endpoint`   |
+| `lambdaAuthorizer`        | A String or authorizer object to add security to the lambda `/swagger` and `/swagger.json` endpoints                  | -                                                                          |                                                          |
+| `schemes`                 | Array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes                                      | Scheme used to serve the API specification (reflecting Swagger's behavior) |                                                          |
 | `swaggerFiles`            | Array of string which will merge custom json OpenApi 2.0 files to the generated swagger                               | `[]`                                                                       |                                                          |
 | `swaggerPath`             | String for customize swagger path. Your new swagger UI will be available at `https://{your-url-domain}/{swaggerPath}` | `swagger`                                                                  | `my-swagger` => `https://{your-url-domain}/my-swagger`   |
-| `apiType`                 | API type for which your Swagger UI and Swagger JSON lambdas should be deployed. Options are `http` and `httpApi`      | `httpApi`                                                                  |                                                          |
-| `apiKeyHeaders`           | Array of strings used to define API keys used in auth headers                                                         | `[]`                                                                       | `apiKeyHeaders: ['Authorization', 'x-api-key']`          |
+| `title`                   | String to overwrite the project title with a custom one                                                               | Serverless service name                                                    |                                                          |
+| `typefiles`               | Array of strings which defines where to find the typescript types to use for the request and response bodies          | `['./src/types/api-types.d.ts']`                                           |                                                          |
 | `useStage`                | Boolean to either use current stage in beginning of path or not                                                       | `false`                                                                    | `true` => `dev/swagger` for stage `dev`                  |
-| `basePath`                | String that can be prepended to every request. Should include leading `/`                                             | -                                                                          | `/some-base` => `http://localhost/some-base/my-endpoint` |
-| `host`                    | String that overrides the host. With this you can set your custom domain for your application endpoints               | -                                                                          | `http://some-host` => `{http://some-host}/my-endpoint`   |
-| `schemes`                 | Array (containing one of `http`, `https`, `ws`, or `wss`) for specifying schemes                                      | Scheme used to serve the API specification (reflecting Swagger's behavior) |                                                          |
-| `excludeStages`           | Array of strings that contains stages in which Swagger UI and Swagger JSON lambdas should **not** be deployed in.     | `[]`                                                                       |                                                          |
 
 ## Adding more details
 

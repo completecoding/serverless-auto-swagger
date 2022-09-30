@@ -1,5 +1,5 @@
 'use strict';
-import { ApiType, CustomServerless, ServerlessFunction } from '../types/serverless-plugin.types';
+import { ApiType, CustomHttpApiEvent, CustomServerless, ServerlessFunction } from '../types/serverless-plugin.types';
 
 export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON', ServerlessFunction> => {
   const handlerPath = 'swagger/';
@@ -10,6 +10,7 @@ export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON
 
   const useStage = serverless.service.custom?.autoswagger?.useStage;
   const apiType: ApiType = serverless.service.custom?.autoswagger?.apiType ?? 'httpApi';
+  const authorizer = serverless.service.custom?.autoswagger?.lambdaAuthorizer as CustomHttpApiEvent['authorizer'];
 
   if (!['http', 'httpApi'].includes(apiType)) {
     throw new Error(`custom.autoswagger.apiType must be "http" or "httpApi". Received: "${apiType}"`);
@@ -24,6 +25,7 @@ export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON
         [apiType as 'httpApi']: {
           method: 'get' as const,
           path: useStage ? `/${stage}/${path}` : `/${path}`,
+          ...(authorizer && { authorizer }),
         },
       },
     ],
@@ -38,6 +40,7 @@ export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON
         [apiType as 'httpApi']: {
           method: 'get' as const,
           path: useStage ? `/${stage}/${path}.json` : `/${path}.json`,
+          ...(authorizer && { authorizer }),
         },
       },
     ],
