@@ -39,6 +39,7 @@ export default class ServerlessAutoSwagger {
     swagger: '2.0',
     info: {
       title: '',
+      description: '',
       version: '1',
     },
     paths: {},
@@ -108,6 +109,8 @@ export default class ServerlessAutoSwagger {
     if (autoswagger.host) this.swagger.host = autoswagger.host;
     if (autoswagger.schemes) this.swagger.schemes = autoswagger.schemes;
     if (autoswagger.title) this.swagger.info.title = autoswagger.title;
+    if (autoswagger.description) this.swagger.info.description = autoswagger.description;
+    if (autoswagger.version) this.swagger.info.version = autoswagger.version;
 
     // There must be at least one or this `if` will be false
     if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles);

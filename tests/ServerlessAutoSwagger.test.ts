@@ -821,6 +821,7 @@ describe('ServerlessAutoSwagger', () => {
             basePath: '/bp',
             host: 'some-host',
             title: 'My API Title',
+            description: 'API Description',
             schemes: ['ws'],
             swaggerFiles: [fileName],
           }
@@ -833,7 +834,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         definitions: expect.any(Object),
-        info: { title: 'My API Title', version: '1' },
+        info: { title: 'My API Title', version: '1', description: 'API Description' },
         paths: expect.any(Object),
         securityDefinitions: expect.any(Object),
         swagger: '2.0',
@@ -875,7 +876,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: '', version: '1', description: '' },
         paths: {},
         definitions: {},
         securityDefinitions: {},
@@ -910,7 +911,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: '', version: '1', description: '' },
         schemes: ['http'],
         paths: {},
         securityDefinitions: {},
@@ -967,7 +968,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1' },
+        info: { title: '', version: '1', description: '' },
         paths: {
           '/foo': 'whatever',
           '/bar': 'something else',
