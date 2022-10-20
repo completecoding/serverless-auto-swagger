@@ -39,7 +39,6 @@ export default class ServerlessAutoSwagger {
     swagger: '2.0',
     info: {
       title: '',
-      description: '',
       version: '1',
     },
     paths: {},

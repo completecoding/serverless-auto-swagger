@@ -876,7 +876,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1', description: '' },
+        info: { title: '', version: '1' },
         paths: {},
         definitions: {},
         securityDefinitions: {},
@@ -911,7 +911,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1', description: '' },
+        info: { title: '', version: '1' },
         schemes: ['http'],
         paths: {},
         securityDefinitions: {},
@@ -968,7 +968,7 @@ describe('ServerlessAutoSwagger', () => {
 
       expect(serverlessAutoSwagger.swagger).toEqual({
         swagger: '2.0',
-        info: { title: '', version: '1', description: '' },
+        info: { title: '', version: '1' },
         paths: {
           '/foo': 'whatever',
           '/bar': 'something else',
