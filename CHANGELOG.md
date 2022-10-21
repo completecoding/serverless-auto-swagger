@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.10.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.9.2...v2.10.0) (2022-10-21)
+
+### Features
+
+- add option to change api description and version ([#99](https://github.com/SamWSoftware/serverless-auto-swagger/issues/99)) ([4aeba34](https://github.com/SamWSoftware/serverless-auto-swagger/commit/4aeba34054ff72bfd1ad31850277a0221f32d04c))
+
 ### [2.9.2](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.9.1...v2.9.2) (2022-09-30)
 
 ### Bug Fixes
