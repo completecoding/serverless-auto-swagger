@@ -40,6 +40,8 @@ export interface AutoSwaggerCustomConfig {
   host?: string;
   schemes?: SwaggerScheme[];
   title?: string;
+  description?: string;
+  version?: string;
   excludeStages?: string[];
   lambdaAuthorizer?: Http['authorizer'] | HttpApiEvent['authorizer'];
 }
