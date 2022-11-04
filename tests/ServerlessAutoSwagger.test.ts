@@ -989,4 +989,43 @@ describe('ServerlessAutoSwagger', () => {
       });
     });
   });
+
+  describe('overrideOperationId', () => {
+    it('should use defaults if overrides are not specified', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: 'hello',
+              method: 'post',
+            },
+          },
+        ]),
+        options,
+        logging
+      );
+      serverlessAutoSwagger.generatePaths();
+
+      expect(serverlessAutoSwagger.swagger.paths['/hello'].post?.operationId).toBe('mocked.post.hello');
+    });
+
+    it('should use operationId override if specified', () => {
+      const serverlessAutoSwagger = new ServerlessAutoSwagger(
+        generateServerlessFromAnEndpoint([
+          {
+            http: {
+              path: 'hello',
+              method: 'post',
+              operationId: 'postHello',
+            },
+          },
+        ]),
+        options,
+        logging
+      );
+      serverlessAutoSwagger.generatePaths();
+
+      expect(serverlessAutoSwagger.swagger.paths['/hello'].post?.operationId).toBe('postHello');
+    });
+  });
 });

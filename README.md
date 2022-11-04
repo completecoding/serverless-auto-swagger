@@ -225,6 +225,18 @@ http: {
 }
 ```
 
+### Custom operationId
+
+You can override the automatically generated operationId by adding the `operationId` property to the http event. This can be useful when using code generators.
+
+```js
+http: {
+    path: 'hello',
+    method: 'post',
+    operationId: 'postHello',
+}
+```
+
 ### MIME Types
 
 You can specify the MIME types by adding `consumes` and `produces` to the http event. Default for both is `['application/json']`
