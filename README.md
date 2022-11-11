@@ -48,7 +48,8 @@ custom:
         host: 'http://some-host'
         schemes: ['http', 'https', 'ws', 'wss']
         excludeStages: ['production', 'anyOtherStage']
-        lambdaAuthorizer?: ${self:custom.myAuthorizer}
+        lambdaAuthorizer: ${self:custom.myAuthorizer}
+        useRedirectUI: true | false
 ```
 
 | Option                    | Description                                                                                                           | Default                                                                    | Example                                                  |
@@ -68,6 +69,7 @@ custom:
 | `version`                 | String to overwrite the project version with a custom one                                                             | `1`                                                                        |                                                          |
 | `typefiles`               | Array of strings which defines where to find the typescript types to use for the request and response bodies          | `['./src/types/api-types.d.ts']`                                           |                                                          |
 | `useStage`                | Boolean to either use current stage in beginning of path or not                                                       | `false`                                                                    | `true` => `dev/swagger` for stage `dev`                  |
+| `useRedirectUI`           | Boolean to include a path and handler for the oauth2 redirect flow or not                                             | `false`                                                                    |                                                          |
 
 ## Adding more details
 

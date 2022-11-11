@@ -44,6 +44,7 @@ export interface AutoSwaggerCustomConfig {
   version?: string;
   excludeStages?: string[];
   lambdaAuthorizer?: Http['authorizer'] | HttpApiEvent['authorizer'];
+  useRedirectUI?: boolean;
 }
 
 export type CustomWithAutoSwagger = Custom & { autoswagger?: AutoSwaggerCustomConfig };
