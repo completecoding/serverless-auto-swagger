@@ -20,6 +20,7 @@ import type {
   PathParameters,
   QueryStringParameters,
   ServerlessCommand,
+  ServerlessFunction,
   ServerlessHooks,
 } from './types/serverless-plugin.types';
 
@@ -235,7 +236,15 @@ export default class ServerlessAutoSwagger {
   addEndpointsAndLambda = () => {
     this.serverless.service.functions = {
       ...this.serverless.service.functions,
-      ...swaggerFunctions(this.serverless),
+      ...Object.entries(swaggerFunctions(this.serverless))
+        .filter(([_key, value]) => value)
+        .reduce(
+          (acc, [key, value]) => ({
+            ...acc,
+            [key]: value as ServerlessFunction,
+          }),
+          {}
+        ),
     };
   };
 
@@ -259,6 +268,7 @@ export default class ServerlessAutoSwagger {
       operationId: http.operationId || `${functionName}.${method}.${http.path}`,
       consumes: http.consumes ?? ['application/json'],
       produces: http.produces ?? ['application/json'],
+      security: http.security,
       // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
       parameters: this.httpEventToParameters(http as CustomHttpEvent),
       responses: this.formatResponses(http.responseData ?? http.responses),

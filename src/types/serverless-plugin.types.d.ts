@@ -12,8 +12,10 @@ import type {
   Serverless,
 } from 'serverless/aws';
 import type { HttpMethod } from './common.types';
+import { MethodSecurity } from './swagger.types';
 
 export type CustomServerless = {
+  // eslint-disable-next-line no-unused-vars
   cli?: { log: (text: string) => void }; // deprecated and replaced in v3.0.0
   service: ServerlessConfig;
   configSchemaHandler: configSchemaHandler;
@@ -44,6 +46,7 @@ export interface AutoSwaggerCustomConfig {
   version?: string;
   excludeStages?: string[];
   lambdaAuthorizer?: Http['authorizer'] | HttpApiEvent['authorizer'];
+  useRedirectUI?: boolean;
 }
 
 export type CustomWithAutoSwagger = Custom & { autoswagger?: AutoSwaggerCustomConfig };
@@ -111,6 +114,7 @@ export interface CustomHttpEvent extends Http {
   headerParameters?: HeaderParameters;
   queryStringParameters?: QueryStringParameters;
   operationId?: string;
+  security?: MethodSecurity[];
 }
 
 export interface CustomHttpApiEvent extends HttpApiEvent {
@@ -127,6 +131,7 @@ export interface CustomHttpApiEvent extends HttpApiEvent {
   headerParameters?: string;
   queryStringParameterType?: string;
   operationId?: string;
+  security?: MethodSecurity[];
 }
 
 export interface HttpResponses {

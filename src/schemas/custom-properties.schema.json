@@ -86,6 +86,10 @@
           "default": "swagger",
           "type": "string"
         },
+        "useRedirectUI": {
+          "default": "false",
+          "type": "boolean"
+        },
         "typefiles": {
           "default": [],
           "items": {
