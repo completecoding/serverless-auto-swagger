@@ -52,7 +52,7 @@ const getCustomServerlessConfig = ({ autoswaggerOptions }: GetCustomServerlessCo
 });
 
 describe('swaggerFunctions tests', () => {
-  it('includes blank if useRedirectUI is set to true', () => {
+  it('includes swaggerRedirectURI if useRedirectUI is set to true', () => {
     const serviceDetails = getCustomServerlessConfig({
       autoswaggerOptions: {
         useRedirectUI: true,
@@ -62,7 +62,7 @@ describe('swaggerFunctions tests', () => {
     expect(Object.keys(result)).toContain('swaggerRedirectURI');
   });
 
-  it('does not includes blank if useRedirectUI is set to false', () => {
+  it('does not includes swaggerRedirectURI if useRedirectUI is set to false', () => {
     const serviceDetails = getCustomServerlessConfig({
       autoswaggerOptions: {
         useRedirectUI: false,
@@ -72,7 +72,7 @@ describe('swaggerFunctions tests', () => {
     expect(Object.keys(result)).not.toContain('swaggerRedirectURI');
   });
 
-  it('does not includes blank if useRedirectUI is not set', () => {
+  it('does not includes swaggerRedirectURI if useRedirectUI is not set', () => {
     const serviceDetails = getCustomServerlessConfig();
     const result = swaggerFunctions(serviceDetails);
     expect(Object.keys(result)).not.toContain('swaggerRedirectURI');
