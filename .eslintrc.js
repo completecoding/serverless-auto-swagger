@@ -14,14 +14,7 @@ module.exports = {
   },
   rules: {
     // 0 = off; 1 = warning; 2 = error
-    'no-unused-vars': [
-      'warn',
-      {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-        caughtErrorsIgnorePattern: '^_',
-      },
-    ],
+    'no-unused-vars': 0, // For Typescript, this has to be handled with the TS plugin instead (automatically)
     'no-console': 0,
     'no-restricted-syntax': 0,
     'no-undef': 1,
@@ -34,7 +27,6 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 0,
     'deprecation/deprecation': 1,
     '@typescript-eslint/no-explicit-any': 0, // Ideally we want this on, but we have some types that I'm unfamiliar with typed as `any`.
-    '@typescript-eslint/no-unused-vars': 0,
   },
   overrides: [
     {

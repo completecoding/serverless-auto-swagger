@@ -20,7 +20,6 @@ import type {
   PathParameters,
   QueryStringParameters,
   ServerlessCommand,
-  ServerlessFunction,
   ServerlessHooks,
 } from './types/serverless-plugin.types';
 
@@ -236,15 +235,7 @@ export default class ServerlessAutoSwagger {
   addEndpointsAndLambda = () => {
     this.serverless.service.functions = {
       ...this.serverless.service.functions,
-      ...Object.entries(swaggerFunctions(this.serverless))
-        .filter(([_key, value]) => value)
-        .reduce(
-          (acc, [key, value]) => ({
-            ...acc,
-            [key]: value as ServerlessFunction,
-          }),
-          {}
-        ),
+      ...swaggerFunctions(this.serverless),
     };
   };
 

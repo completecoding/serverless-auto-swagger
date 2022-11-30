@@ -1,9 +1,11 @@
 'use strict';
 import { ApiType, CustomHttpApiEvent, CustomServerless, ServerlessFunction } from '../types/serverless-plugin.types';
 
+type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>;
+
 export default (
   serverless: CustomServerless
-): Record<'swaggerUI' | 'swaggerJSON' | 'swaggerRedirectURI', ServerlessFunction | undefined> => {
+): PartialRecord<'swaggerUI' | 'swaggerJSON' | 'swaggerRedirectURI', ServerlessFunction> => {
   const handlerPath = 'swagger/';
   const configInput = serverless?.configurationInput || serverless.service;
   const path = serverless.service.custom?.autoswagger?.swaggerPath ?? 'swagger';
@@ -66,6 +68,6 @@ export default (
   return {
     swaggerUI,
     swaggerJSON,
-    swaggerRedirectURI,
+    ...(swaggerRedirectURI && { swaggerRedirectURI }),
   };
 };
