@@ -1,7 +1,11 @@
 'use strict';
 import { ApiType, CustomHttpApiEvent, CustomServerless, ServerlessFunction } from '../types/serverless-plugin.types';
 
-export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON', ServerlessFunction> => {
+type PartialRecord<K extends keyof any, T> = Partial<Record<K, T>>;
+
+export default (
+  serverless: CustomServerless
+): PartialRecord<'swaggerUI' | 'swaggerJSON' | 'swaggerRedirectURI', ServerlessFunction> => {
   const handlerPath = 'swagger/';
   const configInput = serverless?.configurationInput || serverless.service;
   const path = serverless.service.custom?.autoswagger?.swaggerPath ?? 'swagger';
@@ -46,5 +50,24 @@ export default (serverless: CustomServerless): Record<'swaggerUI' | 'swaggerJSON
     ],
   };
 
-  return { swaggerUI, swaggerJSON };
+  const swaggerRedirectURI: ServerlessFunction | undefined = serverless.service.custom?.autoswagger?.useRedirectUI
+    ? {
+        name: name && stage ? `${name}-${stage}-swagger-redirect-uri` : undefined,
+        handler: handlerPath + 'oauth2-redirect-html.handler',
+        events: [
+          {
+            [apiType as 'httpApi']: {
+              method: 'get' as const,
+              path: useStage ? `/${stage}/oauth2-redirect.html` : `/oauth2-redirect.html`,
+            },
+          },
+        ],
+      }
+    : undefined;
+
+  return {
+    swaggerUI,
+    swaggerJSON,
+    ...(swaggerRedirectURI && { swaggerRedirectURI }),
+  };
 };
