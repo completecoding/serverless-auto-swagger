@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [2.11.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.10.0...v2.11.0) (2022-11-09)
+## [2.12.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.11.0...v2.12.0) (2022-12-02)
+
+### Features
+
+- add oauth authentication using `useRedirectUI` custom configuration ([#105](https://github.com/SamWSoftware/serverless-auto-swagger/issues/105)) ([0bb8432](https://github.com/SamWSoftware/serverless-auto-swagger/commit/0bb8432fa68e3c192f8b274bdd306bfbbc060a40))
+
+### Changes
+
+- Updated dependencies
+
+## [2.11.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.10.0...v2.11.0) (2022-11-09)
 
 ### Features
 

@@ -350,7 +350,7 @@ export default class ServerlessAutoSwagger {
 
     const rawPathParams: PathParameters['path'] = httpEvent.request?.parameters?.paths;
     const match = httpEvent.path.match(/[^{}]+(?=})/g);
-    let pathParameters = match ?? [];
+    let pathParameters: string[] = match ?? [];
 
     if (rawPathParams) {
       Object.entries(rawPathParams ?? {}).forEach(([param, paramInfo]) => {
