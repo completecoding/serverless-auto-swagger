@@ -5,12 +5,13 @@ import type { Options } from 'serverless';
 import type { Service } from 'serverless/aws';
 import type { Logging } from 'serverless/classes/Plugin';
 import { getOpenApiWriter, getTypeScriptReader, makeConverter } from 'typeconv';
-import { removeStringFromArray, writeFile } from './helperFunctions';
+import { generateEmptySwagger, removeStringFromArray, writeFile } from './helperFunctions';
 import swaggerFunctions from './resources/functions';
 import * as customPropertiesSchema from './schemas/custom-properties.schema.json';
 import * as functionEventPropertiesSchema from './schemas/function-event-properties.schema.json';
 import type { HttpMethod } from './types/common.types';
 import type {
+  AutoSwaggerCustomConfig,
   CustomHttpApiEvent,
   CustomHttpEvent,
   CustomServerless,
@@ -19,7 +20,7 @@ import type {
   PathParameterPath,
   PathParameters,
   QueryStringParameters,
-  ServerlessCommand,
+  ServerlessCommands,
   ServerlessHooks,
 } from './types/serverless-plugin.types';
 
@@ -34,51 +35,51 @@ import type {
 
 export default class ServerlessAutoSwagger {
   serverless: CustomServerless;
+  autoSwaggerCustomConfig: AutoSwaggerCustomConfig;
+  swagger: Swagger = generateEmptySwagger();
   options: Options;
-  swagger: Swagger = {
-    swagger: '2.0',
-    info: {
-      title: '',
-      version: '1',
-    },
-    paths: {},
-    definitions: {},
-    securityDefinitions: {},
-  };
   log: Logging['log'];
-
-  commands: Record<string, ServerlessCommand> = {};
-  hooks: ServerlessHooks = {};
+  commands: ServerlessCommands;
+  hooks: ServerlessHooks;
 
   // IO is only injected in Serverless v3.0.0 (can experiment with `import { writeText, log, progress } from '@serverless/utils/log'; in a future PR)
   constructor(serverless: CustomServerless, options: Options, io?: Logging) {
     this.serverless = serverless;
+    this.autoSwaggerCustomConfig = this.serverless.service.custom?.autoswagger || {};
     this.options = options;
+    this.log = this.setupLogging(io);
+    this.commands = this.getCustomCommands();
+    this.hooks = this.getCustomLifecycleHooks();
+    this.enrichServerlessSchema();
+  }
 
-    if (io?.log) this.log = io.log;
-    else
-      this.log = {
-        notice: this.serverless.cli?.log ?? console.log,
-        error: console.error,
-      } as Logging['log'];
-
-    this.registerOptions();
-
-    this.commands = {
-      'generate-swagger': {
-        usage: 'Generates Swagger for your API',
-        lifecycleEvents: ['generateSwagger'],
-      },
-    };
-
-    this.hooks = {
+  private getCustomLifecycleHooks(): ServerlessHooks {
+    return {
       'generate-swagger:generateSwagger': this.generateSwagger,
       'before:offline:start:init': this.preDeploy,
       'before:package:cleanup': this.preDeploy,
     };
   }
 
-  registerOptions = () => {
+  private getCustomCommands(): ServerlessCommands {
+    return {
+      'generate-swagger': {
+        usage: 'Generates Swagger for your API',
+        lifecycleEvents: ['generateSwagger'],
+      },
+    };
+  }
+
+  private setupLogging(io: Logging | undefined) {
+    if (io?.log) return io.log;
+    else
+      return {
+        notice: this.serverless.cli?.log ?? console.log,
+        error: console.error,
+      } as Logging['log'];
+  }
+
+  enrichServerlessSchema = () => {
     // TODO: Test custom properties configuration
     this.serverless.configSchemaHandler?.defineCustomProperties(customPropertiesSchema);
     this.serverless.configSchemaHandler?.defineFunctionEventProperties('aws', 'http', functionEventPropertiesSchema);
@@ -87,15 +88,15 @@ export default class ServerlessAutoSwagger {
 
   preDeploy = async () => {
     const stage = this.serverless.service.provider.stage;
-    const excludedStages = this.serverless.service.custom?.autoswagger?.excludeStages;
-    if (excludedStages?.includes(stage!)) {
+    const excludedStages = this.autoSwaggerCustomConfig.excludeStages;
+    if (excludedStages && excludedStages.includes(stage!)) {
       this.log.notice(
         `Swagger lambdas will not be deployed for stage [${stage}], as it has been marked for exclusion.`
       );
       return;
     }
 
-    const generateSwaggerOnDeploy = this.serverless.service.custom?.autoswagger?.generateSwaggerOnDeploy ?? true;
+    const generateSwaggerOnDeploy = this.autoSwaggerCustomConfig.generateSwaggerOnDeploy ?? true;
     if (generateSwaggerOnDeploy) await this.generateSwagger();
     this.addEndpointsAndLambda();
   };
@@ -148,7 +149,7 @@ export default class ServerlessAutoSwagger {
     });
     const { convert } = makeConverter(reader, writer);
     try {
-      const typeLocationOverride = this.serverless.service.custom?.autoswagger?.typefiles;
+      const typeLocationOverride = this.autoSwaggerCustomConfig.typefiles;
 
       const typesFile = typeLocationOverride || ['./src/types/api-types.d.ts'];
       await Promise.all(
@@ -181,7 +182,7 @@ export default class ServerlessAutoSwagger {
   };
 
   generateSecurity = (): void => {
-    const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
+    const apiKeyHeaders = this.autoSwaggerCustomConfig.apiKeyHeaders;
 
     if (apiKeyHeaders?.length) {
       const securityDefinitions: Record<string, SecurityDefinition> = {};
@@ -265,7 +266,7 @@ export default class ServerlessAutoSwagger {
       responses: this.formatResponses(http.responseData ?? http.responses),
     };
 
-    const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
+    const apiKeyHeaders = this.autoSwaggerCustomConfig.apiKeyHeaders;
 
     const security: MethodSecurity[] = [];
 
