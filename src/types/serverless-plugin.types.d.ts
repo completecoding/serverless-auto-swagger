@@ -148,4 +148,6 @@ export interface ServerlessCommand {
   usage?: string;
 }
 
+export type ServerlessCommands = Record<string, ServerlessCommand>;
+
 export type ServerlessHooks = Record<string, () => Promise<void>>;
