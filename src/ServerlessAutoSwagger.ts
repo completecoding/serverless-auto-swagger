@@ -20,7 +20,7 @@ import type {
 } from './types/serverless-plugin.types';
 
 import type { Definition, MethodSecurity, SecurityDefinition, Swagger } from './types/swagger.types';
-import { formatResponses, httpEventToParameters } from './converters';
+import { formatResponses, httpEventToParameters, isHttpApiEvent, isHttpEvent } from './converters';
 
 export default class ServerlessAutoSwagger {
   serverless: CustomServerless;
@@ -292,10 +292,13 @@ export default class ServerlessAutoSwagger {
     const functions = this.serverless.service.functions ?? {};
     Object.entries(functions).forEach(([functionName, config]) => {
       const events = config.events ?? [];
-      events
-        .map((event) => event.http || event.httpApi)
-        .filter((http) => !!http && typeof http !== 'string' && !http.exclude)
-        .forEach((http) => this.addSwaggerPath(functionName, http!));
+      events.forEach((event) => {
+        if (isHttpEvent(event) && !event.http.exclude) {
+          this.addSwaggerPath(functionName, event.http);
+        } else if (isHttpApiEvent(event) && !event.httpApi.exclude) {
+          this.addSwaggerPath(functionName, event.httpApi);
+        }
+      });
     });
   };
 }

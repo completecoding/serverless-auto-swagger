@@ -1,10 +1,12 @@
 import {
+  CustomHttpApiEvent,
   CustomHttpEvent,
   HeaderParameters,
   HttpResponses,
   PathParameterPath,
   PathParameters,
   QueryStringParameters,
+  ServerlessFunctionEvent,
 } from './types/serverless-plugin.types';
 import { Parameter, Response } from './types/swagger.types';
 import { removeStringFromArray } from './helperFunctions';
@@ -126,4 +128,11 @@ export const pathToParam = (pathParam: string, paramInfoOrRequired?: PathParamet
     description: isObj ? paramInfoOrRequired.description : undefined,
     type: 'string',
   };
+};
+
+export const isHttpEvent = (event: ServerlessFunctionEvent): event is { http: CustomHttpEvent } => {
+  return event.http !== undefined;
+};
+export const isHttpApiEvent = (event: ServerlessFunctionEvent): event is { httpApi: CustomHttpApiEvent } => {
+  return event.httpApi !== undefined;
 };
