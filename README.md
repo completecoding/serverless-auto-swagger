@@ -95,7 +95,7 @@ http: {
 
 This plugin uses typescript types to generate the data types for the endpoints. By default, it pulls the types from `src/types/api-types.d.ts`.
 
-You can then assign these typescript definitions to requests as `bodyType` on the http or https config, or to the response as seen just below.
+You can then assign these typescript definitions to requests as `requestBody` on the http or https config, or to the response as seen just below.
 
 ### Responses
 
@@ -122,7 +122,7 @@ responseData: {
 
 When you create a `POST` or `PUT` endpoint, you expect to receive a specific structure of data as the body of the request.
 
-You can do that by adding a `bodyType` to the http event:
+You can do that by adding a `requestBody` to the http event:
 
 ```js
 http: {

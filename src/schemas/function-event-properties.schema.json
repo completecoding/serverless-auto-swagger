@@ -1,6 +1,6 @@
 {
   "properties": {
-    "bodyType": {
+    "requestBody": {
       "type": "string"
     },
     "summary": {

@@ -262,7 +262,7 @@ export default class ServerlessAutoSwagger {
       security: http.security,
       // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
       parameters: this.httpEventToParameters(http as CustomHttpEvent),
-      responses: this.formatResponses(http.responseData ?? http.responses),
+      responses: this.formatResponses(http.functionName.documentation.responseData ?? http.responses),
     };
 
     const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
@@ -338,13 +338,13 @@ export default class ServerlessAutoSwagger {
   httpEventToParameters = (httpEvent: CustomHttpEvent): Parameter[] => {
     const parameters: Parameter[] = [];
 
-    if (httpEvent.bodyType) {
+    if (httpEvent.requestBody) {
       parameters.push({
         in: 'body',
         name: 'body',
         description: 'Body required in the request',
         required: true,
-        schema: { $ref: `#/definitions/${httpEvent.bodyType}` },
+        schema: { $ref: `#/definitions/${httpEvent.requestBody}` },
       });
     }
 

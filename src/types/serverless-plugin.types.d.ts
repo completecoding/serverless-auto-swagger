@@ -110,7 +110,7 @@ export interface CustomHttpEvent extends Http {
   responseData?: HttpResponses;
   responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
   exclude?: boolean;
-  bodyType?: string;
+  requestBody?: string;
   headerParameters?: HeaderParameters;
   queryStringParameters?: QueryStringParameters;
   operationId?: string;
@@ -127,7 +127,7 @@ export interface CustomHttpApiEvent extends HttpApiEvent {
   responseData?: HttpResponses;
   responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
   exclude?: boolean;
-  bodyType?: string;
+  requestBody?: string;
   headerParameters?: string;
   queryStringParameterType?: string;
   operationId?: string;
