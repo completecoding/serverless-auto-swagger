@@ -107,7 +107,6 @@ export interface CustomHttpEvent extends Http {
   consumes?: string[];
   summary?: string;
   description?: string;
-  responseData?: HttpResponses;
   responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
   exclude?: boolean;
   requestBody?: string;
@@ -115,6 +114,7 @@ export interface CustomHttpEvent extends Http {
   queryStringParameters?: QueryStringParameters;
   operationId?: string;
   security?: MethodSecurity[];
+  documentation?: HttpResponseDocumentation;
 }
 
 export interface CustomHttpApiEvent extends HttpApiEvent {
@@ -124,7 +124,6 @@ export interface CustomHttpApiEvent extends HttpApiEvent {
   consumes?: string[];
   description?: string;
   summary?: string;
-  responseData?: HttpResponses;
   responses?: HttpResponses; // Ideally don't use as it conflicts with serverless offline
   exclude?: boolean;
   requestBody?: string;
@@ -132,6 +131,7 @@ export interface CustomHttpApiEvent extends HttpApiEvent {
   queryStringParameterType?: string;
   operationId?: string;
   security?: MethodSecurity[];
+  documentation: HttpResponseDocumentation;
 }
 
 export interface HttpResponses {
@@ -146,6 +146,10 @@ export interface HttpResponses {
 export interface ServerlessCommand {
   lifecycleEvents: string[];
   usage?: string;
+}
+
+export interface HttpResponseDocumentation { 
+  responseData: HttpResponses;
 }
 
 export type ServerlessHooks = Record<string, () => Promise<void>>;
