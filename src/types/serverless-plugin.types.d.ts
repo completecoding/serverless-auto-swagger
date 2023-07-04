@@ -114,7 +114,7 @@ export interface CustomHttpEvent extends Http {
   queryStringParameters?: QueryStringParameters;
   operationId?: string;
   security?: MethodSecurity[];
-  documentation?: HttpResponseDocumentation;
+  documentation?: HttpResponses;
 }
 
 export interface CustomHttpApiEvent extends HttpApiEvent {
@@ -131,7 +131,7 @@ export interface CustomHttpApiEvent extends HttpApiEvent {
   queryStringParameterType?: string;
   operationId?: string;
   security?: MethodSecurity[];
-  documentation: HttpResponseDocumentation;
+  documentation: HttpResponses;
 }
 
 export interface HttpResponses {
@@ -146,10 +146,6 @@ export interface HttpResponses {
 export interface ServerlessCommand {
   lifecycleEvents: string[];
   usage?: string;
-}
-
-export interface HttpResponseDocumentation { 
-  responseData: HttpResponses;
 }
 
 export type ServerlessHooks = Record<string, () => Promise<void>>;

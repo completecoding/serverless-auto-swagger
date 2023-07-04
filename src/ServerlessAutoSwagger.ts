@@ -154,15 +154,13 @@ export default class ServerlessAutoSwagger {
       await Promise.all(
         typesFile.map(async (filepath) => {
           try {
-            const fileData = readFileSync(filepath, 'utf8');
+            const fileData = await this.writeWrapperIfResponse(filepath!);
 
             const { data } = await convert({ data: fileData });
-            // change the #/components/schema to #/definitions
+            // Change the #/components/schema to #/definitions
             const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
             const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
-
-            // TODO: Handle `anyOf` in swagger configs
 
             this.swagger.definitions = {
               ...this.swagger.definitions,
@@ -174,10 +172,40 @@ export default class ServerlessAutoSwagger {
           }
         })
       );
+
       // TODO change this to store these as temporary and only include definitions used elsewhere.
     } catch (error) {
       this.log.error(`Unable to get types: ${error}`);
     }
+  };
+
+  writeWrapperIfResponse = async (filePath: string) => {
+    let fileData = await readFileSync(filePath, 'utf8');
+    const fileName = filePath.split('/').pop();
+    if (!fileName) {
+      throw new Error(`Invalid file path: ${filePath}`);
+    }
+    const isResponseFile = fileName.includes('response');
+    if (isResponseFile) {
+      try {
+        const interfaceName = fileName.split('.')[0];
+        const newInterfaceName = `${interfaceName}Response`;
+        const newInterface = `
+  export interface ${newInterfaceName} {
+    ${interfaceName.toLowerCase()}: ${interfaceName};
+    code: number;
+    message: string;
+  }
+  `;
+
+        const modifiedFileData = fileData + newInterface;
+        await writeFile(filePath, modifiedFileData);
+        fileData = await readFileSync(filePath, 'utf8');
+      } catch (error) {
+        throw new Error(`Couldn't read or write file: ${filePath}`);
+      }
+    }
+    return fileData;
   };
 
   generateSecurity = (): void => {
@@ -262,7 +290,7 @@ export default class ServerlessAutoSwagger {
       security: http.security,
       // This is actually type `HttpEvent | HttpApiEvent`, but we can lie since only HttpEvent params (or shared params) are used
       parameters: this.httpEventToParameters(http as CustomHttpEvent),
-      responses: this.formatResponses(http.functionName.documentation.responseData ?? http.responses),
+      responses: this.formatResponses(http.documentation ?? http.responses),
     };
 
     const apiKeyHeaders = this.serverless.service.custom?.autoswagger?.apiKeyHeaders;
