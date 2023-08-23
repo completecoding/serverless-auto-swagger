@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.12.3](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.12.0...v2.12.3) (2023-08-23)
+
+### [2.12.2](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.12.0...v2.12.2) (2023-08-23)
+
+### [2.12.1](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.12.0...v2.12.1) (2023-08-23)
+
 ## [2.12.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.11.0...v2.12.0) (2022-12-02)
 
 ### Features
