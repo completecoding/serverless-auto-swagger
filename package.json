@@ -60,7 +60,7 @@
     "node": ">=12"
   },
   "lint-staged": {
-    "**/*.ts": [
+    "/*.ts": [
       "npm run lint:fix"
     ],
     "**/*.{ts,js,json,md,yaml}": [
