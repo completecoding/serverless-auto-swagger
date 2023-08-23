@@ -157,11 +157,24 @@ export default class ServerlessAutoSwagger {
             const fileData = readFileSync(filepath, 'utf8');
 
             const { data } = await convert({ data: fileData });
-            // change the #/components/schema to #/definitions
             const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
-            const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
-
+            const jsonData = JSON.parse(definitionsData);
+            // This is to Override the property name to payload
+            for (const schemaName in jsonData.components.schemas) {
+              if (schemaName.includes('Response')) {
+                const schema = jsonData.components.schemas[schemaName];
+                if (schema.properties) {
+                  const firstPropertyName = Object.keys(schema.properties)[0];
+                  if (firstPropertyName) {
+                    schema.properties.payload = schema.properties[firstPropertyName];
+                    delete schema.properties[firstPropertyName];
+                  }
+                }
+              }
+            }
+            const updatedData = JSON.stringify(jsonData, null, 2);
+            const definitions: Record<string, Definition> = JSON.parse(updatedData).components.schemas;
             // TODO: Handle `anyOf` in swagger configs
 
             this.swagger.definitions = {
