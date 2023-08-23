@@ -15,8 +15,6 @@
     "build:watch": "npm run compile -- --watch",
     "postbuild": "copyfiles -f ./src/resources/*.py ./dist/resources/",
     "check-types": "tsc --noEmit",
-    "lint": "eslint 'src/**/*.ts'",
-    "lint:fix": "npm run lint -- --fix",
     "prepare-release": "standard-version",
     "prepublish": "npm run build",
     "precommit": "npm run test",
