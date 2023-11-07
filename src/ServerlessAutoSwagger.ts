@@ -145,7 +145,7 @@ export default class ServerlessAutoSwagger {
       format: 'json',
       title: this.swagger.info.title,
       version: 'v1',
-      schemaVersion: '2.0',
+      schemaVersion: this.swagger.swagger,
     });
     const { convert } = makeConverter(reader, writer);
     try {

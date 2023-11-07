@@ -1,7 +1,8 @@
 import type { HttpMethod } from './common.types';
+import type { OpenApiSchemaVersion } from 'openapi-json-schema';
 
 export interface Swagger {
-  swagger: string;
+  swagger: OpenApiSchemaVersion;
   info: Info;
   host?: string;
   basePath?: string;

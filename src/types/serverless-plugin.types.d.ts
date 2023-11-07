@@ -1,4 +1,5 @@
 'use strict';
+import type { OpenApiSchemaVersion } from 'openapi-json-schema';
 import type { AwsLambdaRuntime } from '@serverless/typescript';
 import { configSchemaHandler } from 'serverless';
 import type {
@@ -44,7 +45,7 @@ export interface AutoSwaggerCustomConfig {
   title?: string;
   description?: string;
   version?: string;
-  swaggerSchemaVersion?: string;
+  swaggerSchemaVersion?: OpenApiSchemaVersion;
   excludeStages?: string[];
   lambdaAuthorizer?: Http['authorizer'] | HttpApiEvent['authorizer'];
   useRedirectUI?: boolean;
