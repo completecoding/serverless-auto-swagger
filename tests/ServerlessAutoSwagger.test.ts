@@ -822,6 +822,7 @@ describe('ServerlessAutoSwagger', () => {
             host: 'some-host',
             title: 'My API Title',
             description: 'API Description',
+            swaggerSchemaVersion: '3.0.0',
             schemes: ['ws'],
             swaggerFiles: [fileName],
           }
@@ -837,7 +838,7 @@ describe('ServerlessAutoSwagger', () => {
         info: { title: 'My API Title', version: '1', description: 'API Description' },
         paths: expect.any(Object),
         securityDefinitions: expect.any(Object),
-        swagger: '2.0',
+        swagger: '3.0.0',
         schemes: ['ws'],
         basePath: '/bp',
         host: 'some-host',

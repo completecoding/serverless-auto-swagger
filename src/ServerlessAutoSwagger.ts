@@ -110,6 +110,7 @@ export default class ServerlessAutoSwagger {
     if (autoswagger.title) this.swagger.info.title = autoswagger.title;
     if (autoswagger.description) this.swagger.info.description = autoswagger.description;
     if (autoswagger.version) this.swagger.info.version = autoswagger.version;
+    if (autoswagger.swaggerSchemaVersion) this.swagger.swagger = autoswagger.swaggerSchemaVersion;
 
     // There must be at least one or this `if` will be false
     if (autoswagger.swaggerFiles?.length) this.gatherSwaggerFiles(autoswagger.swaggerFiles);
