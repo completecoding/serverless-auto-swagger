@@ -1,5 +1,6 @@
 'use strict';
-import { copy, readFileSync } from 'fs-extra';
+import { readFileSync } from 'fs';
+import { copy } from 'fs-extra';
 import { dirname } from 'path';
 import type { Options } from 'serverless';
 import type { Service } from 'serverless/aws';

@@ -24,7 +24,7 @@
     "prepare": "is-ci || husky install",
     "prettier": "prettier --write '**/*.{ts,js,json,md,yaml}'",
     "publish:manual": "np",
-    "test": "jest",
+    "test": "NODE_OPTIONS=\"$NODE_OPTIONS --experimental-vm-modules\" jest",
     "test:ci": "npm test -- --silent"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "@jest/types": "^29.1.2",
     "@types/fs-extra": "^9.0.13",
     "@types/jest": "^29.1.1",
+    "@types/mock-fs": "^4.13.4",
     "@types/serverless": "^3.0.1",
     "@typescript-eslint/eslint-plugin": "^5.13.0",
     "@typescript-eslint/parser": "^5.13.0",
@@ -48,6 +49,7 @@
     "is-ci": "^3.0.1",
     "jest": "^29.1.2",
     "lint-staged": "^13.0.1",
+    "mock-fs": "^5.2.0",
     "prettier": "^2.5.1",
     "standard-version": "^9.3.1",
     "ts-jest": "^29.0.3",

@@ -1,10 +1,13 @@
 'use strict';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import { PathOrFileDescriptor } from 'fs-extra';
 import { Options } from 'serverless';
 import { Logging } from 'serverless/classes/Plugin';
 import ServerlessAutoSwagger from '../src/ServerlessAutoSwagger';
 import { CustomServerless, ServerlessConfig, ServerlessFunctionEvent } from '../src/types/serverless-plugin.types';
+import mock from 'mock-fs';
+
+const jest = import.meta.jest;
 
 const log = {
   notice: jest.fn(),
@@ -60,26 +63,15 @@ const generateServerlessFromAnEndpoint = (
 };
 
 describe('ServerlessAutoSwagger', () => {
-  const mockedJsonFiles = new Map<string, string>();
-
-  jest
-    .spyOn<typeof fs, 'readFileSync'>(fs, 'readFileSync')
-    .mockImplementation((fileName: PathOrFileDescriptor): string => {
-      const content = mockedJsonFiles.get(fileName as string);
-
-      if (!content) {
-        throw new Error(`file ${fileName} not mocked`);
-      }
-
-      return content;
-    });
+  let mockedJsonFiles: Record<string, string> = {};
 
   const mockJsonFile = (fileName: string, content: Record<string, unknown>): void => {
-    mockedJsonFiles.set(fileName, JSON.stringify(content));
+    mockedJsonFiles[fileName] = JSON.stringify(content);
+    mock(mockedJsonFiles);
   };
 
   beforeEach(() => {
-    mockedJsonFiles.clear();
+    mockedJsonFiles = {};
   });
 
   describe('generatePaths', () => {

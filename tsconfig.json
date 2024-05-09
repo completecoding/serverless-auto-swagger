@@ -2,14 +2,16 @@
   "compilerOptions": {
     "declaration": true,
     "lib": ["es6", "esnext.asynciterable"],
-    "target": "es2017",
-    "module": "commonjs",
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "node",
     "noImplicitReturns": false,
     "strict": true,
     "outDir": "dist",
     "rootDir": ".",
     "skipLibCheck": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*", "tests/**/*"]
 }
