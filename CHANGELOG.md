@@ -8,7 +8,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 - Remove support for Node 14, 16
 - Add support for Node 18, 20, 22
-- Refactored to make it easier to implement new features in the future. Move to `@serverless/types` for typing [#112](https://github.com/completecoding/serverless-auto-swagger/pull/112) - Thanks @gbremond
+- Refactored to make it easier to implement new features in the future. Move to `@serverless/types` for typing ([#112](https://github.com/completecoding/serverless-auto-swagger/pull/112) - thanks @gbremond)
 
 ## [2.12.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.11.0...v2.12.0) (2022-12-02)
 
