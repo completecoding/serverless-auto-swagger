@@ -8,6 +8,7 @@
     "type": "git",
     "url": "https://github.com/completecoding/serverless-auto-swagger"
   },
+  "type": "module",
   "scripts": {
     "start": "npm run build:watch",
     "compile": "tsc -p tsconfig.build.json",
