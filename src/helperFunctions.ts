@@ -40,3 +40,13 @@ export const recursiveFixAnyOf = (definition: Definition) => {
 
   return definition;
 };
+export const generateEmptySwagger = () => ({
+  swagger: '2.0',
+  info: {
+    title: '',
+    version: '1',
+  },
+  paths: {},
+  definitions: {},
+  securityDefinitions: {},
+});
