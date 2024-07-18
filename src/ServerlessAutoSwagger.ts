@@ -1,6 +1,7 @@
 'use strict';
 import { copy, readFileSync } from 'fs-extra';
 import { dirname } from 'path';
+import { glob } from 'glob';
 import type { Options } from 'serverless';
 import type { Service } from 'serverless/aws';
 import type { Logging } from 'serverless/classes/Plugin';
@@ -153,27 +154,32 @@ export default class ServerlessAutoSwagger {
 
       const typesFile = typeLocationOverride || ['./src/types/api-types.d.ts'];
       await Promise.all(
-        typesFile.map(async (filepath) => {
-          try {
-            const fileData = readFileSync(filepath, 'utf8');
+        typesFile
+          .reduce((files: string[], pattern: string) => {
+            const newFiles = glob.sync(pattern);
+            return [...files, ...newFiles];
+          }, [])
+          .map(async (filepath) => {
+            try {
+              const fileData = readFileSync(filepath, 'utf8');
 
-            const { data } = await convert({ data: fileData });
-            // change the #/components/schema to #/definitions
-            const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
+              const { data } = await convert({ data: fileData });
+              // change the #/components/schema to #/definitions
+              const definitionsData = data.replace(/\/components\/schemas/g, '/definitions');
 
-            const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
+              const definitions: Record<string, Definition> = JSON.parse(definitionsData).components.schemas;
 
-            // TODO: Handle `anyOf` in swagger configs
+              // TODO: Handle `anyOf` in swagger configs
 
-            this.swagger.definitions = {
-              ...this.swagger.definitions,
-              ...definitions,
-            };
-          } catch (error) {
-            this.log.error(`Couldn't read types from file: ${filepath}`);
-            return;
-          }
-        })
+              this.swagger.definitions = {
+                ...this.swagger.definitions,
+                ...definitions,
+              };
+            } catch (error) {
+              this.log.error(`Couldn't read types from file: ${filepath}`);
+              return;
+            }
+          })
       );
       // TODO change this to store these as temporary and only include definitions used elsewhere.
     } catch (error) {
