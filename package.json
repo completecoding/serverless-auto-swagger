@@ -1,6 +1,6 @@
 {
   "name": "@archprotocol/serverless-auto-swagger",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Automatically generate a swagger file from your Serverless Framework config file",
   "main": "dist/index.js",
   "homepage": "https://github.com/SamWSoftware/serverless-auto-swagger",

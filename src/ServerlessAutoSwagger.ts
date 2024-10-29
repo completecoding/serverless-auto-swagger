@@ -203,7 +203,7 @@ export default class ServerlessAutoSwagger {
 
   private async prepareResourceFolder() {
     // TODO enable user to specify swagger file path. also needs to update the swagger json endpoint.
-    const packagePath = dirname(require.resolve('serverless-auto-swagger/package.json'));
+    const packagePath = dirname(require.resolve('@archprotocol/serverless-auto-swagger/package.json'));
     const resourcesPath = `${packagePath}/dist/resources`;
     await copy(resourcesPath, './swagger');
     return resourcesPath;
