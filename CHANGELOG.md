@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.12.0...v3.1.0) (2025-03-12)
+
+### Changes
+
+- Run `npm update` for dependencies
+- Add serverless 4 support ([#142](https://github.com/completecoding/serverless-auto-swagger/pull/142) fixes [#138](https://github.com/completecoding/serverless-auto-swagger/issues/138) - thanks @eahefnawy)
+- `typefiles` supports glob patterns ([#137](https://github.com/completecoding/serverless-auto-swagger/pull/137) - thanks @antoriche)
+
 ## [3.0.0](https://github.com/SamWSoftware/serverless-auto-swagger/compare/v2.12.0...v3.0.0) (2024-05-09)
 
 ### Changes
